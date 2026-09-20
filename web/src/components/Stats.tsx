@@ -54,9 +54,9 @@ export default function Stats({ card, frame, summary, committed }: Props) {
         </span>
       </div>
 
-      <Meter label="confidence in this percept" value={confidence} tone="var(--primary)" />
-      <Meter label="dopamine pool" value={dopamine} tone="var(--dopamine)" />
-      <Meter label="aversion pool" value={aversion} tone="var(--aversion)" />
+      <Meter label="confidence in this percept" value={confidence} tone="var(--wing)" />
+      <Meter label="dopamine pool" value={dopamine} tone="var(--amber)" />
+      <Meter label="aversion pool" value={aversion} tone="var(--eye)" />
 
       <dl className="readout">
         <div>

@@ -11,7 +11,6 @@ from pathlib import Path
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from api.routes import analysis, brain, health
@@ -50,11 +49,11 @@ def create_app() -> FastAPI:
     app.include_router(analysis.router)
 
     if WEB_DIST.is_dir():
-        app.mount("/assets", StaticFiles(directory=WEB_DIST / "assets"), name="assets")
-
-        @app.get("/", include_in_schema=False)
-        def index() -> FileResponse:
-            return FileResponse(WEB_DIST / "index.html")
+        # The whole build directory, not just /assets: the frontend also ships
+        # the favicon, the icon sheet, and the hemibrain meshes the 3D view
+        # loads at runtime, all of which sit at the root of the build. This
+        # mount is registered last, so every API route above still wins.
+        app.mount("/", StaticFiles(directory=WEB_DIST, html=True), name="web")
 
     return app
 

@@ -24,6 +24,7 @@ uv sync --extra dev
 uv pip install -e .
 
 frrf-fetch                       # download the corpus and turn it into percepts
+frrf-meshes                      # optional: rebuild the neuropil surfaces (committed already)
 frrf-train                       # cross-validate, tune the commit rule, ship a fly
 frrf-evaluate                    # draw what cross-validation found
 
@@ -110,17 +111,27 @@ the song.
 | `brain/` | the circuit — ear, gain control, calyx, output compartments, dopamine |
 | `training/` | corpus, fetch, cross-validation, scoring, plots |
 | `api/` | FastAPI app; SSE stream so the browser can watch a track play |
-| `web/` | React frontend; the circuit in 3D on a three.js canvas, on one screen |
+| `web/` | React frontend; real hemibrain neuropils in three.js, on one screen |
+| `training/meshes.py` | pulls those neuropils out of the hemibrain; a build step, not a runtime one |
 | `docs/BRAIN.md` | what is a fly and what is an engineering choice, number by number |
 | `docs/FINDINGS.md` | what the measurements said, including the unwelcome parts |
 | `models/` | the shipped fly, its metrics, and the out-of-fold traces |
 
-The interface is one screen and does not scroll: the mushroom body turns in
-the middle of it, 4,000 Kenyon cells as points inside the calyx with about 200
-lit at any moment, the video beside it, and the whole response along the
-bottom. The anatomy is drawn from the arrangement the textbooks describe
-rather than measured from a connectome, and the page says so. It is also,
-deliberately, a MySpace profile from 2003.
+The interface is one screen and does not scroll. In the middle of it the
+mushroom body turns, and every surface in that scene is measured anatomy: the
+neuropils come from the **Janelia FlyEM hemibrain v1.2 ROI segmentation**, so
+the calyx on screen is the calyx, and the lobes that light up are the lobes
+the output neurons actually read. The 4,000 Kenyon cells are scattered inside
+the real calyx surface — sampled once at build time and rejected against the
+mesh, so a lit cell is lit somewhere a Kenyon cell could be.
+
+Johnston's organ is not in that scene. It sits in the antenna, outside the
+brain and outside the connectome, and inventing one to stand next to measured
+anatomy would undo the point of measuring it; the receptors are drawn flat,
+under the brain, where they can be honest about being a bar chart.
+
+`frrf-meshes` regenerates the surfaces. Its output is committed, so a clone
+needs neither the extra dependencies nor the download.
 
 `models/traces.npz` holds every out-of-fold confidence timeline. Cross-validation
 is the expensive part of this project and those timelines are its real product:
@@ -131,7 +142,7 @@ of retraining.
 ## Develop
 
 ```bash
-pytest          # 88 tests
+pytest          # 89 tests
 ruff check .
 ```
 
@@ -140,3 +151,8 @@ ruff check .
 The architecture is Drosophila's. The parameters that are the fly's say so in
 `brain/config.py`; the ones that are engineering say that too. The song is
 Stock, Aitken and Waterman's, 1987.
+
+The neuropil surfaces in `web/public/fly-brain.glb` are from the [Janelia FlyEM
+hemibrain](https://www.janelia.org/project-team/flyem/hemibrain) v1.2 ROI
+segmentation, used under CC BY 4.0. They are the only part of this repository
+that is someone else's measurement rather than our arithmetic.

@@ -22,10 +22,19 @@ dev = [
     "matplotlib>=3.9",
 ]
 
+# Only needed to regenerate web/public/fly-brain.glb from the hemibrain. The
+# output is committed, so running or developing the fly needs none of this.
+meshes = [
+    "cloud-volume>=12",
+    "trimesh>=4",
+    "rtree>=1.3",
+]
+
 [project.scripts]
 frrf-fetch = "training.fetch:main"
 frrf-train = "training.train:main"
 frrf-evaluate = "training.evaluate:main"
+frrf-meshes = "training.meshes:main"
 
 [build-system]
 requires = ["hatchling"]

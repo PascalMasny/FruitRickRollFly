@@ -1,0 +1,84 @@
+{
+  "source": "Janelia FlyEM hemibrain v1.2 ROI segmentation",
+  "licence": "CC BY 4.0",
+  "url": "https://www.janelia.org/project-team/flyem/hemibrain",
+  "space": "hemibrain, right hemisphere",
+  "units": "micrometres, scaled and centred on the mushroom body",
+  "orientation": "+y dorsal, +z anterior",
+  "kenyonCells": 8192,
+  "seed": 1987,
+  "regions": [
+    {
+      "roi": "CA(R)",
+      "name": "calyx",
+      "role": "circuit",
+      "vertices": 1304
+    },
+    {
+      "roi": "PED(R)",
+      "name": "peduncle",
+      "role": "circuit",
+      "vertices": 1007
+    },
+    {
+      "roi": "aL(R)",
+      "name": "alpha",
+      "role": "avoidance",
+      "vertices": 938
+    },
+    {
+      "roi": "a'L(R)",
+      "name": "alpha-prime",
+      "role": "avoidance",
+      "vertices": 848
+    },
+    {
+      "roi": "bL(R)",
+      "name": "beta",
+      "role": "approach",
+      "vertices": 665
+    },
+    {
+      "roi": "b'L(R)",
+      "name": "beta-prime",
+      "role": "approach",
+      "vertices": 828
+    },
+    {
+      "roi": "gL(R)",
+      "name": "gamma",
+      "role": "approach",
+      "vertices": 1867
+    },
+    {
+      "roi": "AL(R)",
+      "name": "antennal-lobe",
+      "role": "circuit",
+      "vertices": 3661
+    },
+    {
+      "roi": "LH(R)",
+      "name": "lateral-horn",
+      "role": "context",
+      "vertices": 270
+    },
+    {
+      "roi": "ME(R)",
+      "name": "medulla",
+      "role": "context",
+      "vertices": 1392
+    },
+    {
+      "roi": "LO(R)",
+      "name": "lobula",
+      "role": "context",
+      "vertices": 1756
+    },
+    {
+      "roi": "LOP(R)",
+      "name": "lobula-plate",
+      "role": "context",
+      "vertices": 1011
+    }
+  ]
+}

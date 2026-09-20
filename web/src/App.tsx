@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import BrainView from './components/BrainView'
-import Rail from './components/Rail'
+import Ear from './components/Ear'
 import StageStrip from './components/StageStrip'
 import Stats from './components/Stats'
 import Timeline from './components/Timeline'
@@ -10,12 +10,6 @@ import { fetchBrain } from './lib/api'
 import type { BrainCard } from './lib/types'
 import { useAnalysis } from './lib/useAnalysis'
 import { useFrameAt, useReplay } from './lib/usePlayhead'
-
-const TICKER =
-  '★ WELCOME 2 MY PROFILE ★ i am a fruit fly and i know ONE song ★ ' +
-  'paste a youtube link and watch my dopamine go crazy!!! ★ ' +
-  'no haters ★ 200 of my 4000 kenyon cells fire at a time thats just how i am ★ ' +
-  'PLZ SIGN MY GUESTBOOK ★'
 
 export default function App() {
   const [card, setCard] = useState<BrainCard | null>(null)
@@ -66,27 +60,14 @@ export default function App() {
   const busy = ['queued', 'resolving', 'fetching', 'hearing', 'judging'].includes(analysis.stage)
   const committed = Boolean(analysis.summary?.verdict)
 
-  /* A hit counter, because it is 2003. It counts real visits to this browser
-     and nothing else, which makes it the most honest counter of its era. */
-  const hits = useMemo(() => {
-    try {
-      const next = Number(localStorage.getItem('frrf.hits') ?? '0') + 1
-      localStorage.setItem('frrf.hits', String(next))
-      return next
-    } catch {
-      return 1
-    }
-  }, [])
-
   if (cardError) {
     return (
       <main className="shell" style={{ display: 'grid', placeItems: 'center' }}>
         <div className="fatal">
-          <h1>404 NO FLY</h1>
+          <h1>No fly</h1>
           <p>{cardError}</p>
           <p className="hint">
-            Run <code>uv run frrf-fetch</code> then <code>uv run frrf-train</code>, and restart the
-            server.
+            Run <code>frrf-fetch</code> then <code>frrf-train</code>, and restart the server.
           </p>
         </div>
       </main>
@@ -96,55 +77,69 @@ export default function App() {
   return (
     <main className="shell">
       <header className="masthead">
-        <h1 className="wordart">
-          Fruit<span className="accent">Rick</span>Roll<span className="accent">Fly</span>
-        </h1>
-        <div className="marquee">
-          <span>{TICKER}</span>
+        <div>
+          <h1>
+            Fruit<span className="accent">Rick</span>Roll<span className="accent">Fly</span>
+          </h1>
+          <p className="tagline">
+            A Drosophila mushroom body that has learned exactly one song.
+          </p>
         </div>
         {card && (
           <dl className="masthead-meta">
             <div>
-              <dt>trained</dt>
-              <dd>{card.trained}</dd>
+              <dt>target</dt>
+              <dd>{card.target}</dd>
             </div>
             <div>
               <dt>corpus</dt>
               <dd>
-                {card.corpus.tracks} tracks / {card.corpus.percepts?.toLocaleString()} percepts
+                {card.corpus.tracks} tracks, {card.corpus.percepts?.toLocaleString()} percepts
               </dd>
+            </div>
+            <div>
+              <dt>trained</dt>
+              <dd>{card.trained}</dd>
             </div>
           </dl>
         )}
       </header>
 
-      {card && <Rail card={card} hits={hits} committed={committed} busy={busy} />}
-
-      <section className="card brain">
-        <div className="card-head">
-          <span>~*~ my brain ~*~</span>
-          <span>mushroom body, live</span>
+      <section className="panel brain">
+        <div className="panel-head">
+          <span className="label">mushroom body</span>
+          <span className="label">right hemisphere, measured</span>
         </div>
-        <div className="card-body flush">
-          {card && <BrainView circuit={card.circuit} frame={frame} live={Boolean(frame)} />}
-        </div>
+        {card && (
+          <>
+            <BrainView circuit={card.circuit} frame={frame} live={Boolean(frame)} />
+            <div className="ear">
+              <Ear circuit={card.circuit} frame={frame} />
+              <div className="ear-key">
+                <b className="mel">{card.circuit.melBands} tonotopic</b>
+                <b className="chroma">{card.circuit.chromaBands} pitch classes</b>
+                <b>&times;{card.circuit.subframes} sub-frames</b>
+              </div>
+            </div>
+          </>
+        )}
       </section>
 
-      <section className="card bar">
-        <div className="card-head">
-          <span>play me something</span>
-          <span className="blink">{busy ? 'LISTENING...' : 'ONLINE NOW!'}</span>
+      <section className="panel bar">
+        <div className="panel-head">
+          <span className="label">play it something</span>
+          <span className="label">{busy ? 'listening' : 'idle'}</span>
         </div>
-        <div className="card-body">
+        <div>
           <UrlInput onSubmit={analysis.run} busy={busy} disabled={!card} />
           <StageStrip stage={analysis.stage} error={analysis.error} />
         </div>
       </section>
 
       <div className="side">
-        <section className="card side-video">
-          <div className="card-head">
-            <span>now playing</span>
+        <section className="panel side-video">
+          <div className="panel-head">
+            <span className="label">now playing</span>
             {analysis.summary?.committedAt != null && (
               <button
                 type="button"
@@ -155,66 +150,56 @@ export default function App() {
               </button>
             )}
           </div>
-          <div className="card-body flush">
-            {analysis.video ? (
-              <>
-                <VideoPreview video={analysis.video} onTime={onTime} seekTo={seekTo} />
-                <div className="video-controls">
-                  <button
-                    type="button"
-                    className="chip"
-                    onClick={() => (replay.running ? replay.stop() : replay.start(0))}
-                    disabled={!analysis.frames.length}
-                  >
-                    {replay.running ? 'stop replay' : 'replay without the video'}
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="video-empty">
-                <span className="big">♫</span>
-                <span>nothing in the CD tray yet</span>
-                <span className="hint">paste a link and i will listen</span>
+          {analysis.video ? (
+            <>
+              <VideoPreview video={analysis.video} onTime={onTime} seekTo={seekTo} />
+              <div className="video-controls">
+                <button
+                  type="button"
+                  className="chip"
+                  onClick={() => (replay.running ? replay.stop() : replay.start(0))}
+                  disabled={!analysis.frames.length}
+                >
+                  {replay.running ? 'stop replay' : 'replay without the video'}
+                </button>
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <div className="video-empty">
+              <span>nothing playing</span>
+              <span>paste a link</span>
+            </div>
+          )}
         </section>
 
-        <section className="card side-stats">
-          <div className="card-head">
-            <span>my details</span>
-          </div>
-          <div className="card-body">
-            {card && (
-              <Stats card={card} frame={frame} summary={analysis.summary} committed={committed} />
-            )}
-          </div>
+        <section className="panel side-stats">
+          {card && (
+            <Stats card={card} frame={frame} summary={analysis.summary} committed={committed} />
+          )}
         </section>
       </div>
 
-      <section className="card time">
-        <div className="card-head">
-          <span>the whole song, second by second</span>
-          <span>click to seek</span>
+      <section className="panel time">
+        <div className="panel-head">
+          <span className="label">the whole response</span>
+          <span className="label">click to seek</span>
         </div>
-        <div className="card-body">
-          {card && analysis.frames.length > 0 ? (
-            <Timeline
-              frames={analysis.frames}
-              summary={analysis.summary}
-              at={at}
-              commitThreshold={card.circuit.commitThreshold}
-              onSeek={seek}
-            />
-          ) : (
-            <p className="hint" style={{ fontSize: '0.66rem' }}>
-              {card?.performance.unheardUpload && card.performance.unheardRendition
-                ? `held out: ${(card.performance.unheardUpload.macroAuc * 100).toFixed(1)}% AUC on an unheard upload of the record, ` +
-                  `${(card.performance.unheardRendition.macroAuc * 100).toFixed(1)}% on a rendition it has never heard anyone play. both out of fold.`
-                : 'no song yet.'}
-            </p>
-          )}
-        </div>
+        {card && analysis.frames.length > 0 ? (
+          <Timeline
+            frames={analysis.frames}
+            summary={analysis.summary}
+            at={at}
+            commitThreshold={card.circuit.commitThreshold}
+            onSeek={seek}
+          />
+        ) : (
+          <p className="hint">
+            {card?.performance.unheardUpload && card.performance.unheardRendition
+              ? `Held out: ${(card.performance.unheardUpload.macroAuc * 100).toFixed(1)}% AUC on an unheard upload of the record, ` +
+                `${(card.performance.unheardRendition.macroAuc * 100).toFixed(1)}% on a rendition it has never heard anyone play. Both out of fold.`
+              : 'Nothing heard yet.'}
+          </p>
+        )}
       </section>
     </main>
   )

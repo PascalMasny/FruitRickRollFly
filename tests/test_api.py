@@ -58,3 +58,25 @@ def test_an_absurdly_long_url_fails_validation(client):
 def test_an_unknown_job_is_a_404(client):
     assert client.get("/api/analysis/deadbeef").status_code == 404
     assert client.get("/api/analysis/deadbeef/events").status_code == 404
+
+
+def test_the_build_directory_is_served_whole(client, tmp_path, monkeypatch):
+    """Not just /assets. The meshes and the favicon live at the build root, and
+    mounting only /assets left every one of them a 404."""
+    import api.main as main
+
+    dist = tmp_path / "dist"
+    (dist / "assets").mkdir(parents=True)
+    (dist / "index.html").write_text("<!doctype html><title>fly</title>")
+    (dist / "assets" / "app.js").write_text("// bundle")
+    (dist / "fly-brain.glb").write_bytes(b"glTF-ish")
+    (dist / "favicon.svg").write_text("<svg/>")
+    monkeypatch.setattr(main, "WEB_DIST", dist)
+
+    served = TestClient(main.create_app())
+    assert served.get("/").status_code == 200
+    assert served.get("/assets/app.js").status_code == 200
+    assert served.get("/fly-brain.glb").content == b"glTF-ish"
+    assert served.get("/favicon.svg").status_code == 200
+    # The API still outranks the mount.
+    assert served.get("/api/health").json()["ok"] is True
