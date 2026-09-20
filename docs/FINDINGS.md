@@ -287,6 +287,78 @@ cut from `rendition`, simulated memes are so hard that nothing fires; cut from
 is pasting an upload, so `upload` is the population, and saying so is part of
 the claim.
 
+### 6c. The gate was the wrong variable, and the statistic was the wrong statistic
+
+The caveat at the end of finding 6 — *a long video with a short sting is still
+missed by construction* — is not a corner case. It is the most common shape a
+Rickroll takes: four seconds of the record buried in ten minutes of something
+else. Pasted in: an eleven-minute video containing **1.3 s and 1.4 s** of the
+song. Peak confidence 0.976, pool stalled at 0.471 against 0.60, burst switched
+off by the 25-second gate. **Not a rickroll.**
+
+The obvious fix is to ungate the burst. It does not work, and the measurement
+is not close. Best two-second mean confidence, over whole tracks, no gate:
+
+| | best 2 s mean |
+|---|---|
+| TED talk, *How not to be ignorant about the world* | **0.985** |
+| *She Wants To Dance With Me* (the hard negative) | **0.972** |
+| the eleven-minute video that really is a Rickroll | 0.939 |
+
+Ranked by that statistic the genuine Rickroll loses to a lecture. A mean over a
+window can be carried by a single spike, and a long video offers thousands of
+windows to find a spike in. The gate was not protecting an arbitrary length
+limit; it was protecting a statistic that cannot survive many chances.
+
+**An unbroken run can.** Requiring every consecutive percept to clear a high
+bar is a much harder test to pass by accident, because it has to survive each
+percept it covers rather than average over them. Of forty-four full-length
+negatives, exactly one holds 0.97 for six tenths of a second — and it is *She
+Wants To Dance With Me*, which this project already documents the fly as partly
+confusing with the song.
+
+So a third path, ungated: **0.97 held for 0.60 s**. Measured on the out-of-fold
+tracks:
+
+| | recall | specificity |
+|---|---|---|
+| unheard upload | 1.000 → 1.000 | 0.977 → **0.977** |
+| unheard rendition | 0.429 → **0.619** | 0.909 → **0.909** |
+
+Neither specificity moves. Rendition recall — the honest number — rises
+nineteen points, because a cover that is briefly right now counts even though
+its pool never charges. The eleven-minute video commits at 163.8 s, on the
+song's second appearance.
+
+Three things recorded rather than buried. The bar sits on a cliff: at 0.60 s
+upload specificity is 0.977, at 0.50 s it is 0.909, and the video this was
+chased with holds 0.97 for 0.639 s — a margin of six percent, better than the
+four thousandths that sank the first burst rule, but still a margin. The new
+recall is slower: median rendition commit goes from 28.1 s to 41.9 s and p90
+from 50.6 s to 190.5 s, because nothing already caught got faster and
+everything newly caught is hard and late. And *10 rickrolls 1 video*, 34
+seconds, is still missed — its best run never holds 0.97 that long.
+
+### 6d. The defaults in `brain/config.py` are not the shipped fly
+
+Found while measuring the above, and worth more than a footnote. Training tunes
+the commitment parameters and saves what it chose into the model, so:
+
+| | `brain/config.py` | `models/fly_brain.npz` |
+|---|---|---|
+| `da_tau` | 0.9 | **2.0** |
+| `da_baseline` | 0.66 | **0.72** |
+| `da_commit` | 0.35 | **0.6** |
+
+This is by design — the dataclass docstring says the config travels with the
+weights — but it is a trap for anything that measures behaviour. A sweep built
+on a bare `BrainConfig()` reproduces upload specificity of **0.614** where the
+shipped fly scores **0.977**, and every conclusion drawn from it is about an
+animal that was never shipped. The earlier short-clip numbers in 6b were
+computed that way and should be read as indicative only; the real-audio table
+in 6b was not, and stands. `BrainConfig`'s docstring now says this outright:
+take the config from `FlyBrain.load(...).config`, never from the defaults.
+
 ---
 
 ## What this points at

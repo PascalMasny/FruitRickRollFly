@@ -152,6 +152,50 @@ certainty would. In practice the useful statistic is how *often* the fly says
 yes, not by how much, and a saturating input curve measures exactly that. It
 is also what neurons do."""
 
+DA_STREAK_CONFIDENCE = 0.97
+DA_STREAK_SECONDS = 0.60
+"""A third way to commit, and the only one that does not care how long the
+video is: six tenths of a second in which every consecutive percept is at or
+above 0.97 confidence.
+
+**The case this exists for.** Four seconds of the record stapled to the front
+of an eleven-minute video. The pool cannot charge from four seconds inside six
+hundred, and the burst above is switched off past twenty-five seconds by a gate
+that exists for good reasons. So the most ordinary Rickroll there is -- the
+sting hidden in something long -- was missed by construction, and said so in
+its own documentation.
+
+**Why a run, and not a longer mean.** The obvious fix is to ungate the burst.
+It does not work, and the measurement is unambiguous: over a whole track the
+best two-second mean confidence reaches 0.972 on *She Wants To Dance With Me*
+and 0.985 on a TED talk, while a real eleven-minute video carrying four seconds
+of the record scores 0.939. A mean over a window can be dragged up by one
+spike, and a long video offers thousands of windows to find one in. Ranked by
+that statistic the genuine Rickroll loses to a lecture about global ignorance.
+
+An unbroken run of near-certainty is a different question, and a much harder
+one to pass by accident. On the same full-length negatives only one of
+forty-four holds 0.97 for six tenths of a second -- and it is *She Wants To
+Dance With Me*, same artist, same producers, same year, which the fly is
+already documented as partly confusing with the song.
+
+**What it costs, measured on the out-of-fold tracks.** Nothing, and it pays:
+
+    unheard upload      recall 1.000 -> 1.000   specificity 0.977 -> 0.977
+    unheard rendition   recall 0.429 -> 0.619   specificity 0.909 -> 0.909
+
+Both specificities are untouched; rendition recall -- the honest number, the
+one for a cover the fly has never heard anyone play -- rises nineteen points,
+because a cover that is right for half a second now counts even though its pool
+never charges.
+
+The bar is the tight end of a cliff. At 0.60 s upload specificity is 0.977; at
+0.50 s it falls to 0.909. The video this was chased with holds 0.97 for 0.639 s,
+which is a margin of six percent rather than the four thousandths that sank the
+first version of the burst rule -- but it is still a margin, and it is recorded
+here rather than buried.
+"""
+
 DA_BURST_SECONDS = 2.0
 DA_BURST_CONFIDENCE = 0.90
 DA_BURST_MAX_SECONDS = 25.0
@@ -232,7 +276,16 @@ by training/train.py, not by hand."""
 @dataclass(frozen=True)
 class BrainConfig:
     """A complete parameter set, carried with the weights so a saved fly is
-    reproducible even if the defaults above move."""
+    reproducible even if the defaults above move.
+
+    **The defaults above are starting points, not the shipped fly.** Training
+    tunes the commitment parameters and saves what it chose into the model, so
+    a trained `models/fly_brain.npz` carries `da_tau`, `da_baseline` and
+    `da_commit` that differ from the module constants here. Anything measuring
+    the fly's behaviour must take its config from the loaded model --
+    `FlyBrain.load(...).config` -- and never from a bare `BrainConfig()`, which
+    describes an untrained animal and will quietly produce different verdicts.
+    """
 
     sample_rate: int = SAMPLE_RATE
     n_fft: int = N_FFT
@@ -271,6 +324,8 @@ class BrainConfig:
     da_slope: float = DA_SLOPE
     da_gain: float = DA_GAIN
     da_commit: float = DA_COMMIT
+    da_streak_confidence: float = DA_STREAK_CONFIDENCE
+    da_streak_seconds: float = DA_STREAK_SECONDS
     da_burst_seconds: float = DA_BURST_SECONDS
     da_burst_confidence: float = DA_BURST_CONFIDENCE
     da_burst_max_seconds: float = DA_BURST_MAX_SECONDS

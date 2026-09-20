@@ -106,11 +106,13 @@ def slow(config):
     The default commit threshold is 0.35, which a confident percept reaches in
     under a second, and a test of the fast path that the slow path wins is not
     a test of the fast path. These are the shipped tau and baseline with the
-    threshold put out of reach, so only the burst can fire.
+    threshold put out of reach, and the streak switched off, so only the burst
+    can fire.
     """
     from dataclasses import replace
 
-    return replace(config, da_tau=2.0, da_baseline=0.72, da_commit=0.85)
+    return replace(config, da_tau=2.0, da_baseline=0.72, da_commit=0.85,
+                   da_streak_seconds=0.0)
 
 
 def _timeline(config, seconds: float, confidence: float):
@@ -152,8 +154,9 @@ def test_the_fast_path_is_only_for_short_recordings(slow):
     """The same evidence, once inside the gate and once outside it.
 
     A long video gives a sliding rule thousands of chances to fire, which is
-    how an ungated fast path spends the specificity floor. Past the gate the
-    slow pool is the only way in.
+    how an ungated windowed mean spends the specificity floor. Past the gate
+    this path is shut; the streak, which asks a harder question, is the one
+    that stays open (see below).
     """
     short = _timeline(slow, seconds=slow.da_burst_max_seconds - 2.0, confidence=0.99)
     long_ = _timeline(slow, seconds=slow.da_burst_max_seconds + 10.0, confidence=0.99)
@@ -180,4 +183,77 @@ def test_the_burst_can_be_switched_off(slow):
     off = replace(slow, da_burst_seconds=0.0)
     trace = DopamineTrace(off)
     trace.run(*_timeline(off, seconds=4.0, confidence=1.0))
+    assert trace.committed_at is None
+
+
+# ── the streak: near-certainty held without a break ─────────────────────────
+# The only path that does not care how long the video is, and the only one that
+# can catch four seconds of the record buried in eleven minutes of something
+# else -- which is the most ordinary Rickroll there is.
+
+
+@pytest.fixture
+def patient(config):
+    """A fly whose pool and burst are both out of reach, so only a streak fires."""
+    from dataclasses import replace
+
+    return replace(config, da_tau=2.0, da_baseline=0.72, da_commit=0.85,
+                   da_burst_seconds=0.0)
+
+
+def test_a_streak_of_near_certainty_commits(patient):
+    trace = DopamineTrace(patient)
+    trace.run(*_timeline(patient, seconds=2.0, confidence=0.99))
+    assert trace.committed_by == "streak"
+    assert trace.committed_at == pytest.approx(patient.da_streak_seconds, abs=0.2)
+
+
+def test_the_streak_does_not_care_how_long_the_video_is(patient):
+    """The whole point. A sting inside something long is still a sting.
+
+    The burst is gated at twenty-five seconds, so before this path existed the
+    same evidence was caught in a short video and missed in a long one.
+    """
+    hop = patient.window_hop_seconds
+    quiet, loud = 0.30, 0.99
+    for total in (10.0, 600.0):
+        n = int(round(total / hop))
+        confidence = np.full(n, quiet)
+        # four seconds of the record, a long way in
+        start = min(n - int(4.0 / hop) - 1, int(160.0 / hop))
+        confidence[start : start + int(4.0 / hop)] = loud
+        trace = DopamineTrace(patient)
+        trace.run(2.0 * confidence - 1.0, np.arange(n) * hop)
+        assert trace.committed_by == "streak", f"missed the sting in a {total:.0f}s video"
+
+
+def test_a_broken_run_does_not_count(patient):
+    """Sixty percepts of near-certainty, never two in a row, is not a streak.
+
+    A windowed mean would be carried over the line by these; that is exactly
+    the difference, and why this path can be ungated when the mean cannot.
+    """
+    hop = patient.window_hop_seconds
+    confidence = np.full(400, 0.30)
+    confidence[::4] = 1.0
+    trace = DopamineTrace(patient)
+    trace.run(2.0 * confidence - 1.0, np.arange(400) * hop)
+    assert trace.committed_at is None
+
+
+def test_just_under_the_bar_never_streaks(patient):
+    trace = DopamineTrace(patient)
+    trace.run(*_timeline(patient, seconds=60.0,
+                         confidence=patient.da_streak_confidence - 0.02))
+    assert trace.committed_at is None
+
+
+def test_the_streak_can_be_switched_off(patient):
+    from dataclasses import replace
+
+    off = replace(patient, da_streak_seconds=0.0)
+    trace = DopamineTrace(off)
+    # Two seconds: long enough for the streak had it been on, short enough
+    # that the pool cannot reach an out-of-reach threshold by itself.
+    trace.run(*_timeline(off, seconds=2.0, confidence=1.0))
     assert trace.committed_at is None

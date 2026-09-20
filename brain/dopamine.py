@@ -87,6 +87,11 @@ class DopamineTrace:
         self.committed_by: str | None = None
         self._last_t: float | None = None
         self._recent: deque[tuple[float, float]] = deque()
+        self._streak = 0.0
+        """Seconds of unbroken near-certainty. Accumulated as elapsed time
+        rather than counted in percepts, because the hop differs between
+        training and listening and a run counted in percepts would silently
+        mean two different durations."""
         self._burst_allowed = True
         """Set by :meth:`run`, which is the only caller that knows how long the
         recording is. Stepping one percept at a time leaves it on."""
@@ -115,6 +120,26 @@ class DopamineTrace:
         mean = sum(c for _, c in self._recent) / len(self._recent)
         return mean >= self.config.da_burst_confidence
 
+    def _streak_holds(self, confidence: float, dt: float) -> bool:
+        """The third path: near-certainty held without a break.
+
+        Unlike the burst this is not gated on the length of the recording, and
+        it is the only path that can fire on a sting buried in a long video --
+        the shape of the most ordinary Rickroll there is. It can afford to be
+        ungated because it asks a much harder question than a windowed mean: a
+        mean can be carried by one spike, and a long video supplies thousands
+        of windows to find a spike in, whereas a run has to survive every
+        percept it covers.
+        """
+        need = self.config.da_streak_seconds
+        if need <= 0:
+            return False
+        if confidence >= self.config.da_streak_confidence:
+            self._streak += dt
+        else:
+            self._streak = 0.0
+        return self._streak >= need
+
     def step(self, evidence: float, t: float) -> tuple[float, float]:
         """Advance the pool to time ``t`` under the current evidence.
 
@@ -142,13 +167,19 @@ class DopamineTrace:
         self.dopamine = max(0.0, self.dopamine * decay + charge * gain * excite)
         self.aversion = max(0.0, self.aversion * decay + charge * gain * avoid)
 
-        # Two ways to commit, and the pool is asked first so that a track long
-        # enough to convince it reports the reaction time it always did.
+        # Three ways to commit, and the pool is asked first so that a track
+        # long enough to convince it reports the reaction time it always did.
+        confidence = (evidence + 1.0) / 2.0
+        # The streak is advanced whatever else happens, so that a commit which
+        # arrives through another path does not leave it half counted.
+        streak = self._streak_holds(confidence, dt)
         if self.committed_at is None:
             if self.dopamine >= config.da_commit:
                 self.committed_at, self.committed_by = t, "pool"
-            elif self._burst((evidence + 1.0) / 2.0, t):
+            elif self._burst(confidence, t):
                 self.committed_at, self.committed_by = t, "burst"
+            elif streak:
+                self.committed_at, self.committed_by = t, "streak"
         return self.dopamine, self.aversion
 
     def run(self, evidence: np.ndarray, times: np.ndarray) -> tuple[np.ndarray, np.ndarray]:

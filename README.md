@@ -53,16 +53,30 @@ re-encode, a remaster or a lyric video.
 
 | | percept AUC | track recall | track specificity | first suspicion | commits |
 |---|---|---|---|---|---|
-| **unheard rendition** | 0.704 macro · 0.780 pooled | 0.429 | 0.909 | 2.3 s | 28.1 s |
-| **unheard upload** | 0.971 macro · 0.971 pooled | 1.000 | 0.977 | 0.8 s | 10.1 s |
+| **unheard rendition** | 0.704 macro · 0.780 pooled | 0.619 | 0.909 | 2.3 s | 41.9 s |
+| **unheard upload** | 0.971 macro · 0.971 pooled | 1.000 | 0.977 | 0.8 s | 10.0 s |
 
-There are two ways for the fly to commit. The dopamine pool is the normal one
-and needs about ten seconds of the song. A meme does not have ten seconds — it
-has four, spliced onto the end of a cat video — so a second path commits on two
-seconds averaging 0.90 confidence, in recordings of at most 25 seconds. An
-eight-second Rickroll commits at about 4 s. The
-gate is what keeps it honest: it cannot reach a full-length track, so the
-figures above are untouched by it. See finding 6 in
+There are **three** ways for the fly to commit, because a Rickroll comes in
+three shapes.
+
+The dopamine pool is the normal one and needs about ten seconds of the song.
+A meme does not have ten seconds — it has four, spliced onto the end of a cat
+video — so a second path commits on two seconds averaging 0.90 confidence, in
+recordings of at most 25 seconds; an eight-second Rickroll commits at about
+4 s. That gate is what keeps the second path honest, but it also meant the most
+ordinary Rickroll of all was missed by construction: four seconds of the record
+buried in eleven minutes of something else, far too long for the gate and far
+too short for the pool.
+
+So there is a third, and it is the only one that does not care how long the
+video is: **six tenths of a second in which every consecutive percept is at or
+above 0.97**. Ungating the second path instead does not work, and the
+measurement is not close — over a whole track the best two-second mean reaches
+0.972 on *She Wants To Dance With Me* and 0.985 on a TED talk, while a real
+eleven-minute video carrying four seconds of the record scores 0.939. A mean
+can be carried by one spike and a long video supplies thousands of windows to
+find one in; an unbroken run cannot. It costs neither specificity above, and it
+is why rendition recall is 0.619 rather than 0.429. See finding 6 in
 [docs/FINDINGS.md](docs/FINDINGS.md).
 
 65 tracks, 66,035 percepts, 19,156 of them the song. Confidences are pooled
@@ -86,9 +100,15 @@ same master. It is the right number for the product and the wrong number for
 **The rendition number is the honest one, and it is 0.704.** For a piano cover
 or a live performance the fly is much closer to guessing.
 
-**Track-level figures carry a mild optimism.** The commit rule's three numbers
-are chosen against the 65 out-of-fold tracks. The percept AUCs are untouched by
+**Track-level figures carry a mild optimism.** The commit rule's numbers are
+chosen against the 65 out-of-fold tracks. The percept AUCs are untouched by
 that.
+
+**Catching more covers made the fly slower to say so.** Rendition recall went
+from 0.429 to 0.619 when the third path was added, and the median commit time
+went from 28.1 s to 41.9 s with it. Nothing got slower: the covers that were
+already caught are caught at the same moment as before. The ones that are new
+are the hard ones, and they are caught late.
 
 **And the specificity is flattered.** Adding four ordinary uploads of "She
 Wants To Dance With Me" — same artist, same producers, same year — drops the

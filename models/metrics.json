@@ -48,7 +48,9 @@
     "compartments": [
       "approach",
       "avoidance"
-    ]
+    ],
+    "da_streak_confidence": 0.97,
+    "da_streak_seconds": 0.6
   },
   "unheard_rendition": {
     "folds": [
@@ -248,11 +250,11 @@
     },
     "tracks": {
       "count": 65,
-      "accuracy": 0.7538461538461538,
-      "recall": 0.42857142857142855,
+      "accuracy": 0.8153846153846154,
+      "recall": 0.6190476190476191,
       "specificity": 0.9090909090909091,
-      "median_latency": 28.1309757232666,
-      "p90_latency": 50.60789184570313
+      "median_latency": 41.92362976074219,
+      "p90_latency": 190.5266876220703
     },
     "median_first_suspicion": 2.3336055278778076,
     "verdicts": [
@@ -274,7 +276,7 @@
         "kind": "rework",
         "positive": true,
         "committed": true,
-        "latency": 45.754920959472656,
+        "latency": 45.4995002746582,
         "peak_confidence": 0.9928689002990723,
         "mean_confidence": 0.7311525940895081
       },
@@ -350,8 +352,8 @@
         "group": "studio-1987",
         "kind": "studio",
         "positive": true,
-        "committed": false,
-        "latency": null,
+        "committed": true,
+        "latency": 189.30067443847656,
         "peak_confidence": 0.9866743087768555,
         "mean_confidence": 0.6546210646629333
       },
@@ -406,7 +408,7 @@
         "kind": "studio",
         "positive": true,
         "committed": true,
-        "latency": 4.632380962371826,
+        "latency": 4.121541976928711,
         "peak_confidence": 0.9966784119606018,
         "mean_confidence": 0.8658949136734009
       },
@@ -417,7 +419,7 @@
         "kind": "studio",
         "positive": true,
         "committed": true,
-        "latency": 9.740771293640137,
+        "latency": 9.229931831359863,
         "peak_confidence": 0.9936233758926392,
         "mean_confidence": 0.8013108372688293
       },
@@ -438,8 +440,8 @@
         "group": "studio-1987",
         "kind": "studio",
         "positive": true,
-        "committed": false,
-        "latency": null,
+        "committed": true,
+        "latency": 190.83319091796875,
         "peak_confidence": 0.9908708333969116,
         "mean_confidence": 0.7262173891067505
       },
@@ -449,8 +451,8 @@
         "group": "studio-1987",
         "kind": "studio",
         "positive": true,
-        "committed": false,
-        "latency": null,
+        "committed": true,
+        "latency": 189.30067443847656,
         "peak_confidence": 0.9864017963409424,
         "mean_confidence": 0.6543703675270081
       },
@@ -471,8 +473,8 @@
         "group": "studio-1987",
         "kind": "studio",
         "positive": true,
-        "committed": false,
-        "latency": null,
+        "committed": true,
+        "latency": 190.83319091796875,
         "peak_confidence": 0.9915086030960083,
         "mean_confidence": 0.7452354431152344
       },
@@ -956,7 +958,7 @@
         "kind": "speech",
         "positive": false,
         "committed": true,
-        "latency": 12.039546012878418,
+        "latency": 10.762449264526367,
         "peak_confidence": 0.9928767681121826,
         "mean_confidence": 0.27624645829200745
       },
@@ -1106,7 +1108,7 @@
       "accuracy": 0.9821428571428571,
       "recall": 1.0,
       "specificity": 0.9772727272727273,
-      "median_latency": 10.123899936676025,
+      "median_latency": 9.996190071105957,
       "p90_latency": 32.7796106338501
     },
     "median_first_suspicion": 0.8010884523391724,
@@ -1173,7 +1175,7 @@
         "kind": "studio",
         "positive": true,
         "committed": true,
-        "latency": 3.8661224842071533,
+        "latency": 3.355283498764038,
         "peak_confidence": 0.9957355856895447,
         "mean_confidence": 0.9611002802848816
       },
@@ -1184,7 +1186,7 @@
         "kind": "studio",
         "positive": true,
         "committed": true,
-        "latency": 4.887800216674805,
+        "latency": 3.6107029914855957,
         "peak_confidence": 0.9969268441200256,
         "mean_confidence": 0.9321435689926147
       },
@@ -1206,7 +1208,7 @@
         "kind": "studio",
         "positive": true,
         "committed": true,
-        "latency": 10.251609802246094,
+        "latency": 4.632380962371826,
         "peak_confidence": 0.9946182370185852,
         "mean_confidence": 0.9060014486312866
       },
@@ -1294,7 +1296,7 @@
         "kind": "hard",
         "positive": false,
         "committed": true,
-        "latency": 64.40054321289062,
+        "latency": 64.14512634277344,
         "peak_confidence": 0.9921645522117615,
         "mean_confidence": 0.706468403339386
       },
@@ -4255,6 +4257,11 @@
         "upload_specificity": 1.0,
         "upload_latency": null
       }
-    ]
+    ],
+    "streak": {
+      "confidence": 0.97,
+      "seconds": 0.6,
+      "note": "ungated third path; a run of near-certainty, for a sting inside a long video"
+    }
   }
 }
