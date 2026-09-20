@@ -57,6 +57,10 @@ export default function VideoPreview({ video, onTime, seekTo }: Props) {
   useEffect(() => {
     let cancelled = false
     let poll = 0
+    const stopPolling = () => {
+      window.clearInterval(poll)
+      poll = 0
+    }
 
     loadApi().then(() => {
       if (cancelled || !host.current || !window.YT) return
@@ -72,14 +76,21 @@ export default function VideoPreview({ video, onTime, seekTo }: Props) {
               if (typeof current === 'number') onTime(current)
             }, 50)
           },
-          onError: () => setBlocked(true),
+          // An embed the uploader has blocked still loads and still answers
+          // getCurrentTime, with 0.0, forever. Left polling it would pin the
+          // fly's clock to the start of the song and undo every seek, so the
+          // clock is handed back to the replay button instead.
+          onError: () => {
+            setBlocked(true)
+            stopPolling()
+          },
         },
       })
     })
 
     return () => {
       cancelled = true
-      window.clearInterval(poll)
+      stopPolling()
       player.current?.destroy?.()
       player.current = null
     }

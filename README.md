@@ -110,10 +110,17 @@ the song.
 | `brain/` | the circuit — ear, gain control, calyx, output compartments, dopamine |
 | `training/` | corpus, fetch, cross-validation, scoring, plots |
 | `api/` | FastAPI app; SSE stream so the browser can watch a track play |
-| `web/` | React frontend |
+| `web/` | React frontend; the circuit in 3D on a three.js canvas, on one screen |
 | `docs/BRAIN.md` | what is a fly and what is an engineering choice, number by number |
 | `docs/FINDINGS.md` | what the measurements said, including the unwelcome parts |
 | `models/` | the shipped fly, its metrics, and the out-of-fold traces |
+
+The interface is one screen and does not scroll: the mushroom body turns in
+the middle of it, 4,000 Kenyon cells as points inside the calyx with about 200
+lit at any moment, the video beside it, and the whole response along the
+bottom. The anatomy is drawn from the arrangement the textbooks describe
+rather than measured from a connectome, and the page says so. It is also,
+deliberately, a MySpace profile from 2003.
 
 `models/traces.npz` holds every out-of-fold confidence timeline. Cross-validation
 is the expensive part of this project and those timelines are its real product:

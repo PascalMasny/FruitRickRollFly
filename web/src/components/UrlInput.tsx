@@ -24,7 +24,7 @@ export default function UrlInput({ onSubmit, busy, disabled }: Props) {
       }}
     >
       <div className="url-row">
-        <span className="url-prompt">youtube</span>
+        <span className="url-prompt">http://</span>
         <input
           className="url-input"
           type="url"
@@ -37,10 +37,11 @@ export default function UrlInput({ onSubmit, busy, disabled }: Props) {
           disabled={disabled}
         />
         <button className="url-submit" type="submit" disabled={busy || disabled || !value.trim()}>
-          {busy ? 'listening' : 'play it to the fly'}
+          {busy ? 'listening' : 'play it 2 me'}
         </button>
       </div>
       <div className="url-examples">
+        <span className="url-examples-label">or try:</span>
         {EXAMPLES.map((example) => (
           <button
             key={example.url}
