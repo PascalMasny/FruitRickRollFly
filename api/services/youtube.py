@@ -182,9 +182,13 @@ def has_video_stream(path: Path) -> bool:
     return probe.returncode == 0 and b"video" in probe.stdout
 
 
+AUDIO_FORMAT = "bestaudio[abr<=160]/bestaudio/best"
+"""What the fly listens to. Small, and the only thing the verdict depends on."""
+
+
 def _options(destination: Path) -> dict:
     return {
-        "format": "bestaudio[abr<=160]/bestaudio/best",
+        "format": AUDIO_FORMAT,
         "outtmpl": str(destination / "%(id)s.%(ext)s"),
         "quiet": True,
         "no_warnings": True,
@@ -194,12 +198,7 @@ def _options(destination: Path) -> dict:
     }
 
 
-def describe(identifier: str, destination: Path) -> Video:
-    """Fetch title, channel and duration without downloading the media."""
-    import yt_dlp
-
-    with yt_dlp.YoutubeDL(_options(destination)) as ydl:
-        info = ydl.extract_info(f"https://www.youtube.com/watch?v={identifier}", download=False)
+def _describe(identifier: str, info: dict) -> Video:
     return Video(
         id=identifier,
         title=info.get("title") or identifier,
@@ -207,6 +206,48 @@ def describe(identifier: str, destination: Path) -> Video:
         duration=info.get("duration"),
         thumbnail=info.get("thumbnail"),
     )
+
+
+def describe(identifier: str, destination: Path) -> Video:
+    """Title, channel and duration, without downloading anything."""
+    import yt_dlp
+
+    with yt_dlp.YoutubeDL(_options(destination)) as ydl:
+        info = ydl.extract_info(f"https://www.youtube.com/watch?v={identifier}", download=False)
+    return _describe(identifier, info)
+
+
+def fetch_audio(identifier: str, destination: Path) -> tuple[Path, Video]:
+    """Download the audio and return it with the metadata, in one round trip.
+
+    Asking yt-dlp for the metadata and then asking it again to download used to
+    cost two extractions of the same page -- about 1.5 s of the roughly 4 s a
+    cold analysis took, spent entirely on learning a title twice. One call
+    downloads and returns the info it had to fetch anyway.
+
+    The audio is named apart from the video because both are cached: the fly
+    only ever needs this file, and waiting for the pictures before saying
+    anything is what made the answer feel slow.
+    """
+    import yt_dlp
+
+    destination.mkdir(parents=True, exist_ok=True)
+    cached = sorted(destination.glob(f"{identifier}.audio.*"))
+    if cached:
+        return cached[0], describe(identifier, destination)
+
+    options = _options(destination) | {
+        "skip_download": False,
+        "format": AUDIO_FORMAT,
+        "outtmpl": str(destination / "%(id)s.audio.%(ext)s"),
+    }
+    with yt_dlp.YoutubeDL(options) as ydl:
+        info = ydl.extract_info(f"https://www.youtube.com/watch?v={identifier}", download=True)
+
+    produced = sorted(p for p in destination.glob(f"{identifier}.audio.*") if p.suffix != ".part")
+    if not produced:
+        raise RuntimeError("YouTube served no audio for that video.")
+    return produced[0], _describe(identifier, info)
 
 
 MEDIA_FORMAT = (
@@ -231,7 +272,12 @@ def fetch_media(identifier: str, destination: Path) -> Path:
     destination.mkdir(parents=True, exist_ok=True)
 
     def on_disk() -> list[Path]:
-        return sorted(p for p in destination.glob(f"{identifier}.*") if p.suffix != ".part")
+        # `.audio.` files are the fly's copy and carry no pictures; matching
+        # them here would hand the player a soundtrack and call it a video.
+        return sorted(
+            p for p in destination.glob(f"{identifier}.*")
+            if p.suffix != ".part" and ".audio." not in p.name
+        )
 
     cached = on_disk()
     if cached and has_video_stream(cached[0]):

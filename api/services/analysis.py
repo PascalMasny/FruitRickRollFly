@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import functools
+import threading
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -22,6 +23,11 @@ from api.services import fly as fly_service
 from api.services import youtube
 from brain.audio import decode
 from brain.model import Response
+
+MEDIA_GRACE_SECONDS = 180.0
+"""How long the event stream stays open after the verdict, waiting for the
+video to finish downloading. It is only ever the viewer's picture that is
+waiting; the answer went out the moment the fly had one."""
 
 CHUNK = 48
 """Percepts per streamed frame. Small enough that the brain visibly fills in,
@@ -150,19 +156,32 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
         emit("stage", stage=value.value)
 
     started = time.perf_counter()
+    pictures: threading.Thread | None = None
     try:
         stage(Stage.RESOLVING)
         identifier = youtube.resolve_video_id(job.url)
-        video = youtube.describe(identifier, fly_service.CACHE_DIR)
+
+        stage(Stage.FETCHING)
+        # Audio only, and the metadata comes back from the same call. The fly
+        # never needed the pictures, and waiting for them before saying
+        # anything was most of the wait: on a cold run the two yt-dlp
+        # extractions and the video download were 94 percent of it, against
+        # five percent for hearing the thing.
+        path, video = youtube.fetch_audio(identifier, fly_service.CACHE_DIR)
         job.video = video.to_dict()
         emit("video", video=job.video)
 
-        stage(Stage.FETCHING)
-        path = youtube.fetch_media(identifier, fly_service.CACHE_DIR)
-        job.media = path
-        # The player waits for this: the file has to exist before the browser
-        # is told where to find it.
-        emit("media", url=f"/api/analysis/{job.id}/media")
+        # The picture is for the viewer, not the verdict, so it is fetched
+        # behind the analysis and announced whenever it lands.
+        def with_pictures() -> None:
+            try:
+                job.media = youtube.fetch_media(identifier, fly_service.CACHE_DIR)
+                emit("media", url=f"/api/analysis/{job.id}/media", ok=True)
+            except Exception as error:  # the verdict does not depend on this
+                emit("media", url=None, ok=False, detail=f"{type(error).__name__}: {error}")
+
+        pictures = threading.Thread(target=with_pictures, name=f"media-{job.id}", daemon=True)
+        pictures.start()
 
         stage(Stage.HEARING)
         brain = fly_service.fly()
@@ -189,6 +208,15 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
         emit("error", message=job.error)
         emit("stage", stage=Stage.FAILED.value)
     finally:
+        # The verdict is already on the wire; this only keeps the stream open
+        # long enough for the picture to follow it. Closing at `done`, which is
+        # what used to happen, meant the browser hung up before the video it
+        # had been promised ever arrived.
+        if pictures is not None:
+            pictures.join(timeout=MEDIA_GRACE_SECONDS)
+            if pictures.is_alive():
+                emit("media", url=None, ok=False, detail="the video is taking too long")
+        emit("end")
         loop.call_soon_threadsafe(job.finished.set)
 
 

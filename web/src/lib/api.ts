@@ -27,7 +27,7 @@ export async function submit(url: string): Promise<{ id: string; events: string 
 export interface StreamHandlers {
   onStage(stage: Stage): void
   onVideo(video: Video): void
-  onMedia(url: string): void
+  onMedia(url: string | null): void
   onHeard(percepts: number, seconds: number): void
   onTimeline(from: number, frames: Frame[]): void
   onSummary(summary: Summary): void
@@ -45,10 +45,12 @@ export function stream(jobId: string, handlers: StreamHandlers): () => void {
   const source = new EventSource(`/api/analysis/${jobId}/events`)
 
   source.addEventListener('stage', (event) => {
-    const data = JSON.parse((event as MessageEvent).data)
-    handlers.onStage(data.stage)
-    if (data.stage === 'done' || data.stage === 'failed') source.close()
+    handlers.onStage(JSON.parse((event as MessageEvent).data).stage)
   })
+  // The server says when it has nothing left to send. `done` is not that
+  // moment: the video is still downloading behind the verdict, and closing
+  // there threw away the event carrying its address.
+  source.addEventListener('end', () => source.close())
   source.addEventListener('video', (event) => {
     handlers.onVideo(JSON.parse((event as MessageEvent).data).video)
   })

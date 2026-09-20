@@ -153,6 +153,12 @@ of the place these cells actually sit even with the surface no longer drawn.
 `models/` as provenance rather than shipped to a browser that would download
 half a megabyte and never use it.
 
+The verdict does not wait for the picture. The fly needs the audio and nothing
+else, so the audio is fetched first — in the same call that returns the title,
+rather than a second round trip for it — and the video downloads behind the
+analysis. Pasting a link to a verdict is about 1.9 s cold, of which the model
+is 0.2 s; it was 4 s when the pictures came first.
+
 The video plays from our own copy rather than from a YouTube embed. The
 uploads most worth asking about are very often the ones whose uploader has
 disabled embedding, and for those the embed is a grey box reading *this video

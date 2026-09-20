@@ -4,6 +4,7 @@ import type { Video } from '../lib/types'
 interface Props {
   video: Video
   src: string | null
+  failed: boolean
   onTime(seconds: number): void
   seekTo: number | null
 }
@@ -20,7 +21,7 @@ interface Props {
  * Position is read on an animation frame rather than from `timeupdate`, which
  * fires about four times a second -- too coarse for a brain drawn at eight.
  */
-export default function VideoPreview({ video, src, onTime, seekTo }: Props) {
+export default function VideoPreview({ video, src, failed, onTime, seekTo }: Props) {
   const element = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
@@ -65,7 +66,9 @@ export default function VideoPreview({ video, src, onTime, seekTo }: Props) {
             onSeeked={(event) => onTime(event.currentTarget.currentTime)}
           />
         ) : (
-          <div className="video-pending">downloading the video</div>
+          <div className="video-pending">
+            {failed ? "the video would not download" : "downloading the video"}
+          </div>
         )}
       </div>
       <div className="video-meta">

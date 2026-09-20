@@ -142,6 +142,7 @@ export default function App() {
               <VideoPreview
                 video={analysis.video}
                 src={analysis.mediaUrl}
+                failed={analysis.mediaFailed}
                 onTime={onTime}
                 seekTo={seekTo}
               />

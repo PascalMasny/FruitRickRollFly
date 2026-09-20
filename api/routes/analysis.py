@@ -115,7 +115,10 @@ async def events(job_id: str) -> StreamingResponse:
                     yield ": still here\n\n"
                     continue
                 yield f"event: {event['kind']}\ndata: {json.dumps(event)}\n\n"
-                if event["kind"] == "stage" and event["stage"] in {"done", "failed"}:
+                # Not `done`: the analysis finishes before the video has
+                # finished downloading, and hanging up there loses the event
+                # that tells the player where to find it.
+                if event["kind"] == "end":
                     break
         finally:
             job.unsubscribe(queue)

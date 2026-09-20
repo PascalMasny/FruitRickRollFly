@@ -6,6 +6,7 @@ export interface AnalysisState {
   stage: Stage | 'idle'
   video: Video | null
   mediaUrl: string | null
+  mediaFailed: boolean
   frames: Frame[]
   expected: number | null
   summary: Summary | null
@@ -16,6 +17,7 @@ const EMPTY: AnalysisState = {
   stage: 'idle',
   video: null,
   mediaUrl: null,
+  mediaFailed: false,
   frames: [],
   expected: null,
   summary: null,
@@ -42,7 +44,8 @@ export function useAnalysis() {
       close.current = stream(id, {
         onStage: (stage) => setState((s) => ({ ...s, stage })),
         onVideo: (video) => setState((s) => ({ ...s, video })),
-        onMedia: (mediaUrl) => setState((s) => ({ ...s, mediaUrl })),
+        onMedia: (mediaUrl) =>
+          setState((s) => ({ ...s, mediaUrl, mediaFailed: mediaUrl === null })),
         onHeard: (percepts) => setState((s) => ({ ...s, expected: percepts })),
         onTimeline: (from, chunk) =>
           setState((s) => {
