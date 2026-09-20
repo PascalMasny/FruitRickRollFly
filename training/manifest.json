@@ -1,0 +1,670 @@
+{
+  "target": "Rick Astley - Never Gonna Give You Up (Stock Aitken Waterman, 1987)",
+  "curated": "2026-09-19",
+  "curation_rules": [
+    "A track is labelled rickroll only if the song is essentially the whole of it.",
+    "No compilation, megamix, greatest-hits or full-album upload may be a negative: those almost certainly contain the song, and a negative that contains the target is poison.",
+    "Uploads of the same master recording share a group. Splits are drawn by group, never by video, or the same audio would sit on both sides of the split.",
+    "Hard negatives are deliberate: the rest of Rick Astley's catalogue, other Stock Aitken Waterman productions from the same studio and the same year, and a different song that happens to be called Never Gonna Give You Up.",
+    "Speech and non-music are in the corpus because people will paste lectures and news clips into the box.",
+    "Fourteen further hard negatives (more uploads of the two Astley singles the fly was measured confusing with the target, plus Mel & Kim, Sinitta, Jason Donovan and Kylie Minogue) are carried at use=holdout. They are fetched and kept reproducible but not trained on: adding them to the training set drops the best reachable held-out upload specificity from 0.977 to 0.897, below the floor the commit rule is held to, so adopting them is a product decision about that floor and not a curation one. See docs/FINDINGS.md."
+  ],
+  "tracks": [
+    {
+      "id": "dQw4w9WgXcQ",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Official Video, 4K Remaster)"
+    },
+    {
+      "id": "3BFTio5296w",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (2022 Remaster)"
+    },
+    {
+      "id": "b7QpxQjezY8",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (2022 Remaster, Audio)"
+    },
+    {
+      "id": "2rmYU0B3kCQ",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (HQ Audio)"
+    },
+    {
+      "id": "LQ4w9xiHkrY",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Remastered in 4K, re-upload)"
+    },
+    {
+      "id": "eNOsh4IMtoE",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Remastered Audio HQ, re-upload)"
+    },
+    {
+      "id": "UUruPku91TI",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Audio Remastered, re-upload)"
+    },
+    {
+      "id": "5SZYz7lZRRI",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (1987, re-upload)"
+    },
+    {
+      "id": "7FwDP17XPlk",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (lyrics re-upload)"
+    },
+    {
+      "id": "RrESvSRNpeo",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Japanese subtitles)"
+    },
+    {
+      "id": "6PLatPMoxGw",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (lyrics video)"
+    },
+    {
+      "id": "MOcQaR7_Wro",
+      "label": "rickroll",
+      "group": "studio-1987",
+      "kind": "studio",
+      "use": "train",
+      "title": "Never Gonna Give You Up (lyrics video, re-upload)"
+    },
+    {
+      "id": "OWGRrOo7l5E",
+      "label": "rickroll",
+      "group": "extended-mix",
+      "kind": "mix",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Extended)"
+    },
+    {
+      "id": "QFK09y01me0",
+      "label": "rickroll",
+      "group": "tv-countdown-1987",
+      "kind": "live",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Countdown, 1987)"
+    },
+    {
+      "id": "XGxIE1hr0w4",
+      "label": "rickroll",
+      "group": "live-bbc-nye",
+      "kind": "live",
+      "use": "train",
+      "title": "Never Gonna Give You Up (BBC New Year's Eve)"
+    },
+    {
+      "id": "w2Sz_yClQyI",
+      "label": "rickroll",
+      "group": "live-late-late-show",
+      "kind": "live",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Late Late Show)"
+    },
+    {
+      "id": "IdkCEioCp24",
+      "label": "rickroll",
+      "group": "live-foo-fighters",
+      "kind": "live",
+      "use": "train",
+      "title": "Never Gonna Give You Up (with Foo Fighters, O2 2017)"
+    },
+    {
+      "id": "TMBN8hj5Jy0",
+      "label": "rickroll",
+      "group": "live-2016",
+      "kind": "live",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Live 2016)"
+    },
+    {
+      "id": "rTga41r3a4s",
+      "label": "rickroll",
+      "group": "pianoforte",
+      "kind": "rework",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Pianoforte, Performance)"
+    },
+    {
+      "id": "GHMjD0Lp5DY",
+      "label": "rickroll",
+      "group": "pianoforte",
+      "kind": "rework",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Pianoforte, Official Audio)"
+    },
+    {
+      "id": "8leAAwMIigI",
+      "label": "rickroll",
+      "group": "karaoke",
+      "kind": "rework",
+      "use": "train",
+      "title": "Never Gonna Give You Up (Karaoke, no lead vocal)"
+    },
+    {
+      "id": "nsCIeklgp1M",
+      "label": "rickroll",
+      "group": "live-glastonbury-2023",
+      "kind": "live",
+      "use": "demo",
+      "title": "Never Gonna Give You Up (Glastonbury 2023, with crowd and banter)"
+    },
+    {
+      "id": "dJRsWJqDjFE",
+      "label": "rickroll",
+      "group": "choir",
+      "kind": "rework",
+      "use": "demo",
+      "title": "Choir! Choir! Choir! sing Never Gonna Give You Up (with rehearsal talk)"
+    },
+    {
+      "id": "GtL1huin9EE",
+      "label": "rickroll",
+      "group": "advert",
+      "kind": "rework",
+      "use": "demo",
+      "title": "Insurance advert built on the song (65 s)"
+    },
+    {
+      "id": "yPYZpwSpKmA",
+      "label": "other",
+      "group": "astley-together-forever",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - Together Forever"
+    },
+    {
+      "id": "E9de-cmycx8",
+      "label": "other",
+      "group": "astley-together-forever",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - Together Forever (HD re-upload)"
+    },
+    {
+      "id": "BeyEGebJ1l4",
+      "label": "other",
+      "group": "astley-whenever",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - Whenever You Need Somebody"
+    },
+    {
+      "id": "c8Z8OGHw_bA",
+      "label": "other",
+      "group": "astley-whenever",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - Whenever You Need Somebody (JP subtitles)"
+    },
+    {
+      "id": "yBwD4iYcWC4",
+      "label": "other",
+      "group": "astley-she-wants",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - She Wants To Dance With Me"
+    },
+    {
+      "id": "VBssFzSx6sI",
+      "label": "other",
+      "group": "astley-strong-man",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - It Would Take a Strong Strong Man"
+    },
+    {
+      "id": "eYuUAGXN0KM",
+      "label": "other",
+      "group": "astley-take-me",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - Take Me to Your Heart"
+    },
+    {
+      "id": "C2xel6q0yao",
+      "label": "other",
+      "group": "astley-cry-for-help",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - Cry for Help"
+    },
+    {
+      "id": "DqZS89jFCFg",
+      "label": "other",
+      "group": "astley-hold-me",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - Hold Me In Your Arms"
+    },
+    {
+      "id": "cc91EfoBh8A",
+      "label": "other",
+      "group": "astley-angels",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - Angels On My Side"
+    },
+    {
+      "id": "7ZjBiDVoTTE",
+      "label": "other",
+      "group": "astley-every-one",
+      "kind": "hard",
+      "use": "train",
+      "title": "Rick Astley - Every One of Us"
+    },
+    {
+      "id": "ObrLit0vS9s",
+      "label": "other",
+      "group": "rushen-same-title",
+      "kind": "hard",
+      "use": "train",
+      "title": "Patrice Rushen - Never Gonna Give You Up (a different song, same title)"
+    },
+    {
+      "id": "PZbAEHswIfw",
+      "label": "other",
+      "group": "saw-roadblock",
+      "kind": "hard",
+      "use": "train",
+      "title": "Stock Aitken Waterman - Roadblock"
+    },
+    {
+      "id": "NaCpUsLDf2c",
+      "label": "other",
+      "group": "saw-roadblock",
+      "kind": "hard",
+      "use": "train",
+      "title": "Stock Aitken Waterman - Roadblock (HD re-upload)"
+    },
+    {
+      "id": "xfrVyK9kXvg",
+      "label": "other",
+      "group": "saw-paparazzi",
+      "kind": "hard",
+      "use": "train",
+      "title": "Stock Aitken Waterman - SS Paparazzi"
+    },
+    {
+      "id": "jh2IRwZd3Tk",
+      "label": "other",
+      "group": "saw-packjammed",
+      "kind": "hard",
+      "use": "train",
+      "title": "Stock Aitken Waterman - Packjammed"
+    },
+    {
+      "id": "3_TvpBwSZDM",
+      "label": "other",
+      "group": "saw-kylie",
+      "kind": "hard",
+      "use": "train",
+      "title": "Kylie Minogue - I Should Be So Lucky (PWL)"
+    },
+    {
+      "id": "d4-1ASpdT1Y",
+      "label": "other",
+      "group": "saw-bananarama",
+      "kind": "hard",
+      "use": "train",
+      "title": "Bananarama - Venus"
+    },
+    {
+      "id": "PGNiXGX2nLU",
+      "label": "other",
+      "group": "saw-dead-or-alive",
+      "kind": "hard",
+      "use": "train",
+      "title": "Dead Or Alive - You Spin Me Round"
+    },
+    {
+      "id": "djV11Xbc914",
+      "label": "other",
+      "group": "pop-aha",
+      "kind": "music",
+      "use": "train",
+      "title": "a-ha - Take On Me"
+    },
+    {
+      "id": "FTQbiNvZqaY",
+      "label": "other",
+      "group": "pop-toto",
+      "kind": "music",
+      "use": "train",
+      "title": "Toto - Africa"
+    },
+    {
+      "id": "aGCdLKXNF3w",
+      "label": "other",
+      "group": "pop-tff",
+      "kind": "music",
+      "use": "train",
+      "title": "Tears For Fears - Everybody Wants To Rule The World"
+    },
+    {
+      "id": "Zi_XLOBDo_Y",
+      "label": "other",
+      "group": "pop-mj",
+      "kind": "music",
+      "use": "train",
+      "title": "Michael Jackson - Billie Jean"
+    },
+    {
+      "id": "EPOIS5taqA8",
+      "label": "other",
+      "group": "pop-carnes",
+      "kind": "music",
+      "use": "train",
+      "title": "Kim Carnes - Bette Davis Eyes"
+    },
+    {
+      "id": "JmcA9LIIXWw",
+      "label": "other",
+      "group": "pop-culture-club",
+      "kind": "music",
+      "use": "train",
+      "title": "Culture Club - Karma Chameleon"
+    },
+    {
+      "id": "xFrGuyw1V8s",
+      "label": "other",
+      "group": "pop-abba",
+      "kind": "music",
+      "use": "train",
+      "title": "ABBA - Dancing Queen"
+    },
+    {
+      "id": "fJ9rUzIMcZQ",
+      "label": "other",
+      "group": "rock-queen",
+      "kind": "music",
+      "use": "train",
+      "title": "Queen - Bohemian Rhapsody"
+    },
+    {
+      "id": "hTWKbfoikeg",
+      "label": "other",
+      "group": "rock-nirvana",
+      "kind": "music",
+      "use": "train",
+      "title": "Nirvana - Smells Like Teen Spirit"
+    },
+    {
+      "id": "E0ozmU9cJDg",
+      "label": "other",
+      "group": "metal-metallica",
+      "kind": "music",
+      "use": "train",
+      "title": "Metallica - Master of Puppets"
+    },
+    {
+      "id": "5NV6Rdv1a3I",
+      "label": "other",
+      "group": "electronic-daft-punk",
+      "kind": "music",
+      "use": "train",
+      "title": "Daft Punk - Get Lucky"
+    },
+    {
+      "id": "y6120QOlsfU",
+      "label": "other",
+      "group": "electronic-darude",
+      "kind": "music",
+      "use": "train",
+      "title": "Darude - Sandstorm"
+    },
+    {
+      "id": "xFYQQPAOz7Y",
+      "label": "other",
+      "group": "hiphop-eminem",
+      "kind": "music",
+      "use": "train",
+      "title": "Eminem - Lose Yourself"
+    },
+    {
+      "id": "SW_iujvUAzQ",
+      "label": "other",
+      "group": "meme-gangnam",
+      "kind": "music",
+      "use": "train",
+      "title": "PSY - Gangnam Style"
+    },
+    {
+      "id": "L_jWHffIx5E",
+      "label": "other",
+      "group": "meme-all-star",
+      "kind": "music",
+      "use": "train",
+      "title": "Smash Mouth - All Star"
+    },
+    {
+      "id": "0FCvzsVlXpQ",
+      "label": "other",
+      "group": "meme-megalovania",
+      "kind": "music",
+      "use": "train",
+      "title": "Toby Fox - Megalovania"
+    },
+    {
+      "id": "SSypujlLlNI",
+      "label": "other",
+      "group": "classical-beethoven",
+      "kind": "music",
+      "use": "train",
+      "title": "Beethoven - Symphony No. 5, first movement"
+    },
+    {
+      "id": "9E6b3swbnWg",
+      "label": "other",
+      "group": "classical-chopin",
+      "kind": "music",
+      "use": "train",
+      "title": "Chopin - Nocturne Op. 9 No. 2"
+    },
+    {
+      "id": "p29JUpsOSTE",
+      "label": "other",
+      "group": "classical-chopin-rousseau",
+      "kind": "music",
+      "use": "train",
+      "title": "Chopin - Nocturne Op. 9 No. 2 (Rousseau)"
+    },
+    {
+      "id": "ylXk1LBvIqU",
+      "label": "other",
+      "group": "jazz-miles-davis",
+      "kind": "music",
+      "use": "train",
+      "title": "Miles Davis - So What"
+    },
+    {
+      "id": "Sm5xF-UYgdg",
+      "label": "other",
+      "group": "speech-ted",
+      "kind": "speech",
+      "use": "train",
+      "title": "TED - How not to be ignorant about the world"
+    },
+    {
+      "id": "4VuYiEbGQ9Q",
+      "label": "other",
+      "group": "speech-tedx",
+      "kind": "speech",
+      "use": "train",
+      "title": "TEDx - The Lost Genius of Irrationality"
+    },
+    {
+      "id": "aNPiNGZuV2U",
+      "label": "other",
+      "group": "speech-bbc-a",
+      "kind": "speech",
+      "use": "train",
+      "title": "BBC News report"
+    },
+    {
+      "id": "Q8JxqzJGgpM",
+      "label": "other",
+      "group": "speech-bbc-b",
+      "kind": "speech",
+      "use": "train",
+      "title": "BBC News report, longer"
+    },
+    {
+      "id": "krAHeXlFvls",
+      "label": "other",
+      "group": "speech-review",
+      "kind": "speech",
+      "use": "train",
+      "title": "A long spoken product review"
+    },
+    {
+      "id": "Jw_ros6xICg",
+      "label": "other",
+      "group": "astley-whenever",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Rick Astley - Whenever You Need Somebody (TopPop, 1987)"
+    },
+    {
+      "id": "NZT_n1uzlLM",
+      "label": "other",
+      "group": "astley-whenever",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Rick Astley - Whenever You Need Somebody (JP re-upload)"
+    },
+    {
+      "id": "1wckFVvViuI",
+      "label": "other",
+      "group": "astley-whenever",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Rick Astley - Whenever You Need Somebody (Countdown)"
+    },
+    {
+      "id": "xQHPNQiAY8c",
+      "label": "other",
+      "group": "astley-whenever",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Rick Astley - Whenever You Need Somebody (live)"
+    },
+    {
+      "id": "1KvLjKPNZ40",
+      "label": "other",
+      "group": "astley-she-wants",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Rick Astley - She Wants To Dance With Me (HQ)"
+    },
+    {
+      "id": "GrZ9BrmtTD4",
+      "label": "other",
+      "group": "astley-she-wants",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Rick Astley - She Wants To Dance With Me (music video)"
+    },
+    {
+      "id": "j4wPvy0UdGM",
+      "label": "other",
+      "group": "astley-she-wants",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Rick Astley - She Wants To Dance With Me (Top Of The Pops)"
+    },
+    {
+      "id": "g6raWiUhNHs",
+      "label": "other",
+      "group": "astley-she-wants",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Rick Astley - She Wants To Dance With Me (2023 remaster)"
+    },
+    {
+      "id": "kz_x0zdTIO0",
+      "label": "other",
+      "group": "saw-mel-and-kim",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Mel & Kim - Respectable (TOTP, 1987)"
+    },
+    {
+      "id": "14b-BASNVdI",
+      "label": "other",
+      "group": "saw-mel-and-kim",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Mel & Kim - Showing Out"
+    },
+    {
+      "id": "8Da-qx2zHoE",
+      "label": "other",
+      "group": "saw-sinitta",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Sinitta - Toy Boy (1987)"
+    },
+    {
+      "id": "s7DqwRKqyMk",
+      "label": "other",
+      "group": "saw-sinitta",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Sinitta - So Macho"
+    },
+    {
+      "id": "w5-OZsB3rfM",
+      "label": "other",
+      "group": "saw-donovan",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Jason Donovan - Too Many Broken Hearts (PWL)"
+    },
+    {
+      "id": "POWsFzSFLCE",
+      "label": "other",
+      "group": "saw-kylie-loco",
+      "kind": "hard",
+      "use": "holdout",
+      "title": "Kylie Minogue - The Loco-Motion (PWL)"
+    }
+  ]
+}

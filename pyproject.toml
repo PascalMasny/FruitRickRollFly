@@ -1,0 +1,51 @@
+[project]
+name = "fruitrickrollfly"
+version = "0.1.0"
+description = "A Drosophila mushroom body model that learns to release dopamine when it hears a Rickroll."
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "MIT" }
+authors = [{ name = "Pascal Masny" }]
+
+dependencies = [
+    "numpy>=2.1",
+    "fastapi>=0.118",
+    "uvicorn[standard]>=0.37",
+    "yt-dlp>=2026.6.9",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "httpx2>=0.28",
+    "ruff>=0.13",
+    "matplotlib>=3.9",
+]
+
+[project.scripts]
+frrf-fetch = "training.fetch:main"
+frrf-train = "training.train:main"
+frrf-evaluate = "training.evaluate:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["brain", "api", "training"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# Our own deprecations are errors. Starlette's test client still reaches for an
+# anyio alias that anyio has deprecated, and that is not ours to fix.
+filterwarnings = [
+    "error::DeprecationWarning",
+    "ignore:The anyio.abc.BlockingPortal alias is deprecated:DeprecationWarning",
+]

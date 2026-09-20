@@ -1,0 +1,4260 @@
+{
+  "metadata": {
+    "target": "Rick Astley - Never Gonna Give You Up (Stock Aitken Waterman, 1987)",
+    "trained": "2026-09-19",
+    "epochs": 60,
+    "seed": 7,
+    "tracks": 65,
+    "percepts": 66035,
+    "calibration": "confidence is calibrated on the training corpus; the accuracy figures in metrics.json are out of fold"
+  },
+  "config": {
+    "sample_rate": 22050,
+    "n_fft": 1024,
+    "frame_hop": 256,
+    "n_mel": 48,
+    "n_chroma": 12,
+    "chroma_n_fft": 4096,
+    "chroma_tolerance_cents": 35.0,
+    "mel_fmin": 40.0,
+    "mel_fmax": 8000.0,
+    "chroma_fmin": 55.0,
+    "chroma_fmax": 2100.0,
+    "subframe_frames": 22,
+    "subframes": 3,
+    "window_hop_frames": 11,
+    "target_rms": 0.1,
+    "al_exponent": 1.5,
+    "al_sigma": 0.05,
+    "al_suppression": 0.05,
+    "al_rmax": 1.0,
+    "n_kenyon": 4000,
+    "n_claws": 20,
+    "kc_sparsity": 0.05,
+    "projection_seed": 1987,
+    "w_baseline": 1.0,
+    "w_max": 2.0,
+    "w_min": 0.0,
+    "learning_rate": 0.02,
+    "recovery_rate": 0.0015,
+    "da_tau": 2.0,
+    "da_baseline": 0.72,
+    "da_slope": 0.15,
+    "da_gain": 1.0,
+    "da_commit": 0.6,
+    "da_burst_seconds": 2.0,
+    "da_burst_confidence": 0.93,
+    "da_burst_max_seconds": 25.0,
+    "compartments": [
+      "approach",
+      "avoidance"
+    ]
+  },
+  "unheard_rendition": {
+    "folds": [
+      {
+        "fold": "studio-1987",
+        "held_out_groups": [
+          "astley-together-forever",
+          "electronic-darude",
+          "pop-tff",
+          "rushen-same-title",
+          "speech-ted",
+          "studio-1987"
+        ],
+        "held_out_ids": [],
+        "held_out_tracks": 18,
+        "seconds": 12.0,
+        "percepts": {
+          "count": 16342,
+          "accuracy": 0.8360665769183698,
+          "recall": 0.8533519553072626,
+          "specificity": 0.808641975308642,
+          "auc": 0.9032897889004344
+        }
+      },
+      {
+        "fold": "extended-mix",
+        "held_out_groups": [
+          "astley-whenever",
+          "extended-mix",
+          "hiphop-eminem",
+          "pop-mj",
+          "saw-roadblock",
+          "speech-tedx"
+        ],
+        "held_out_ids": [],
+        "held_out_tracks": 8,
+        "seconds": 12.4,
+        "percepts": {
+          "count": 8808,
+          "accuracy": 0.7591961852861036,
+          "recall": 0.9882179675994109,
+          "specificity": 0.7174496644295302,
+          "auc": 0.9393132913581955
+        }
+      },
+      {
+        "fold": "tv-countdown-1987",
+        "held_out_groups": [
+          "astley-she-wants",
+          "meme-gangnam",
+          "pop-carnes",
+          "saw-paparazzi",
+          "speech-bbc-a",
+          "tv-countdown-1987"
+        ],
+        "held_out_ids": [],
+        "held_out_tracks": 6,
+        "seconds": 12.7,
+        "percepts": {
+          "count": 4832,
+          "accuracy": 0.5885761589403974,
+          "recall": 0.7072072072072072,
+          "specificity": 0.5618661257606491,
+          "auc": 0.6564812784386821
+        }
+      },
+      {
+        "fold": "live-bbc-nye",
+        "held_out_groups": [
+          "astley-strong-man",
+          "live-bbc-nye",
+          "meme-all-star",
+          "pop-culture-club",
+          "saw-packjammed",
+          "speech-bbc-b"
+        ],
+        "held_out_ids": [],
+        "held_out_tracks": 6,
+        "seconds": 12.7,
+        "percepts": {
+          "count": 6323,
+          "accuracy": 0.7384153091886763,
+          "recall": 0.3201754385964912,
+          "specificity": 0.8089077804472371,
+          "auc": 0.7031194780288367
+        }
+      },
+      {
+        "fold": "live-late-late-show",
+        "held_out_groups": [
+          "astley-take-me",
+          "live-late-late-show",
+          "meme-megalovania",
+          "pop-abba",
+          "saw-kylie",
+          "speech-review"
+        ],
+        "held_out_ids": [],
+        "held_out_tracks": 6,
+        "seconds": 12.8,
+        "percepts": {
+          "count": 6084,
+          "accuracy": 0.7800788954635108,
+          "recall": 0.14717348927875243,
+          "specificity": 0.9084618426255437,
+          "auc": 0.6932239048480126
+        }
+      },
+      {
+        "fold": "live-foo-fighters",
+        "held_out_groups": [
+          "astley-cry-for-help",
+          "classical-beethoven",
+          "live-foo-fighters",
+          "rock-queen",
+          "saw-bananarama"
+        ],
+        "held_out_ids": [],
+        "held_out_tracks": 5,
+        "seconds": 12.9,
+        "percepts": {
+          "count": 6344,
+          "accuracy": 0.7996532156368222,
+          "recall": 0.141804788213628,
+          "specificity": 0.9355268162799544,
+          "auc": 0.7516503834900007
+        }
+      },
+      {
+        "fold": "live-2016",
+        "held_out_groups": [
+          "astley-hold-me",
+          "classical-chopin",
+          "live-2016",
+          "rock-nirvana",
+          "saw-dead-or-alive"
+        ],
+        "held_out_ids": [],
+        "held_out_tracks": 5,
+        "seconds": 13.0,
+        "percepts": {
+          "count": 5132,
+          "accuracy": 0.5101325019485581,
+          "recall": 0.11926605504587157,
+          "specificity": 0.6292906178489702,
+          "auc": 0.32917135582304685
+        }
+      },
+      {
+        "fold": "pianoforte",
+        "held_out_groups": [
+          "astley-angels",
+          "classical-chopin-rousseau",
+          "metal-metallica",
+          "pianoforte",
+          "pop-aha"
+        ],
+        "held_out_ids": [],
+        "held_out_tracks": 6,
+        "seconds": 12.9,
+        "percepts": {
+          "count": 6468,
+          "accuracy": 0.6493506493506493,
+          "recall": 0.1394517282479142,
+          "specificity": 0.8279749478079332,
+          "auc": 0.4668872128814251
+        }
+      },
+      {
+        "fold": "karaoke",
+        "held_out_groups": [
+          "astley-every-one",
+          "electronic-daft-punk",
+          "jazz-miles-davis",
+          "karaoke",
+          "pop-toto"
+        ],
+        "held_out_ids": [],
+        "held_out_tracks": 5,
+        "seconds": 14.1,
+        "percepts": {
+          "count": 5702,
+          "accuracy": 0.7976148719747457,
+          "recall": 0.7928934010152284,
+          "specificity": 0.7986008055967776,
+          "auc": 0.8908569177906029
+        }
+      }
+    ],
+    "macro_auc": 0.7037770679510262,
+    "percepts": {
+      "count": 66035,
+      "accuracy": 0.7427576285303248,
+      "recall": 0.6410002088118605,
+      "specificity": 0.7843384031229335,
+      "auc": 0.7804437661606312
+    },
+    "tracks": {
+      "count": 65,
+      "accuracy": 0.7538461538461538,
+      "recall": 0.42857142857142855,
+      "specificity": 0.9090909090909091,
+      "median_latency": 28.1309757232666,
+      "p90_latency": 50.60789184570313
+    },
+    "median_first_suspicion": 2.3336055278778076,
+    "verdicts": [
+      {
+        "id": "OWGRrOo7l5E",
+        "title": "Never Gonna Give You Up (Extended)",
+        "group": "extended-mix",
+        "kind": "mix",
+        "positive": true,
+        "committed": true,
+        "latency": 41.92362976074219,
+        "peak_confidence": 0.993304967880249,
+        "mean_confidence": 0.8907191157341003
+      },
+      {
+        "id": "8leAAwMIigI",
+        "title": "Never Gonna Give You Up (Karaoke, no lead vocal)",
+        "group": "karaoke",
+        "kind": "rework",
+        "positive": true,
+        "committed": true,
+        "latency": 45.754920959472656,
+        "peak_confidence": 0.9928689002990723,
+        "mean_confidence": 0.7311525940895081
+      },
+      {
+        "id": "TMBN8hj5Jy0",
+        "title": "Never Gonna Give You Up (Live 2016)",
+        "group": "live-2016",
+        "kind": "live",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9215328097343445,
+        "mean_confidence": 0.22614741325378418
+      },
+      {
+        "id": "XGxIE1hr0w4",
+        "title": "Never Gonna Give You Up (BBC New Year's Eve)",
+        "group": "live-bbc-nye",
+        "kind": "live",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9653567671775818,
+        "mean_confidence": 0.4149002730846405
+      },
+      {
+        "id": "IdkCEioCp24",
+        "title": "Never Gonna Give You Up (with Foo Fighters, O2 2017)",
+        "group": "live-foo-fighters",
+        "kind": "live",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8778743743896484,
+        "mean_confidence": 0.3050280809402466
+      },
+      {
+        "id": "w2Sz_yClQyI",
+        "title": "Never Gonna Give You Up (Late Late Show)",
+        "group": "live-late-late-show",
+        "kind": "live",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9017449021339417,
+        "mean_confidence": 0.327508807182312
+      },
+      {
+        "id": "rTga41r3a4s",
+        "title": "Never Gonna Give You Up (Pianoforte, Performance)",
+        "group": "pianoforte",
+        "kind": "rework",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9388267993927002,
+        "mean_confidence": 0.21745702624320984
+      },
+      {
+        "id": "GHMjD0Lp5DY",
+        "title": "Never Gonna Give You Up (Pianoforte, Official Audio)",
+        "group": "pianoforte",
+        "kind": "rework",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9555748105049133,
+        "mean_confidence": 0.1990254819393158
+      },
+      {
+        "id": "dQw4w9WgXcQ",
+        "title": "Never Gonna Give You Up (Official Video, 4K Remaster)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9866743087768555,
+        "mean_confidence": 0.6546210646629333
+      },
+      {
+        "id": "3BFTio5296w",
+        "title": "Never Gonna Give You Up (2022 Remaster)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 28.1309757232666,
+        "peak_confidence": 0.9918798804283142,
+        "mean_confidence": 0.7782726883888245
+      },
+      {
+        "id": "b7QpxQjezY8",
+        "title": "Never Gonna Give You Up (2022 Remaster, Audio)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 28.386394500732422,
+        "peak_confidence": 0.9916852116584778,
+        "mean_confidence": 0.7753466963768005
+      },
+      {
+        "id": "2rmYU0B3kCQ",
+        "title": "Never Gonna Give You Up (HQ Audio)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 26.59845733642578,
+        "peak_confidence": 0.9951785802841187,
+        "mean_confidence": 0.8084374070167542
+      },
+      {
+        "id": "LQ4w9xiHkrY",
+        "title": "Never Gonna Give You Up (Remastered in 4K, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 27.109296798706055,
+        "peak_confidence": 0.9922231435775757,
+        "mean_confidence": 0.7855752110481262
+      },
+      {
+        "id": "eNOsh4IMtoE",
+        "title": "Never Gonna Give You Up (Remastered Audio HQ, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 4.632380962371826,
+        "peak_confidence": 0.9966784119606018,
+        "mean_confidence": 0.8658949136734009
+      },
+      {
+        "id": "UUruPku91TI",
+        "title": "Never Gonna Give You Up (Audio Remastered, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 9.740771293640137,
+        "peak_confidence": 0.9936233758926392,
+        "mean_confidence": 0.8013108372688293
+      },
+      {
+        "id": "5SZYz7lZRRI",
+        "title": "Never Gonna Give You Up (1987, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9882192015647888,
+        "mean_confidence": 0.6453651189804077
+      },
+      {
+        "id": "7FwDP17XPlk",
+        "title": "Never Gonna Give You Up (lyrics re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9908708333969116,
+        "mean_confidence": 0.7262173891067505
+      },
+      {
+        "id": "RrESvSRNpeo",
+        "title": "Never Gonna Give You Up (Japanese subtitles)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9864017963409424,
+        "mean_confidence": 0.6543703675270081
+      },
+      {
+        "id": "6PLatPMoxGw",
+        "title": "Never Gonna Give You Up (lyrics video)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 70.019775390625,
+        "peak_confidence": 0.9912375807762146,
+        "mean_confidence": 0.7104001641273499
+      },
+      {
+        "id": "MOcQaR7_Wro",
+        "title": "Never Gonna Give You Up (lyrics video, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9915086030960083,
+        "mean_confidence": 0.7452354431152344
+      },
+      {
+        "id": "QFK09y01me0",
+        "title": "Never Gonna Give You Up (Countdown, 1987)",
+        "group": "tv-countdown-1987",
+        "kind": "live",
+        "positive": true,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9793262481689453,
+        "mean_confidence": 0.6345458030700684
+      },
+      {
+        "id": "cc91EfoBh8A",
+        "title": "Rick Astley - Angels On My Side",
+        "group": "astley-angels",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.7469537854194641,
+        "mean_confidence": 0.17263491451740265
+      },
+      {
+        "id": "C2xel6q0yao",
+        "title": "Rick Astley - Cry for Help",
+        "group": "astley-cry-for-help",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.7169471979141235,
+        "mean_confidence": 0.1077364906668663
+      },
+      {
+        "id": "7ZjBiDVoTTE",
+        "title": "Rick Astley - Every One of Us",
+        "group": "astley-every-one",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9751491546630859,
+        "mean_confidence": 0.5467342734336853
+      },
+      {
+        "id": "DqZS89jFCFg",
+        "title": "Rick Astley - Hold Me In Your Arms",
+        "group": "astley-hold-me",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9868146777153015,
+        "mean_confidence": 0.6021507978439331
+      },
+      {
+        "id": "yBwD4iYcWC4",
+        "title": "Rick Astley - She Wants To Dance With Me",
+        "group": "astley-she-wants",
+        "kind": "hard",
+        "positive": false,
+        "committed": true,
+        "latency": 64.14512634277344,
+        "peak_confidence": 0.9954316020011902,
+        "mean_confidence": 0.713408350944519
+      },
+      {
+        "id": "VBssFzSx6sI",
+        "title": "Rick Astley - It Would Take a Strong Strong Man",
+        "group": "astley-strong-man",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8473123908042908,
+        "mean_confidence": 0.30498456954956055
+      },
+      {
+        "id": "eYuUAGXN0KM",
+        "title": "Rick Astley - Take Me to Your Heart",
+        "group": "astley-take-me",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9187030792236328,
+        "mean_confidence": 0.3582797646522522
+      },
+      {
+        "id": "yPYZpwSpKmA",
+        "title": "Rick Astley - Together Forever",
+        "group": "astley-together-forever",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9374651312828064,
+        "mean_confidence": 0.3288242518901825
+      },
+      {
+        "id": "E9de-cmycx8",
+        "title": "Rick Astley - Together Forever (HD re-upload)",
+        "group": "astley-together-forever",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9518963694572449,
+        "mean_confidence": 0.375879168510437
+      },
+      {
+        "id": "BeyEGebJ1l4",
+        "title": "Rick Astley - Whenever You Need Somebody",
+        "group": "astley-whenever",
+        "kind": "hard",
+        "positive": false,
+        "committed": true,
+        "latency": 9.4853515625,
+        "peak_confidence": 0.9895845055580139,
+        "mean_confidence": 0.7333324551582336
+      },
+      {
+        "id": "c8Z8OGHw_bA",
+        "title": "Rick Astley - Whenever You Need Somebody (JP subtitles)",
+        "group": "astley-whenever",
+        "kind": "hard",
+        "positive": false,
+        "committed": true,
+        "latency": 9.4853515625,
+        "peak_confidence": 0.9893019795417786,
+        "mean_confidence": 0.7348236441612244
+      },
+      {
+        "id": "SSypujlLlNI",
+        "title": "Beethoven - Symphony No. 5, first movement",
+        "group": "classical-beethoven",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8171151876449585,
+        "mean_confidence": 0.14704902470111847
+      },
+      {
+        "id": "9E6b3swbnWg",
+        "title": "Chopin - Nocturne Op. 9 No. 2",
+        "group": "classical-chopin",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8633356690406799,
+        "mean_confidence": 0.11710354685783386
+      },
+      {
+        "id": "p29JUpsOSTE",
+        "title": "Chopin - Nocturne Op. 9 No. 2 (Rousseau)",
+        "group": "classical-chopin-rousseau",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.6960201859474182,
+        "mean_confidence": 0.056481726467609406
+      },
+      {
+        "id": "5NV6Rdv1a3I",
+        "title": "Daft Punk - Get Lucky",
+        "group": "electronic-daft-punk",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.6881176233291626,
+        "mean_confidence": 0.09766118228435516
+      },
+      {
+        "id": "y6120QOlsfU",
+        "title": "Darude - Sandstorm",
+        "group": "electronic-darude",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9341443777084351,
+        "mean_confidence": 0.16410918533802032
+      },
+      {
+        "id": "xFYQQPAOz7Y",
+        "title": "Eminem - Lose Yourself",
+        "group": "hiphop-eminem",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9128007888793945,
+        "mean_confidence": 0.3620738089084625
+      },
+      {
+        "id": "ylXk1LBvIqU",
+        "title": "Miles Davis - So What",
+        "group": "jazz-miles-davis",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9783779382705688,
+        "mean_confidence": 0.25668537616729736
+      },
+      {
+        "id": "L_jWHffIx5E",
+        "title": "Smash Mouth - All Star",
+        "group": "meme-all-star",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9330655336380005,
+        "mean_confidence": 0.4663664698600769
+      },
+      {
+        "id": "SW_iujvUAzQ",
+        "title": "PSY - Gangnam Style",
+        "group": "meme-gangnam",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9445314407348633,
+        "mean_confidence": 0.4213457703590393
+      },
+      {
+        "id": "0FCvzsVlXpQ",
+        "title": "Toby Fox - Megalovania",
+        "group": "meme-megalovania",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.809147298336029,
+        "mean_confidence": 0.26130300760269165
+      },
+      {
+        "id": "E0ozmU9cJDg",
+        "title": "Metallica - Master of Puppets",
+        "group": "metal-metallica",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8763522505760193,
+        "mean_confidence": 0.38962748646736145
+      },
+      {
+        "id": "xFrGuyw1V8s",
+        "title": "ABBA - Dancing Queen",
+        "group": "pop-abba",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8917933106422424,
+        "mean_confidence": 0.25943049788475037
+      },
+      {
+        "id": "djV11Xbc914",
+        "title": "a-ha - Take On Me",
+        "group": "pop-aha",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8993447422981262,
+        "mean_confidence": 0.23830686509609222
+      },
+      {
+        "id": "EPOIS5taqA8",
+        "title": "Kim Carnes - Bette Davis Eyes",
+        "group": "pop-carnes",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8616544604301453,
+        "mean_confidence": 0.20939625799655914
+      },
+      {
+        "id": "JmcA9LIIXWw",
+        "title": "Culture Club - Karma Chameleon",
+        "group": "pop-culture-club",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9406278133392334,
+        "mean_confidence": 0.3579165041446686
+      },
+      {
+        "id": "Zi_XLOBDo_Y",
+        "title": "Michael Jackson - Billie Jean",
+        "group": "pop-mj",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9092888236045837,
+        "mean_confidence": 0.3361029624938965
+      },
+      {
+        "id": "aGCdLKXNF3w",
+        "title": "Tears For Fears - Everybody Wants To Rule The World",
+        "group": "pop-tff",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9007132649421692,
+        "mean_confidence": 0.1646202951669693
+      },
+      {
+        "id": "FTQbiNvZqaY",
+        "title": "Toto - Africa",
+        "group": "pop-toto",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8925702571868896,
+        "mean_confidence": 0.241880401968956
+      },
+      {
+        "id": "hTWKbfoikeg",
+        "title": "Nirvana - Smells Like Teen Spirit",
+        "group": "rock-nirvana",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9649284482002258,
+        "mean_confidence": 0.39211297035217285
+      },
+      {
+        "id": "fJ9rUzIMcZQ",
+        "title": "Queen - Bohemian Rhapsody",
+        "group": "rock-queen",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9130155444145203,
+        "mean_confidence": 0.26876217126846313
+      },
+      {
+        "id": "ObrLit0vS9s",
+        "title": "Patrice Rushen - Never Gonna Give You Up (a different song, same title)",
+        "group": "rushen-same-title",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9312461614608765,
+        "mean_confidence": 0.4715564250946045
+      },
+      {
+        "id": "d4-1ASpdT1Y",
+        "title": "Bananarama - Venus",
+        "group": "saw-bananarama",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.6877932548522949,
+        "mean_confidence": 0.16092267632484436
+      },
+      {
+        "id": "PGNiXGX2nLU",
+        "title": "Dead Or Alive - You Spin Me Round",
+        "group": "saw-dead-or-alive",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.945647120475769,
+        "mean_confidence": 0.5107051730155945
+      },
+      {
+        "id": "3_TvpBwSZDM",
+        "title": "Kylie Minogue - I Should Be So Lucky (PWL)",
+        "group": "saw-kylie",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.6811030507087708,
+        "mean_confidence": 0.17728383839130402
+      },
+      {
+        "id": "jh2IRwZd3Tk",
+        "title": "Stock Aitken Waterman - Packjammed",
+        "group": "saw-packjammed",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9758132696151733,
+        "mean_confidence": 0.2741522789001465
+      },
+      {
+        "id": "xfrVyK9kXvg",
+        "title": "Stock Aitken Waterman - SS Paparazzi",
+        "group": "saw-paparazzi",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9591737389564514,
+        "mean_confidence": 0.6496027708053589
+      },
+      {
+        "id": "PZbAEHswIfw",
+        "title": "Stock Aitken Waterman - Roadblock",
+        "group": "saw-roadblock",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9131709933280945,
+        "mean_confidence": 0.27187371253967285
+      },
+      {
+        "id": "NaCpUsLDf2c",
+        "title": "Stock Aitken Waterman - Roadblock (HD re-upload)",
+        "group": "saw-roadblock",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9094700217247009,
+        "mean_confidence": 0.24156758189201355
+      },
+      {
+        "id": "aNPiNGZuV2U",
+        "title": "BBC News report",
+        "group": "speech-bbc-a",
+        "kind": "speech",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.7357137203216553,
+        "mean_confidence": 0.12231534719467163
+      },
+      {
+        "id": "Q8JxqzJGgpM",
+        "title": "BBC News report, longer",
+        "group": "speech-bbc-b",
+        "kind": "speech",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8671700358390808,
+        "mean_confidence": 0.1287493258714676
+      },
+      {
+        "id": "krAHeXlFvls",
+        "title": "A long spoken product review",
+        "group": "speech-review",
+        "kind": "speech",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9074872732162476,
+        "mean_confidence": 0.15432728826999664
+      },
+      {
+        "id": "Sm5xF-UYgdg",
+        "title": "TED - How not to be ignorant about the world",
+        "group": "speech-ted",
+        "kind": "speech",
+        "positive": false,
+        "committed": true,
+        "latency": 12.039546012878418,
+        "peak_confidence": 0.9928767681121826,
+        "mean_confidence": 0.27624645829200745
+      },
+      {
+        "id": "4VuYiEbGQ9Q",
+        "title": "TEDx - The Lost Genius of Irrationality",
+        "group": "speech-tedx",
+        "kind": "speech",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9092888236045837,
+        "mean_confidence": 0.11472872644662857
+      }
+    ]
+  },
+  "unheard_upload": {
+    "folds": [
+      {
+        "fold": "uploads 1-3",
+        "held_out_groups": [
+          "astley-every-one",
+          "astley-take-me",
+          "astley-together-forever",
+          "classical-beethoven",
+          "hiphop-eminem",
+          "pop-aha",
+          "pop-carnes",
+          "rock-nirvana",
+          "saw-packjammed",
+          "speech-review",
+          "speech-ted"
+        ],
+        "held_out_ids": [
+          "3BFTio5296w",
+          "b7QpxQjezY8",
+          "dQw4w9WgXcQ"
+        ],
+        "held_out_tracks": 15,
+        "seconds": 12.8,
+        "percepts": {
+          "count": 16312,
+          "accuracy": 0.8479033840117705,
+          "recall": 0.988791032826261,
+          "specificity": 0.8224265238164181,
+          "auc": 0.9825004349795169
+        }
+      },
+      {
+        "fold": "uploads 4-6",
+        "held_out_groups": [
+          "astley-cry-for-help",
+          "astley-whenever",
+          "classical-chopin",
+          "meme-gangnam",
+          "metal-metallica",
+          "pop-culture-club",
+          "pop-toto",
+          "rushen-same-title",
+          "saw-kylie",
+          "speech-tedx"
+        ],
+        "held_out_ids": [
+          "2rmYU0B3kCQ",
+          "LQ4w9xiHkrY",
+          "eNOsh4IMtoE"
+        ],
+        "held_out_tracks": 14,
+        "seconds": 12.9,
+        "percepts": {
+          "count": 14676,
+          "accuracy": 0.8174570727718724,
+          "recall": 0.9975806451612903,
+          "specificity": 0.7808297802558216,
+          "auc": 0.9764159686147759
+        }
+      },
+      {
+        "fold": "uploads 7-9",
+        "held_out_groups": [
+          "astley-hold-me",
+          "astley-she-wants",
+          "classical-chopin-rousseau",
+          "electronic-daft-punk",
+          "meme-all-star",
+          "pop-abba",
+          "pop-tff",
+          "saw-bananarama",
+          "saw-roadblock",
+          "speech-bbc-a"
+        ],
+        "held_out_ids": [
+          "5SZYz7lZRRI",
+          "7FwDP17XPlk",
+          "UUruPku91TI"
+        ],
+        "held_out_tracks": 14,
+        "seconds": 13.0,
+        "percepts": {
+          "count": 12461,
+          "accuracy": 0.8076398362892224,
+          "recall": 0.9939831528279182,
+          "specificity": 0.7610353130016051,
+          "auc": 0.9548608495440524
+        }
+      },
+      {
+        "fold": "uploads 10-12",
+        "held_out_groups": [
+          "astley-angels",
+          "astley-strong-man",
+          "electronic-darude",
+          "jazz-miles-davis",
+          "meme-megalovania",
+          "pop-mj",
+          "rock-queen",
+          "saw-dead-or-alive",
+          "saw-paparazzi",
+          "speech-bbc-b"
+        ],
+        "held_out_ids": [
+          "6PLatPMoxGw",
+          "MOcQaR7_Wro",
+          "RrESvSRNpeo"
+        ],
+        "held_out_tracks": 13,
+        "seconds": 12.9,
+        "percepts": {
+          "count": 13454,
+          "accuracy": 0.8145532927010555,
+          "recall": 0.9870740305522914,
+          "specificity": 0.7741491606274654,
+          "auc": 0.9717788048854604
+        }
+      }
+    ],
+    "macro_auc": 0.9713890145059514,
+    "percepts": {
+      "count": 56903,
+      "accuracy": 0.8233485053512117,
+      "recall": 0.9918196328810854,
+      "specificity": 0.7873248149491243,
+      "auc": 0.9710621235288002
+    },
+    "tracks": {
+      "count": 56,
+      "accuracy": 0.9821428571428571,
+      "recall": 1.0,
+      "specificity": 0.9772727272727273,
+      "median_latency": 10.123899936676025,
+      "p90_latency": 32.7796106338501
+    },
+    "median_first_suspicion": 0.8010884523391724,
+    "verdicts": [
+      {
+        "id": "dQw4w9WgXcQ",
+        "title": "Never Gonna Give You Up (Official Video, 4K Remaster)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 33.49478530883789,
+        "peak_confidence": 0.9909926056861877,
+        "mean_confidence": 0.8764786720275879
+      },
+      {
+        "id": "3BFTio5296w",
+        "title": "Never Gonna Give You Up (2022 Remaster)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 9.996190071105957,
+        "peak_confidence": 0.9949349761009216,
+        "mean_confidence": 0.906019926071167
+      },
+      {
+        "id": "b7QpxQjezY8",
+        "title": "Never Gonna Give You Up (2022 Remaster, Audio)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 9.996190071105957,
+        "peak_confidence": 0.9936670064926147,
+        "mean_confidence": 0.9035661220550537
+      },
+      {
+        "id": "2rmYU0B3kCQ",
+        "title": "Never Gonna Give You Up (HQ Audio)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 26.34303855895996,
+        "peak_confidence": 0.9914392232894897,
+        "mean_confidence": 0.879037618637085
+      },
+      {
+        "id": "LQ4w9xiHkrY",
+        "title": "Never Gonna Give You Up (Remastered in 4K, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 8.208253860473633,
+        "peak_confidence": 0.9925915002822876,
+        "mean_confidence": 0.9224227070808411
+      },
+      {
+        "id": "eNOsh4IMtoE",
+        "title": "Never Gonna Give You Up (Remastered Audio HQ, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 3.8661224842071533,
+        "peak_confidence": 0.9957355856895447,
+        "mean_confidence": 0.9611002802848816
+      },
+      {
+        "id": "UUruPku91TI",
+        "title": "Never Gonna Give You Up (Audio Remastered, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 4.887800216674805,
+        "peak_confidence": 0.9969268441200256,
+        "mean_confidence": 0.9321435689926147
+      },
+      {
+        "id": "5SZYz7lZRRI",
+        "title": "Never Gonna Give You Up (1987, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 8.974512100219727,
+        "peak_confidence": 0.9955384135246277,
+        "mean_confidence": 0.8972733616828918
+      },
+      {
+        "id": "7FwDP17XPlk",
+        "title": "Never Gonna Give You Up (lyrics re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 10.251609802246094,
+        "peak_confidence": 0.9946182370185852,
+        "mean_confidence": 0.9060014486312866
+      },
+      {
+        "id": "RrESvSRNpeo",
+        "title": "Never Gonna Give You Up (Japanese subtitles)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 34.00562286376953,
+        "peak_confidence": 0.9884033799171448,
+        "mean_confidence": 0.8518940210342407
+      },
+      {
+        "id": "6PLatPMoxGw",
+        "title": "Never Gonna Give You Up (lyrics video)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 18.425033569335938,
+        "peak_confidence": 0.9917436838150024,
+        "mean_confidence": 0.8647750020027161
+      },
+      {
+        "id": "MOcQaR7_Wro",
+        "title": "Never Gonna Give You Up (lyrics video, re-upload)",
+        "group": "studio-1987",
+        "kind": "studio",
+        "positive": true,
+        "committed": true,
+        "latency": 10.762449264526367,
+        "peak_confidence": 0.9920511245727539,
+        "mean_confidence": 0.8843424320220947
+      },
+      {
+        "id": "cc91EfoBh8A",
+        "title": "Rick Astley - Angels On My Side",
+        "group": "astley-angels",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.7943373918533325,
+        "mean_confidence": 0.28610673546791077
+      },
+      {
+        "id": "C2xel6q0yao",
+        "title": "Rick Astley - Cry for Help",
+        "group": "astley-cry-for-help",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8757715821266174,
+        "mean_confidence": 0.155974343419075
+      },
+      {
+        "id": "7ZjBiDVoTTE",
+        "title": "Rick Astley - Every One of Us",
+        "group": "astley-every-one",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9708717465400696,
+        "mean_confidence": 0.575960636138916
+      },
+      {
+        "id": "DqZS89jFCFg",
+        "title": "Rick Astley - Hold Me In Your Arms",
+        "group": "astley-hold-me",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9925153851509094,
+        "mean_confidence": 0.6205684542655945
+      },
+      {
+        "id": "yBwD4iYcWC4",
+        "title": "Rick Astley - She Wants To Dance With Me",
+        "group": "astley-she-wants",
+        "kind": "hard",
+        "positive": false,
+        "committed": true,
+        "latency": 64.40054321289062,
+        "peak_confidence": 0.9921645522117615,
+        "mean_confidence": 0.706468403339386
+      },
+      {
+        "id": "VBssFzSx6sI",
+        "title": "Rick Astley - It Would Take a Strong Strong Man",
+        "group": "astley-strong-man",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9166551828384399,
+        "mean_confidence": 0.3239780068397522
+      },
+      {
+        "id": "eYuUAGXN0KM",
+        "title": "Rick Astley - Take Me to Your Heart",
+        "group": "astley-take-me",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.883292555809021,
+        "mean_confidence": 0.2908080220222473
+      },
+      {
+        "id": "yPYZpwSpKmA",
+        "title": "Rick Astley - Together Forever",
+        "group": "astley-together-forever",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8746854066848755,
+        "mean_confidence": 0.34409135580062866
+      },
+      {
+        "id": "E9de-cmycx8",
+        "title": "Rick Astley - Together Forever (HD re-upload)",
+        "group": "astley-together-forever",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9302490949630737,
+        "mean_confidence": 0.3568258583545685
+      },
+      {
+        "id": "BeyEGebJ1l4",
+        "title": "Rick Astley - Whenever You Need Somebody",
+        "group": "astley-whenever",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9805970191955566,
+        "mean_confidence": 0.7339411973953247
+      },
+      {
+        "id": "c8Z8OGHw_bA",
+        "title": "Rick Astley - Whenever You Need Somebody (JP subtitles)",
+        "group": "astley-whenever",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9829874038696289,
+        "mean_confidence": 0.7366409301757812
+      },
+      {
+        "id": "SSypujlLlNI",
+        "title": "Beethoven - Symphony No. 5, first movement",
+        "group": "classical-beethoven",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8527854681015015,
+        "mean_confidence": 0.14473064243793488
+      },
+      {
+        "id": "9E6b3swbnWg",
+        "title": "Chopin - Nocturne Op. 9 No. 2",
+        "group": "classical-chopin",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8351041078567505,
+        "mean_confidence": 0.11005716770887375
+      },
+      {
+        "id": "p29JUpsOSTE",
+        "title": "Chopin - Nocturne Op. 9 No. 2 (Rousseau)",
+        "group": "classical-chopin-rousseau",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8798924088478088,
+        "mean_confidence": 0.13095727562904358
+      },
+      {
+        "id": "5NV6Rdv1a3I",
+        "title": "Daft Punk - Get Lucky",
+        "group": "electronic-daft-punk",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8641718626022339,
+        "mean_confidence": 0.11238734424114227
+      },
+      {
+        "id": "y6120QOlsfU",
+        "title": "Darude - Sandstorm",
+        "group": "electronic-darude",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9456778764724731,
+        "mean_confidence": 0.22267867624759674
+      },
+      {
+        "id": "xFYQQPAOz7Y",
+        "title": "Eminem - Lose Yourself",
+        "group": "hiphop-eminem",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8429027199745178,
+        "mean_confidence": 0.3359900116920471
+      },
+      {
+        "id": "ylXk1LBvIqU",
+        "title": "Miles Davis - So What",
+        "group": "jazz-miles-davis",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9487040042877197,
+        "mean_confidence": 0.3265417218208313
+      },
+      {
+        "id": "L_jWHffIx5E",
+        "title": "Smash Mouth - All Star",
+        "group": "meme-all-star",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9539725184440613,
+        "mean_confidence": 0.48529383540153503
+      },
+      {
+        "id": "SW_iujvUAzQ",
+        "title": "PSY - Gangnam Style",
+        "group": "meme-gangnam",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9184346795082092,
+        "mean_confidence": 0.3844881057739258
+      },
+      {
+        "id": "0FCvzsVlXpQ",
+        "title": "Toby Fox - Megalovania",
+        "group": "meme-megalovania",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8964332342147827,
+        "mean_confidence": 0.307546466588974
+      },
+      {
+        "id": "E0ozmU9cJDg",
+        "title": "Metallica - Master of Puppets",
+        "group": "metal-metallica",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9370952844619751,
+        "mean_confidence": 0.29734084010124207
+      },
+      {
+        "id": "xFrGuyw1V8s",
+        "title": "ABBA - Dancing Queen",
+        "group": "pop-abba",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9625017642974854,
+        "mean_confidence": 0.23787431418895721
+      },
+      {
+        "id": "djV11Xbc914",
+        "title": "a-ha - Take On Me",
+        "group": "pop-aha",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9070977568626404,
+        "mean_confidence": 0.2509908378124237
+      },
+      {
+        "id": "EPOIS5taqA8",
+        "title": "Kim Carnes - Bette Davis Eyes",
+        "group": "pop-carnes",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8548421263694763,
+        "mean_confidence": 0.263076514005661
+      },
+      {
+        "id": "JmcA9LIIXWw",
+        "title": "Culture Club - Karma Chameleon",
+        "group": "pop-culture-club",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9332858920097351,
+        "mean_confidence": 0.3503287434577942
+      },
+      {
+        "id": "Zi_XLOBDo_Y",
+        "title": "Michael Jackson - Billie Jean",
+        "group": "pop-mj",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9464235901832581,
+        "mean_confidence": 0.5073332190513611
+      },
+      {
+        "id": "aGCdLKXNF3w",
+        "title": "Tears For Fears - Everybody Wants To Rule The World",
+        "group": "pop-tff",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.7493981719017029,
+        "mean_confidence": 0.12661845982074738
+      },
+      {
+        "id": "FTQbiNvZqaY",
+        "title": "Toto - Africa",
+        "group": "pop-toto",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8286777138710022,
+        "mean_confidence": 0.20087860524654388
+      },
+      {
+        "id": "hTWKbfoikeg",
+        "title": "Nirvana - Smells Like Teen Spirit",
+        "group": "rock-nirvana",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9701605439186096,
+        "mean_confidence": 0.35748764872550964
+      },
+      {
+        "id": "fJ9rUzIMcZQ",
+        "title": "Queen - Bohemian Rhapsody",
+        "group": "rock-queen",
+        "kind": "music",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9111887812614441,
+        "mean_confidence": 0.26848751306533813
+      },
+      {
+        "id": "ObrLit0vS9s",
+        "title": "Patrice Rushen - Never Gonna Give You Up (a different song, same title)",
+        "group": "rushen-same-title",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8856469988822937,
+        "mean_confidence": 0.3082997798919678
+      },
+      {
+        "id": "d4-1ASpdT1Y",
+        "title": "Bananarama - Venus",
+        "group": "saw-bananarama",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.6745367646217346,
+        "mean_confidence": 0.13543713092803955
+      },
+      {
+        "id": "PGNiXGX2nLU",
+        "title": "Dead Or Alive - You Spin Me Round",
+        "group": "saw-dead-or-alive",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8901910781860352,
+        "mean_confidence": 0.40507832169532776
+      },
+      {
+        "id": "3_TvpBwSZDM",
+        "title": "Kylie Minogue - I Should Be So Lucky (PWL)",
+        "group": "saw-kylie",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8356043100357056,
+        "mean_confidence": 0.22888889908790588
+      },
+      {
+        "id": "jh2IRwZd3Tk",
+        "title": "Stock Aitken Waterman - Packjammed",
+        "group": "saw-packjammed",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.97247314453125,
+        "mean_confidence": 0.2755418121814728
+      },
+      {
+        "id": "xfrVyK9kXvg",
+        "title": "Stock Aitken Waterman - SS Paparazzi",
+        "group": "saw-paparazzi",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9512031674385071,
+        "mean_confidence": 0.613447904586792
+      },
+      {
+        "id": "PZbAEHswIfw",
+        "title": "Stock Aitken Waterman - Roadblock",
+        "group": "saw-roadblock",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.7416707277297974,
+        "mean_confidence": 0.2251206934452057
+      },
+      {
+        "id": "NaCpUsLDf2c",
+        "title": "Stock Aitken Waterman - Roadblock (HD re-upload)",
+        "group": "saw-roadblock",
+        "kind": "hard",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.7414293885231018,
+        "mean_confidence": 0.20163673162460327
+      },
+      {
+        "id": "aNPiNGZuV2U",
+        "title": "BBC News report",
+        "group": "speech-bbc-a",
+        "kind": "speech",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.7672079801559448,
+        "mean_confidence": 0.11683973670005798
+      },
+      {
+        "id": "Q8JxqzJGgpM",
+        "title": "BBC News report, longer",
+        "group": "speech-bbc-b",
+        "kind": "speech",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9183254837989807,
+        "mean_confidence": 0.12644033133983612
+      },
+      {
+        "id": "krAHeXlFvls",
+        "title": "A long spoken product review",
+        "group": "speech-review",
+        "kind": "speech",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8451686501502991,
+        "mean_confidence": 0.16125953197479248
+      },
+      {
+        "id": "Sm5xF-UYgdg",
+        "title": "TED - How not to be ignorant about the world",
+        "group": "speech-ted",
+        "kind": "speech",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.9470375776290894,
+        "mean_confidence": 0.2690693438053131
+      },
+      {
+        "id": "4VuYiEbGQ9Q",
+        "title": "TEDx - The Lost Genius of Irrationality",
+        "group": "speech-tedx",
+        "kind": "speech",
+        "positive": false,
+        "committed": false,
+        "latency": null,
+        "peak_confidence": 0.8286777138710022,
+        "mean_confidence": 0.10883908718824387
+      }
+    ]
+  },
+  "commitment": {
+    "tau": 2.0,
+    "baseline": 0.72,
+    "threshold": 0.6,
+    "tuned_on": "out-of-fold traces: specificity and recall on the rendition folds, latency on the upload folds",
+    "curve": [
+      {
+        "tau": 0.6,
+        "baseline": 0.5,
+        "commit": 0.2,
+        "rendition_recall": 1.0,
+        "rendition_specificity": 0.1590909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.13636363636363635,
+        "upload_latency": 2.4613152742385864
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.5,
+        "commit": 0.3,
+        "rendition_recall": 1.0,
+        "rendition_specificity": 0.1590909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.1590909090909091,
+        "upload_latency": 2.5890250205993652
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.5,
+        "commit": 0.4,
+        "rendition_recall": 1.0,
+        "rendition_specificity": 0.2727272727272727,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.22727272727272727,
+        "upload_latency": 2.716734766960144
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.5,
+        "commit": 0.5,
+        "rendition_recall": 0.9523809523809523,
+        "rendition_specificity": 0.3181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.2727272727272727,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.5,
+        "commit": 0.6,
+        "rendition_recall": 0.9523809523809523,
+        "rendition_specificity": 0.38636363636363635,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.36363636363636365,
+        "upload_latency": 2.9721542596817017
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.5,
+        "commit": 0.75,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4772727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5,
+        "upload_latency": 3.2275737524032593
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.6,
+        "commit": 0.2,
+        "rendition_recall": 1.0,
+        "rendition_specificity": 0.22727272727272727,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.1590909090909091,
+        "upload_latency": 2.5890250205993652
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.6,
+        "commit": 0.3,
+        "rendition_recall": 0.9523809523809523,
+        "rendition_specificity": 0.3181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.2727272727272727,
+        "upload_latency": 2.716734766960144
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.6,
+        "commit": 0.4,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.38636363636363635,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.4318181818181818,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.6,
+        "commit": 0.5,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.4090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5454545454545454,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.6,
+        "commit": 0.6,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4772727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6363636363636364,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.6,
+        "commit": 0.75,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.6363636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7727272727272727,
+        "upload_latency": 3.6107029914855957
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.66,
+        "commit": 0.2,
+        "rendition_recall": 0.9523809523809523,
+        "rendition_specificity": 0.29545454545454547,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.38636363636363635,
+        "upload_latency": 2.716734766960144
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.66,
+        "commit": 0.3,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.4090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.4772727272727273,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.66,
+        "commit": 0.4,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.4318181818181818,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5681818181818182,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.66,
+        "commit": 0.5,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6363636363636364,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.66,
+        "commit": 0.6,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6818181818181818,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.66,
+        "commit": 0.75,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.504671096801758
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.72,
+        "commit": 0.2,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.4090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.4772727272727273,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.72,
+        "commit": 0.3,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.5,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6136363636363636,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.72,
+        "commit": 0.4,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6590909090909091,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.72,
+        "commit": 0.5,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7272727272727273,
+        "upload_latency": 3.482993245124817
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.72,
+        "commit": 0.6,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8636363636363636,
+        "upload_latency": 4.3769612312316895
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.72,
+        "commit": 0.75,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.8409090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 4.760090589523315
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.78,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6590909090909091,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.78,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.75,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7045454545454546,
+        "upload_latency": 3.7384127378463745
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.78,
+        "commit": 0.4,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.121541976928711
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.78,
+        "commit": 0.5,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.504671096801758
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.78,
+        "commit": 0.6,
+        "rendition_recall": 0.6190476190476191,
+        "rendition_specificity": 0.8636363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 5.015510082244873
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.78,
+        "commit": 0.75,
+        "rendition_recall": 0.23809523809523808,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 0.9166666666666666,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 33.49478530883789
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.84,
+        "commit": 0.2,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7954545454545454,
+        "upload_latency": 4.2492516040802
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.84,
+        "commit": 0.3,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.8409090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.887800455093384
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.84,
+        "commit": 0.4,
+        "rendition_recall": 0.6190476190476191,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 10.50702953338623
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.84,
+        "commit": 0.5,
+        "rendition_recall": 0.47619047619047616,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9318181818181818,
+        "upload_latency": 26.598458290100098
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.84,
+        "commit": 0.6,
+        "rendition_recall": 0.19047619047619047,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.8333333333333334,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 33.75020217895508
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.84,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.9,
+        "commit": 0.2,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 27.620136260986328
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.9,
+        "commit": 0.3,
+        "rendition_recall": 0.42857142857142855,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 0.9166666666666666,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 33.75020217895508
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.9,
+        "commit": 0.4,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.6666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 35.02730178833008
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.9,
+        "commit": 0.5,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.08333333333333333,
+        "upload_specificity": 1.0,
+        "upload_latency": 144.85768127441406
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.9,
+        "commit": 0.6,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 0.6,
+        "baseline": 0.9,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.5,
+        "commit": 0.2,
+        "rendition_recall": 1.0,
+        "rendition_specificity": 0.1590909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.13636363636363635,
+        "upload_latency": 2.5890250205993652
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.5,
+        "commit": 0.3,
+        "rendition_recall": 1.0,
+        "rendition_specificity": 0.2727272727272727,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.22727272727272727,
+        "upload_latency": 2.716734766960144
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.5,
+        "commit": 0.4,
+        "rendition_recall": 0.9523809523809523,
+        "rendition_specificity": 0.29545454545454547,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.2727272727272727,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.5,
+        "commit": 0.5,
+        "rendition_recall": 0.9523809523809523,
+        "rendition_specificity": 0.38636363636363635,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.36363636363636365,
+        "upload_latency": 2.9721542596817017
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.5,
+        "commit": 0.6,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4772727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.4318181818181818,
+        "upload_latency": 3.2275737524032593
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.5,
+        "commit": 0.75,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.6136363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6363636363636364,
+        "upload_latency": 3.7384127378463745
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.6,
+        "commit": 0.2,
+        "rendition_recall": 0.9523809523809523,
+        "rendition_specificity": 0.29545454545454547,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.22727272727272727,
+        "upload_latency": 2.716734766960144
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.6,
+        "commit": 0.3,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.38636363636363635,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.38636363636363635,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.6,
+        "commit": 0.4,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4318181818181818,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5227272727272727,
+        "upload_latency": 2.9721542596817017
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.6,
+        "commit": 0.5,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6363636363636364,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.6,
+        "commit": 0.6,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7272727272727273,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.6,
+        "commit": 0.75,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.2492516040802
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.66,
+        "commit": 0.2,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.36363636363636365,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.4318181818181818,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.66,
+        "commit": 0.3,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.4090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5681818181818182,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.66,
+        "commit": 0.4,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6363636363636364,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.66,
+        "commit": 0.5,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7045454545454546,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.66,
+        "commit": 0.6,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.6818181818181818,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 3.7384127378463745
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.66,
+        "commit": 0.75,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.75,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 5.143219947814941
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.72,
+        "commit": 0.2,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.5,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5909090909090909,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.72,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6590909090909091,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.72,
+        "commit": 0.4,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7272727272727273,
+        "upload_latency": 3.482993245124817
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.72,
+        "commit": 0.5,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.3769612312316895
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.72,
+        "commit": 0.6,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.632380962371826
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.72,
+        "commit": 0.75,
+        "rendition_recall": 0.47619047619047616,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 9.996190071105957
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.78,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.6136363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6590909090909091,
+        "upload_latency": 3.482993245124817
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.78,
+        "commit": 0.3,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7954545454545454,
+        "upload_latency": 4.121541976928711
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.78,
+        "commit": 0.4,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.504671096801758
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.78,
+        "commit": 0.5,
+        "rendition_recall": 0.6190476190476191,
+        "rendition_specificity": 0.8409090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 4.760090589523315
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.78,
+        "commit": 0.6,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 10.50702953338623
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.78,
+        "commit": 0.75,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.8333333333333334,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 33.877912521362305
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.84,
+        "commit": 0.2,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.2492516040802
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.84,
+        "commit": 0.3,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.8636363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 7.314285755157471
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.84,
+        "commit": 0.4,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 14.338321685791016
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.84,
+        "commit": 0.5,
+        "rendition_recall": 0.23809523809523808,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 0.9166666666666666,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 33.75020217895508
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.84,
+        "commit": 0.6,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.75,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.771881103515625
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.84,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.9,
+        "commit": 0.2,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 33.622493743896484
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.9,
+        "commit": 0.3,
+        "rendition_recall": 0.19047619047619047,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.75,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.00562286376953
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.9,
+        "commit": 0.4,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 0.9772727272727273,
+        "upload_recall": 0.5,
+        "upload_specificity": 1.0,
+        "upload_latency": 35.53814125061035
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.9,
+        "commit": 0.5,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.9,
+        "commit": 0.6,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 0.9,
+        "baseline": 0.9,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.5,
+        "commit": 0.2,
+        "rendition_recall": 1.0,
+        "rendition_specificity": 0.20454545454545456,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.22727272727272727,
+        "upload_latency": 2.716734766960144
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.5,
+        "commit": 0.3,
+        "rendition_recall": 0.9523809523809523,
+        "rendition_specificity": 0.29545454545454547,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.2727272727272727,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.5,
+        "commit": 0.4,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.4318181818181818,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.38636363636363635,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.5,
+        "commit": 0.5,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.4772727272727273,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.5,
+        "commit": 0.6,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5454545454545454,
+        "upload_latency": 3.7384127378463745
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.5,
+        "commit": 0.75,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8181818181818182,
+        "upload_latency": 4.632380962371826
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.6,
+        "commit": 0.2,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.38636363636363635,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.3409090909090909,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.6,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4318181818181818,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.6,
+        "commit": 0.4,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5454545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6363636363636364,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.6,
+        "commit": 0.5,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7727272727272727,
+        "upload_latency": 3.6107029914855957
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.6,
+        "commit": 0.6,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.121541976928711
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.6,
+        "commit": 0.75,
+        "rendition_recall": 0.5714285714285714,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 5.654058933258057
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.66,
+        "commit": 0.2,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.4090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5454545454545454,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.66,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5454545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6590909090909091,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.66,
+        "commit": 0.4,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.75,
+        "upload_latency": 3.482993245124817
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.66,
+        "commit": 0.5,
+        "rendition_recall": 0.8095238095238095,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.121541857719421
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.66,
+        "commit": 0.6,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.887800216674805
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.66,
+        "commit": 0.75,
+        "rendition_recall": 0.47619047619047616,
+        "rendition_specificity": 0.8636363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 9.613061428070068
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.72,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6590909090909091,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.72,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7272727272727273,
+        "upload_latency": 3.6107029914855957
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.72,
+        "commit": 0.4,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.504671096801758
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.72,
+        "commit": 0.5,
+        "rendition_recall": 0.5714285714285714,
+        "rendition_specificity": 0.7727272727272727,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.887800216674805
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.72,
+        "commit": 0.6,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.8636363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 8.846802711486816
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.72,
+        "commit": 0.75,
+        "rendition_recall": 0.19047619047619047,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 10.762449264526367
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.78,
+        "commit": 0.2,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7272727272727273,
+        "upload_latency": 3.993832230567932
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.78,
+        "commit": 0.3,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.504671096801758
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.78,
+        "commit": 0.4,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.8409090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.760090589523315
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.78,
+        "commit": 0.5,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 9.996190071105957
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.78,
+        "commit": 0.6,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 25.959908485412598
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.78,
+        "commit": 0.75,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.6666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.899593353271484
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.84,
+        "commit": 0.2,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.8636363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 4.504671096801758
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.84,
+        "commit": 0.3,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 10.634739398956299
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.84,
+        "commit": 0.4,
+        "rendition_recall": 0.23809523809523808,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 33.75020217895508
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.84,
+        "commit": 0.5,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.8333333333333334,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 34.13333320617676
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.84,
+        "commit": 0.6,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.5833333333333334,
+        "upload_specificity": 1.0,
+        "upload_latency": 35.28272247314453
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.84,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.9,
+        "commit": 0.2,
+        "rendition_recall": 0.2857142857142857,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 0.9166666666666666,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 33.75020217895508
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.9,
+        "commit": 0.3,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.6666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.77188301086426
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.9,
+        "commit": 0.4,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.16666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 22.511746883392334
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.9,
+        "commit": 0.5,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.9,
+        "commit": 0.6,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 1.4,
+        "baseline": 0.9,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.5,
+        "commit": 0.2,
+        "rendition_recall": 1.0,
+        "rendition_specificity": 0.29545454545454547,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.25,
+        "upload_latency": 2.844444513320923
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.5,
+        "commit": 0.3,
+        "rendition_recall": 0.9047619047619048,
+        "rendition_specificity": 0.38636363636363635,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.3409090909090909,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.5,
+        "commit": 0.4,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4772727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.4772727272727273,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.5,
+        "commit": 0.5,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.6136363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5681818181818182,
+        "upload_latency": 3.7384127378463745
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.5,
+        "commit": 0.6,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7045454545454546,
+        "upload_latency": 4.3769612312316895
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.5,
+        "commit": 0.75,
+        "rendition_recall": 0.5714285714285714,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 7.569705247879028
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.6,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.4090909090909091,
+        "upload_latency": 2.9721542596817017
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.6,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5227272727272727,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6136363636363636,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.6,
+        "commit": 0.4,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7727272727272727,
+        "upload_latency": 3.6107029914855957
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.6,
+        "commit": 0.5,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.121541976928711
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.6,
+        "commit": 0.6,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8636363636363636,
+        "upload_latency": 5.398639678955078
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.6,
+        "commit": 0.75,
+        "rendition_recall": 0.38095238095238093,
+        "rendition_specificity": 0.8409090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 9.4853515625
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.66,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4772727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6136363636363636,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.66,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7272727272727273,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.66,
+        "commit": 0.4,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 3.993832230567932
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.66,
+        "commit": 0.5,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8636363636363636,
+        "upload_latency": 5.015510082244873
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.66,
+        "commit": 0.6,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 7.058866262435913
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.66,
+        "commit": 0.75,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 10.251609802246094
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.72,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7045454545454546,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.72,
+        "commit": 0.3,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.121541857719421
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.72,
+        "commit": 0.4,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.75,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.887800216674805
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.72,
+        "commit": 0.5,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.8409090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 8.846802711486816
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.72,
+        "commit": 0.6,
+        "rendition_recall": 0.42857142857142855,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 10.123899936676025
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.72,
+        "commit": 0.75,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.8333333333333334,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 34.64417266845703
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.78,
+        "commit": 0.2,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8636363636363636,
+        "upload_latency": 4.3769612312316895
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.78,
+        "commit": 0.3,
+        "rendition_recall": 0.6190476190476191,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.760090589523315
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.78,
+        "commit": 0.4,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 9.868480682373047
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.78,
+        "commit": 0.5,
+        "rendition_recall": 0.23809523809523808,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 10.762449264526367
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.78,
+        "commit": 0.6,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.8333333333333334,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 34.261043548583984
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.78,
+        "commit": 0.75,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9772727272727273,
+        "upload_recall": 0.5,
+        "upload_specificity": 1.0,
+        "upload_latency": 35.665849685668945
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.84,
+        "commit": 0.2,
+        "rendition_recall": 0.6190476190476191,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 9.102222442626953
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.84,
+        "commit": 0.3,
+        "rendition_recall": 0.2857142857142857,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9318181818181818,
+        "upload_latency": 22.12861728668213
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.84,
+        "commit": 0.4,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.9166666666666666,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 34.00562286376953
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.84,
+        "commit": 0.5,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.6666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.899593353271484
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.84,
+        "commit": 0.6,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.16666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 21.873197555541992
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.84,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.9,
+        "commit": 0.2,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.75,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.00562286376953
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.9,
+        "commit": 0.3,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.5,
+        "upload_specificity": 1.0,
+        "upload_latency": 35.410430908203125
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.9,
+        "commit": 0.4,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.08333333333333333,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.771881103515625
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.9,
+        "commit": 0.5,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.9,
+        "commit": 0.6,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 2.0,
+        "baseline": 0.9,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.5,
+        "commit": 0.2,
+        "rendition_recall": 0.9523809523809523,
+        "rendition_specificity": 0.36363636363636365,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.29545454545454547,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.5,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4772727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.45454545454545453,
+        "upload_latency": 3.482993245124817
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.5,
+        "commit": 0.4,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.6136363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6136363636363636,
+        "upload_latency": 3.993832230567932
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.5,
+        "commit": 0.5,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.75,
+        "upload_latency": 4.632380962371826
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.5,
+        "commit": 0.6,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.7727272727272727,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8181818181818182,
+        "upload_latency": 7.058866262435913
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.5,
+        "commit": 0.75,
+        "rendition_recall": 0.42857142857142855,
+        "rendition_specificity": 0.8409090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 8.46367359161377
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.6,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.4772727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.5,
+        "upload_latency": 3.0998640060424805
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.6,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5909090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7272727272727273,
+        "upload_latency": 3.6107029914855957
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.6,
+        "commit": 0.4,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.2492516040802
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.6,
+        "commit": 0.5,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8636363636363636,
+        "upload_latency": 5.654058933258057
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.6,
+        "commit": 0.6,
+        "rendition_recall": 0.42857142857142855,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 8.719092845916748
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.6,
+        "commit": 0.75,
+        "rendition_recall": 0.19047619047619047,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 10.890158653259277
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.66,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6818181818181818,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.66,
+        "commit": 0.3,
+        "rendition_recall": 0.7619047619047619,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 3.993832230567932
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.66,
+        "commit": 0.4,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8636363636363636,
+        "upload_latency": 5.143219947814941
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.66,
+        "commit": 0.5,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.7727272727272727,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 8.719092845916748
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.66,
+        "commit": 0.6,
+        "rendition_recall": 0.3333333333333333,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 9.996190547943115
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.66,
+        "commit": 0.75,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.9318181818181818,
+        "upload_recall": 0.9166666666666666,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 33.75020217895508
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.72,
+        "commit": 0.2,
+        "rendition_recall": 0.8095238095238095,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 3.6107029914855957
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.72,
+        "commit": 0.3,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.887800216674805
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.72,
+        "commit": 0.4,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 8.719092845916748
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.72,
+        "commit": 0.5,
+        "rendition_recall": 0.3333333333333333,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9545454545454546,
+        "upload_latency": 10.123899936676025
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.72,
+        "commit": 0.6,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 22.5117449760437
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.72,
+        "commit": 0.75,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.75,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 35.53813934326172
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.78,
+        "commit": 0.2,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 4.760090589523315
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.78,
+        "commit": 0.3,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 9.740771293640137
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.78,
+        "commit": 0.4,
+        "rendition_recall": 0.23809523809523808,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 10.762449264526367
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.78,
+        "commit": 0.5,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.8333333333333334,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 34.261043548583984
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.78,
+        "commit": 0.6,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.75,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 35.53813934326172
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.78,
+        "commit": 0.75,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.16666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 24.2996826171875
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.84,
+        "commit": 0.2,
+        "rendition_recall": 0.47619047619047616,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9318181818181818,
+        "upload_latency": 10.379319667816162
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.84,
+        "commit": 0.3,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.9166666666666666,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 34.00562286376953
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.84,
+        "commit": 0.4,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.75,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 35.02730178833008
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.84,
+        "commit": 0.5,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9772727272727273,
+        "upload_recall": 0.5,
+        "upload_specificity": 1.0,
+        "upload_latency": 58.781314849853516
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.84,
+        "commit": 0.6,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.16666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 46.01033926010132
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.84,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.9,
+        "commit": 0.2,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.6666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.89959144592285
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.9,
+        "commit": 0.3,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.16666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 22.256325721740723
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.9,
+        "commit": 0.4,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.9,
+        "commit": 0.5,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.9,
+        "commit": 0.6,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 3.0,
+        "baseline": 0.9,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.5,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.45454545454545453,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.4318181818181818,
+        "upload_latency": 3.355283498764038
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.5,
+        "commit": 0.3,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.6136363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.6136363636363636,
+        "upload_latency": 3.993832230567932
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.5,
+        "commit": 0.4,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7727272727272727,
+        "upload_latency": 4.887800216674805
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.5,
+        "commit": 0.5,
+        "rendition_recall": 0.5714285714285714,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8181818181818182,
+        "upload_latency": 7.058866262435913
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.5,
+        "commit": 0.6,
+        "rendition_recall": 0.47619047619047616,
+        "rendition_specificity": 0.8409090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 8.080544233322144
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.5,
+        "commit": 0.75,
+        "rendition_recall": 0.38095238095238093,
+        "rendition_specificity": 0.8636363636363636,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 11.656416893005371
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.6,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.5681818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.7272727272727273,
+        "upload_latency": 3.6107029914855957
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.6,
+        "commit": 0.3,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7045454545454546,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 4.3769612312316895
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.6,
+        "commit": 0.4,
+        "rendition_recall": 0.6666666666666666,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 7.569705247879028
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.6,
+        "commit": 0.5,
+        "rendition_recall": 0.38095238095238093,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 8.719092845916748
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.6,
+        "commit": 0.6,
+        "rendition_recall": 0.3333333333333333,
+        "rendition_specificity": 0.8409090909090909,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 10.123899936676025
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.6,
+        "commit": 0.75,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 34.13333320617676
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.66,
+        "commit": 0.2,
+        "rendition_recall": 0.8571428571428571,
+        "rendition_specificity": 0.6590909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8409090909090909,
+        "upload_latency": 3.7384127378463745
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.66,
+        "commit": 0.3,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8636363636363636,
+        "upload_latency": 5.27092981338501
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.66,
+        "commit": 0.4,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 8.719092845916748
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.66,
+        "commit": 0.5,
+        "rendition_recall": 0.2857142857142857,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 10.123899936676025
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.66,
+        "commit": 0.6,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9545454545454546,
+        "upload_latency": 22.894875049591064
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.66,
+        "commit": 0.75,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.8333333333333334,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 35.410430908203125
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.72,
+        "commit": 0.2,
+        "rendition_recall": 0.7142857142857143,
+        "rendition_specificity": 0.7272727272727273,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8636363636363636,
+        "upload_latency": 4.760090589523315
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.72,
+        "commit": 0.3,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.7954545454545454,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 8.591383457183838
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.72,
+        "commit": 0.4,
+        "rendition_recall": 0.2857142857142857,
+        "rendition_specificity": 0.8863636363636364,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9090909090909091,
+        "upload_latency": 9.996190547943115
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.72,
+        "commit": 0.5,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.9318181818181818,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 22.384036540985107
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.72,
+        "commit": 0.6,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.9166666666666666,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 34.771881103515625
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.72,
+        "commit": 0.75,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.5833333333333334,
+        "upload_specificity": 1.0,
+        "upload_latency": 39.36943435668945
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.78,
+        "commit": 0.2,
+        "rendition_recall": 0.5238095238095238,
+        "rendition_specificity": 0.8181818181818182,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.8863636363636364,
+        "upload_latency": 8.335963726043701
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.78,
+        "commit": 0.3,
+        "rendition_recall": 0.2857142857142857,
+        "rendition_specificity": 0.9090909090909091,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 10.634739398956299
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.78,
+        "commit": 0.4,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.9166666666666666,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 34.261043548583984
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.78,
+        "commit": 0.5,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.75,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 35.28272247314453
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.78,
+        "commit": 0.6,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.6666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 39.75256156921387
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.78,
+        "commit": 0.75,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.08333333333333333,
+        "upload_specificity": 1.0,
+        "upload_latency": 18.169614791870117
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.84,
+        "commit": 0.2,
+        "rendition_recall": 0.14285714285714285,
+        "rendition_specificity": 0.9318181818181818,
+        "upload_recall": 1.0,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 33.877912521362305
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.84,
+        "commit": 0.3,
+        "rendition_recall": 0.09523809523809523,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.75,
+        "upload_specificity": 0.9772727272727273,
+        "upload_latency": 35.02730178833008
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.84,
+        "commit": 0.4,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 0.9545454545454546,
+        "upload_recall": 0.6666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 60.313833236694336
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.84,
+        "commit": 0.5,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.16666666666666666,
+        "upload_specificity": 1.0,
+        "upload_latency": 23.91655397415161
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.84,
+        "commit": 0.6,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.08333333333333333,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.261043548583984
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.84,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.9,
+        "commit": 0.2,
+        "rendition_recall": 0.047619047619047616,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.4166666666666667,
+        "upload_specificity": 1.0,
+        "upload_latency": 36.048980712890625
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.9,
+        "commit": 0.3,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.08333333333333333,
+        "upload_specificity": 1.0,
+        "upload_latency": 34.00562286376953
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.9,
+        "commit": 0.4,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.9,
+        "commit": 0.5,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.9,
+        "commit": 0.6,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      },
+      {
+        "tau": 4.5,
+        "baseline": 0.9,
+        "commit": 0.75,
+        "rendition_recall": 0.0,
+        "rendition_specificity": 1.0,
+        "upload_recall": 0.0,
+        "upload_specificity": 1.0,
+        "upload_latency": null
+      }
+    ]
+  }
+}

@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+
+# Node
+node_modules/
+web/dist/
+
+# Audio corpus and derived features: large, rebuildable, not ours to redistribute
+data/audio/*
+!data/audio/.gitkeep
+data/features/*
+!data/features/.gitkeep
+data/cache/*
+!data/cache/.gitkeep
+
+# Runtime
+.DS_Store
+*.log
