@@ -59,7 +59,8 @@ re-encode, a remaster or a lyric video.
 There are two ways for the fly to commit. The dopamine pool is the normal one
 and needs about ten seconds of the song. A meme does not have ten seconds — it
 has four, spliced onto the end of a cat video — so a second path commits on two
-seconds averaging 0.93 confidence, in recordings of at most 25 seconds. The
+seconds averaging 0.90 confidence, in recordings of at most 25 seconds. An
+eight-second Rickroll commits at about 4 s. The
 gate is what keeps it honest: it cannot reach a full-length track, so the
 figures above are untouched by it. See finding 6 in
 [docs/FINDINGS.md](docs/FINDINGS.md).
@@ -130,8 +131,19 @@ brain and outside the connectome, and inventing one to stand next to measured
 anatomy would undo the point of measuring it; the receptors are drawn flat,
 under the brain, where they can be honest about being a bar chart.
 
-`frrf-meshes` regenerates the surfaces. Its output is committed, so a clone
-needs neither the extra dependencies nor the download.
+The surfaces are drawn as unlit wireframe over a shell faint enough to read as
+volume: a diagram of a brain rather than a photograph of one. `frrf-meshes`
+regenerates them, and its output is committed, so a clone needs neither the
+extra dependencies nor the download.
+
+The video plays from our own copy rather than from a YouTube embed. The
+uploads most worth asking about are very often the ones whose uploader has
+disabled embedding, and for those the embed is a grey box reading *this video
+is not available*; the file the fly listened to is already on disk, so it is
+served from there. Links are still YouTube-only. A link shortener is followed —
+a Rickroll is very often hidden behind one — but the rule after the redirect is
+the rule before it, and every hop has to land on a shortener or on YouTube, so
+it cannot be pointed at anything else.
 
 `models/traces.npz` holds every out-of-fold confidence timeline. Cross-validation
 is the expensive part of this project and those timelines are its real product:
@@ -142,7 +154,7 @@ of retraining.
 ## Develop
 
 ```bash
-pytest          # 89 tests
+pytest          # 104 tests
 ruff check .
 ```
 

@@ -152,7 +152,12 @@ export default function App() {
           </div>
           {analysis.video ? (
             <>
-              <VideoPreview video={analysis.video} onTime={onTime} seekTo={seekTo} />
+              <VideoPreview
+                video={analysis.video}
+                src={analysis.mediaUrl}
+                onTime={onTime}
+                seekTo={seekTo}
+              />
               <div className="video-controls">
                 <button
                   type="button"

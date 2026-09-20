@@ -153,10 +153,10 @@ yes, not by how much, and a saturating input curve measures exactly that. It
 is also what neurons do."""
 
 DA_BURST_SECONDS = 2.0
-DA_BURST_CONFIDENCE = 0.93
+DA_BURST_CONFIDENCE = 0.90
 DA_BURST_MAX_SECONDS = 25.0
 """A second, faster way to commit, for short recordings only: two seconds whose
-mean confidence is at least 0.93, in a video of at most 25 seconds.
+mean confidence is at least 0.90, in a video of at most 25 seconds.
 
 The pool above needs about ten seconds of the song to charge, which is correct
 for a track and wrong for a meme. Most rickrolls in the wild are four to
@@ -191,13 +191,27 @@ whole track and a rule aimed at fifteen-second memes had never met a
 fifteen-second non-meme; roughly nine thousand negative clips were cut from the
 out-of-fold timelines for it.
 
-The cut is a product decision, not a tuning one, and the dial is honest:
-0.94 at a 45 s gate holds 95.5 percent specificity for 54.5 percent sting
-recall; 0.92 at 25 s buys more recall for less specificity. One caveat worth
-recording: the video this was chased with scores 0.934 over its best two
-seconds, against a cut of 0.93. That margin is four thousandths, and a rule
-whose threshold sits that close to a single example it was shown is fitted to
-that example as much as to the sweep.
+**Why 0.90 and not the 0.93 this shipped with.** The original cut was fitted
+to one video that scored 0.934, a margin of four thousandths, and that was
+recorded here as a caveat at the time. It was the right worry. Two ordinary
+eight-second Rickrolls -- the shape the gate exists for -- score 0.9202 and
+0.9269 over their best two seconds and were both reported as *not a rickroll*
+while the fly was 97 percent confident about them.
+
+`frrf-commitment` rebuilds the sweep, and the honest answer is that this
+threshold is nearly free over a wide range. Every short clip the burst would
+catch between 0.86 and 0.99, the pool already commits on by itself, so on nine
+thousand out-of-fold short negatives the measured cost of coming down from 0.99
+all the way to 0.86 is **zero** additional false alarms. They begin at 0.84,
+which costs fifteen. 0.90 sits well inside the flat region and six hundredths
+above the edge, rather than four thousandths above one example.
+
+On real audio the change is surgical: the two eight-second clips now commit at
+4.0 s, and every other cached video -- the record, the advert, the Astley hard
+negative, three ordinary negatives and finding 6's own fifteen-second meme --
+behaves exactly as before. The hard negative is the reason the gate is not
+also up for negotiation: its best two seconds average 0.9479, above this cut,
+and only its 207-second length keeps the burst away from it.
 
 Loosely, two compartments with different kinetics: the fly's dopaminergic
 neurons are not all slow, and a phasic path beside a tonic one is the sort of

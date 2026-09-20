@@ -1,120 +1,78 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import type { Video } from '../lib/types'
 
 interface Props {
   video: Video
+  src: string | null
   onTime(seconds: number): void
   seekTo: number | null
 }
 
-declare global {
-  interface Window {
-    YT?: {
-      Player: new (element: HTMLElement, options: Record<string, unknown>) => YouTubePlayer
-      PlayerState: { PLAYING: number }
-    }
-    onYouTubeIframeAPIReady?: () => void
-  }
-}
-
-interface YouTubePlayer {
-  getCurrentTime(): number
-  seekTo(seconds: number, allowSeekAhead: boolean): void
-  destroy(): void
-}
-
-const API_SRC = 'https://www.youtube.com/iframe_api'
-
-/** Load the IFrame API once per page, and let every caller await the same load. */
-function loadApi(): Promise<void> {
-  if (window.YT?.Player) return Promise.resolve()
-  return new Promise((resolve) => {
-    const previous = window.onYouTubeIframeAPIReady
-    window.onYouTubeIframeAPIReady = () => {
-      previous?.()
-      resolve()
-    }
-    if (!document.querySelector(`script[src="${API_SRC}"]`)) {
-      const script = document.createElement('script')
-      script.src = API_SRC
-      document.head.appendChild(script)
-    }
-  })
-}
-
 /**
- * The video, and the clock that drives the brain.
+ * The video, played from our own copy, and the clock that drives the brain.
  *
- * Playback position is polled rather than pushed, because the IFrame API has no
- * time event. Twenty times a second is smoother than the fly updates anyway.
+ * This used to be a YouTube embed, which failed in the one case the whole
+ * application is about: the uploads worth asking about are very often the ones
+ * whose uploader has disabled embedding, and those rendered as a grey box
+ * reading *this video is not available*. The file the fly listened to is
+ * already on disk, so it is served from there and played in a plain <video>.
+ *
+ * Position is read on an animation frame rather than from `timeupdate`, which
+ * fires about four times a second -- too coarse for a brain drawn at eight.
  */
-export default function VideoPreview({ video, onTime, seekTo }: Props) {
-  const host = useRef<HTMLDivElement>(null)
-  const player = useRef<YouTubePlayer | null>(null)
-  const [ready, setReady] = useState(false)
-  const [blocked, setBlocked] = useState(false)
+export default function VideoPreview({ video, src, onTime, seekTo }: Props) {
+  const element = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
-    let cancelled = false
-    let poll = 0
-    const stopPolling = () => {
-      window.clearInterval(poll)
-      poll = 0
+    const player = element.current
+    // `src` is in the dependencies because it has to be: until the download
+    // lands there is no <video> for the ref to point at, and an effect that
+    // only watched `onTime` would give up on that first empty pass and never
+    // start the clock at all.
+    if (!player || !src) return
+    let raf = 0
+    let last = 0
+    const tick = (now: number) => {
+      raf = requestAnimationFrame(tick)
+      // Percepts arrive at about 8 Hz, so sampling at 25 is already finer
+      // than anything downstream can show. Every frame would just be three
+      // times the renders for the same picture.
+      if (now - last < 40) return
+      last = now
+      if (!player.paused && !player.seeking) onTime(player.currentTime)
     }
-
-    loadApi().then(() => {
-      if (cancelled || !host.current || !window.YT) return
-      player.current = new window.YT.Player(host.current, {
-        videoId: video.id,
-        playerVars: { modestbranding: 1, rel: 0, playsinline: 1 },
-        events: {
-          onReady: () => {
-            if (cancelled) return
-            setReady(true)
-            poll = window.setInterval(() => {
-              const current = player.current?.getCurrentTime?.()
-              if (typeof current === 'number') onTime(current)
-            }, 50)
-          },
-          // An embed the uploader has blocked still loads and still answers
-          // getCurrentTime, with 0.0, forever. Left polling it would pin the
-          // fly's clock to the start of the song and undo every seek, so the
-          // clock is handed back to the replay button instead.
-          onError: () => {
-            setBlocked(true)
-            stopPolling()
-          },
-        },
-      })
-    })
-
-    return () => {
-      cancelled = true
-      stopPolling()
-      player.current?.destroy?.()
-      player.current = null
-    }
-  }, [video.id, onTime])
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [onTime, src])
 
   useEffect(() => {
-    if (seekTo != null && ready) player.current?.seekTo(seekTo, true)
-  }, [seekTo, ready])
+    const player = element.current
+    if (!player || seekTo == null) return
+    player.currentTime = seekTo
+    onTime(seekTo)
+  }, [seekTo, onTime])
 
   return (
     <div className="video">
       <div className="video-frame">
-        <div ref={host} />
+        {src ? (
+          <video
+            ref={element}
+            src={src}
+            controls
+            playsInline
+            preload="metadata"
+            onSeeked={(event) => onTime(event.currentTarget.currentTime)}
+          />
+        ) : (
+          <div className="video-pending">downloading the video</div>
+        )}
       </div>
       <div className="video-meta">
         <a href={video.watchUrl} target="_blank" rel="noreferrer noopener" className="video-title">
           {video.title}
         </a>
         <span className="video-channel">{video.channel}</span>
-        {blocked && (
-          <span className="video-blocked">
-            The uploader blocks embedding; use Replay to watch the fly instead.
-          </span>
-        )}
       </div>
     </div>
   )

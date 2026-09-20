@@ -230,6 +230,63 @@ video with a short sting is still missed by construction: the gate is a
 statement that a four-minute upload gets judged by the pool, whatever is
 spliced into it.
 
+### 6b. The first caveat came true, and the sweep was not reproducible
+
+Two ordinary eight-second Rickrolls — *Rick Roll (Different link + no ads)* and
+*Rick roll, but with different link*, the exact shape this rule exists for —
+score **0.9202** and **0.9269** over their best two seconds. Both were reported
+as *not a rickroll* while the fly was 97 percent confident about them and the
+pool had stalled at 0.39 against 0.60. A threshold fitted four thousandths
+above one example missed the next two examples it met.
+
+Worse, the sweep that produced 0.93 was never committed, so the number could
+not be argued with. `frrf-commitment` now rebuilds it from `models/traces.npz`:
+memes cut as filler-then-sting from the **upload** family, short negatives cut
+from ordinary tracks at the same lengths.
+
+Rebuilding it turned up something the original write-up got wrong. **The burst
+path barely fires at all.** Swept from 0.99 down to 0.86 against nine thousand
+out-of-fold short negatives, the measured cost is *zero* additional false
+alarms at every step — because every short clip the burst would catch, the pool
+has already committed on by itself. False alarms begin at 0.84, where fifteen
+appear. The claimed lift from 39.8 to 67.5 percent recall does not reproduce;
+on this population the pool alone takes 95 to 100 percent of simulated memes,
+and the burst's real job is the narrow band the pool stalls in — which is
+exactly where those two videos sat.
+
+So the cut moved to **0.90**: six hundredths above the edge of the flat region
+rather than four thousandths above one example. On real audio the change is
+surgical.
+
+| video | before | after |
+|---|---|---|
+| Rick Roll, no ads (8 s) | never | **4.0 s** |
+| Rick roll, different link (7 s) | never | **4.0 s** |
+| Send this to all your friends (15 s) | 13.7 s | 13.1 s |
+| the record (213 s) | 9.5 s | 9.5 s |
+| insurance advert (65 s) | 4.6 s | 4.6 s |
+| Astley hard negative (208 s) | never | never |
+| three ordinary negatives | never | never |
+
+The hard negative is why the 25-second gate is not also up for negotiation: its
+best two seconds average **0.9479**, comfortably above the new cut, and only
+its length keeps the burst away from it.
+
+One case is still missed and stays missed: *10 rickrolls 1 video*, 34 seconds,
+outside the gate, with a best two seconds of only 0.855. The gate remains a
+statement that anything past 25 seconds is the pool's business.
+
+Two measurements worth recording while the sweep existed. Short-clip
+specificity is **0.86**, far below the 0.977 the fly holds on whole tracks —
+fifteen percent of random five-to-twenty-five second windows of ordinary
+negatives commit, through the pool, with the burst disabled entirely. That is a
+pre-existing weakness of the pool on short inputs and nothing to do with this
+rule. And the family a meme's sting is cut from changes the answer completely:
+cut from `rendition`, simulated memes are so hard that nothing fires; cut from
+`upload`, the pool takes almost all of them. Somebody pasting a Rickroll link
+is pasting an upload, so `upload` is the population, and saying so is part of
+the claim.
+
 ---
 
 ## What this points at

@@ -22,6 +22,24 @@ const INK = {
 
 /* Which surface plays which part. The names are the ones the extractor wrote
    into the GLB, which are the hemibrain's own ROIs under plainer labels. */
+interface Tinted {
+  fill: THREE.MeshBasicMaterial
+  lines: THREE.LineBasicMaterial
+  base: THREE.Color
+  fillOpacity: number
+  lineOpacity: number
+}
+
+/** Brightness is the only channel these materials have, so it carries the pool. */
+function tint(targets: Tinted[], level: number) {
+  for (const target of targets) {
+    target.fill.color.copy(target.base).multiplyScalar(0.3 + 2.2 * level)
+    target.fill.opacity = target.fillOpacity * (1 + 5 * level)
+    target.lines.color.copy(target.base).multiplyScalar(0.5 + 1.8 * level)
+    target.lines.opacity = Math.min(1, target.lineOpacity * (1 + 3.2 * level))
+  }
+}
+
 const APPROACH = new Set(['beta', 'beta-prime', 'gamma'])
 const AVOIDANCE = new Set(['alpha', 'alpha-prime'])
 const CONTEXT = new Set(['lateral-horn', 'medulla', 'lobula', 'lobula-plate'])
@@ -52,9 +70,9 @@ export default function BrainView({ circuit, frame, live }: Props) {
     kenyonColors: THREE.BufferAttribute
     kenyonSizes: THREE.BufferAttribute
     lit: Set<number>
-    approach: THREE.MeshStandardMaterial[]
-    avoidance: THREE.MeshStandardMaterial[]
-    antennalLobe: THREE.MeshStandardMaterial | null
+    approach: Tinted[]
+    avoidance: Tinted[]
+    antennalLobe: Tinted[]
     calyxGlow: THREE.PointLight
     target: { dopamine: number; aversion: number; drive: number }
   } | null>(null)
@@ -83,19 +101,9 @@ export default function BrainView({ circuit, frame, live }: Props) {
     controls.autoRotate = true
     controls.autoRotateSpeed = 0.55
 
-    /* Warm key, cold fill, cold rim. An earlier orange rim made the optic
-       lobes look like raw meat, which is not the note we are going for. */
-    scene.add(new THREE.AmbientLight(0xffffff, 0.8))
-    const key = new THREE.DirectionalLight(0xfff2e0, 2.1)
-    key.position.set(5, 9, 7)
-    scene.add(key)
-    const rim = new THREE.DirectionalLight(0xa8bed4, 0.7)
-    rim.position.set(-7, -2, -8)
-    scene.add(rim)
-    const fill = new THREE.DirectionalLight(0x8fa2bd, 0.7)
-    fill.position.set(-6, 3, 5)
-    scene.add(fill)
-
+    /* No lights. Every material here is unlit on purpose: a shaded surface
+       is what made this look like a specimen instead of a diagram. Brightness
+       carries signal, not geometry. */
     const calyxGlow = new THREE.PointLight(INK.approach, 0, 14, 2)
     scene.add(calyxGlow)
 
@@ -103,34 +111,57 @@ export default function BrainView({ circuit, frame, live }: Props) {
       kenyonColors: null as unknown as THREE.BufferAttribute,
       kenyonSizes: null as unknown as THREE.BufferAttribute,
       lit: new Set<number>(),
-      approach: [] as THREE.MeshStandardMaterial[],
-      avoidance: [] as THREE.MeshStandardMaterial[],
-      antennalLobe: null as THREE.MeshStandardMaterial | null,
+      approach: [] as Tinted[],
+      avoidance: [] as Tinted[],
+      antennalLobe: [] as Tinted[],
       calyxGlow,
       target: { dopamine: 0, aversion: 0, drive: 0 },
     }
 
-    const surface = (name: string) => {
+    /* Abstract, not anatomical. The surfaces are the real ROI meshes, but
+       they are drawn as unlit wireframe over a shell so faint it reads as
+       volume rather than as flesh -- a diagram of a brain rather than a
+       photograph of one. Nothing here is shaded, so nothing looks wet. */
+    const dress = (mesh: THREE.Mesh, name: string) => {
       const approach = APPROACH.has(name)
       const avoidance = AVOIDANCE.has(name)
       const context = CONTEXT.has(name)
-      const material = new THREE.MeshStandardMaterial({
-        color: approach ? 0x3a2a14 : avoidance ? 0x331014 : context ? INK.context : INK.circuit,
-        emissive: approach ? INK.approach : avoidance ? INK.avoidance : 0x000000,
-        emissiveIntensity: 0,
-        roughness: context ? 1.0 : 0.5,
-        metalness: 0.15,
+      const base = new THREE.Color(
+        approach ? INK.approach : avoidance ? INK.avoidance : context ? INK.context : INK.circuit,
+      )
+
+      const fill = new THREE.MeshBasicMaterial({
+        color: base.clone().multiplyScalar(context ? 0.5 : 0.35),
         transparent: true,
-        // The ROI meshes are not watertight and their winding is inverted, so
-        // both faces are drawn rather than trusting the normals.
+        opacity: context ? 0.03 : 0.07,
         side: THREE.DoubleSide,
-        opacity: context ? 0.12 : name === 'calyx' ? 0.16 : 0.92,
-        depthWrite: !context && name !== 'calyx',
+        depthWrite: false,
+        blending: THREE.AdditiveBlending,
       })
-      if (approach) state.approach.push(material)
-      if (avoidance) state.avoidance.push(material)
-      if (name === 'antennal-lobe') state.antennalLobe = material
-      return material
+      mesh.material = fill
+
+      const lines = new THREE.LineSegments(
+        new THREE.WireframeGeometry(mesh.geometry),
+        new THREE.LineBasicMaterial({
+          color: base.clone().multiplyScalar(context ? 0.22 : 0.55),
+          transparent: true,
+          opacity: context ? 0.1 : 0.3,
+          depthWrite: false,
+          blending: THREE.AdditiveBlending,
+        }),
+      )
+      mesh.add(lines)
+
+      const tinted: Tinted = {
+        fill,
+        lines: lines.material as THREE.LineBasicMaterial,
+        base,
+        fillOpacity: fill.opacity,
+        lineOpacity: (lines.material as THREE.LineBasicMaterial).opacity,
+      }
+      if (approach) state.approach.push(tinted)
+      if (avoidance) state.avoidance.push(tinted)
+      if (name === 'antennal-lobe') state.antennalLobe.push(tinted)
     }
 
     const loadPoints = fetch('kenyon-cells.bin').then(async (response) => {
@@ -143,12 +174,13 @@ export default function BrainView({ circuit, frame, live }: Props) {
       .then(([gltf, pool]) => {
         if (disposed) return
 
+        const meshes: THREE.Mesh[] = []
         gltf.scene.traverse((object) => {
-          if (!(object instanceof THREE.Mesh)) return
-          const name = object.name.toLowerCase().replace(/[^a-z-]/g, '')
-          object.material = surface(name)
-          object.geometry.computeVertexNormals()
+          if (object instanceof THREE.Mesh) meshes.push(object)
         })
+        // Collected first: dress() adds a child to each mesh, and mutating the
+        // tree inside traverse() would walk into what it just added.
+        for (const mesh of meshes) dress(mesh, mesh.name.toLowerCase().replace(/[^a-z-]/g, ''))
         scene.add(gltf.scene)
 
         // The build ships a pool; the page takes as many as the fly has.
@@ -250,12 +282,9 @@ export default function BrainView({ circuit, frame, live }: Props) {
       controls.update()
       const pulse = 0.88 + 0.12 * Math.sin(t * 2.7)
       const { dopamine, aversion, drive } = state.target
-      for (const material of state.approach) material.emissiveIntensity = 1.9 * dopamine * pulse
-      for (const material of state.avoidance) material.emissiveIntensity = 1.9 * aversion * pulse
-      if (state.antennalLobe) {
-        state.antennalLobe.emissive.setHex(INK.quiet)
-        state.antennalLobe.emissiveIntensity = 0.5 * drive
-      }
+      tint(state.approach, dopamine * pulse)
+      tint(state.avoidance, aversion * pulse)
+      tint(state.antennalLobe, drive * 0.7)
       state.calyxGlow.intensity = 22 * dopamine * pulse
       renderer.render(scene, camera)
     }

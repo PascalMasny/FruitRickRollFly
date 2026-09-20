@@ -13,6 +13,7 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import StrEnum
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -43,6 +44,7 @@ class Job:
     url: str
     stage: Stage = Stage.QUEUED
     video: dict | None = None
+    media: Path | None = None
     summary: dict | None = None
     error: str | None = None
     events: list[dict] = field(default_factory=list)
@@ -150,13 +152,17 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
     started = time.perf_counter()
     try:
         stage(Stage.RESOLVING)
-        identifier = youtube.video_id(job.url)
+        identifier = youtube.resolve_video_id(job.url)
         video = youtube.describe(identifier, fly_service.CACHE_DIR)
         job.video = video.to_dict()
         emit("video", video=job.video)
 
         stage(Stage.FETCHING)
-        path = youtube.fetch_audio(identifier, fly_service.CACHE_DIR)
+        path = youtube.fetch_media(identifier, fly_service.CACHE_DIR)
+        job.media = path
+        # The player waits for this: the file has to exist before the browser
+        # is told where to find it.
+        emit("media", url=f"/api/analysis/{job.id}/media")
 
         stage(Stage.HEARING)
         brain = fly_service.fly()

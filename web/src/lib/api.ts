@@ -27,6 +27,7 @@ export async function submit(url: string): Promise<{ id: string; events: string 
 export interface StreamHandlers {
   onStage(stage: Stage): void
   onVideo(video: Video): void
+  onMedia(url: string): void
   onHeard(percepts: number, seconds: number): void
   onTimeline(from: number, frames: Frame[]): void
   onSummary(summary: Summary): void
@@ -50,6 +51,9 @@ export function stream(jobId: string, handlers: StreamHandlers): () => void {
   })
   source.addEventListener('video', (event) => {
     handlers.onVideo(JSON.parse((event as MessageEvent).data).video)
+  })
+  source.addEventListener('media', (event) => {
+    handlers.onMedia(JSON.parse((event as MessageEvent).data).url)
   })
   source.addEventListener('heard', (event) => {
     const data = JSON.parse((event as MessageEvent).data)

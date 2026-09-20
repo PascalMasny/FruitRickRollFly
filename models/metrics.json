@@ -43,7 +43,7 @@
     "da_gain": 1.0,
     "da_commit": 0.6,
     "da_burst_seconds": 2.0,
-    "da_burst_confidence": 0.93,
+    "da_burst_confidence": 0.9,
     "da_burst_max_seconds": 25.0,
     "compartments": [
       "approach",

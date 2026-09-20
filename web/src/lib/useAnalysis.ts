@@ -5,6 +5,7 @@ import type { Frame, Stage, Summary, Video } from './types'
 export interface AnalysisState {
   stage: Stage | 'idle'
   video: Video | null
+  mediaUrl: string | null
   frames: Frame[]
   expected: number | null
   summary: Summary | null
@@ -14,6 +15,7 @@ export interface AnalysisState {
 const EMPTY: AnalysisState = {
   stage: 'idle',
   video: null,
+  mediaUrl: null,
   frames: [],
   expected: null,
   summary: null,
@@ -40,6 +42,7 @@ export function useAnalysis() {
       close.current = stream(id, {
         onStage: (stage) => setState((s) => ({ ...s, stage })),
         onVideo: (video) => setState((s) => ({ ...s, video })),
+        onMedia: (mediaUrl) => setState((s) => ({ ...s, mediaUrl })),
         onHeard: (percepts) => setState((s) => ({ ...s, expected: percepts })),
         onTimeline: (from, chunk) =>
           setState((s) => {

@@ -272,11 +272,15 @@ a:hover { color: var(--amber); }
 .side-stats { flex: 1; min-height: 0; }
 
 .video-frame { aspect-ratio: 16 / 9; background: var(--ink-1); border: 1px solid var(--line); }
-.video-frame iframe, .video-frame > div { width: 100%; height: 100%; border: 0; display: block; }
+.video-frame video { width: 100%; height: 100%; display: block; background: #000; }
+.video-pending {
+  width: 100%; height: 100%;
+  display: grid; place-items: center;
+  font-family: var(--mono); font-size: 0.62rem; color: var(--bone-faint);
+}
 .video-meta { display: flex; flex-direction: column; gap: 2px; margin-top: 7px; font-size: 0.7rem; }
 .video-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-decoration: none; }
-.video-channel, .video-blocked { font-family: var(--mono); font-size: 0.6rem; color: var(--bone-faint); }
-.video-blocked { color: var(--amber); }
+.video-channel { font-family: var(--mono); font-size: 0.6rem; color: var(--bone-faint); }
 .video-controls { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
 
 .video-empty {

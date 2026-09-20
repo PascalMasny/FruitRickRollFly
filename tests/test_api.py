@@ -80,3 +80,42 @@ def test_the_build_directory_is_served_whole(client, tmp_path, monkeypatch):
     assert served.get("/favicon.svg").status_code == 200
     # The API still outranks the mount.
     assert served.get("/api/health").json()["ok"] is True
+
+
+def test_a_shortener_is_accepted_and_resolved_later(client, monkeypatch):
+    """It cannot be judged without following it, and following it needs the
+    network, so it is admitted here and refused in the worker if it does not
+    land on YouTube."""
+    import api.routes.analysis as route
+
+    monkeypatch.setattr(route.analysis, "run", lambda job: None)
+    response = client.post("/api/analysis", json={"url": "https://bit.ly/whatever"})
+    assert response.status_code == 202
+
+
+def test_media_is_a_404_until_something_has_been_downloaded(client):
+    # The job is made through the service rather than the endpoint on purpose:
+    # posting would start the real pipeline, and a unit test has no business
+    # downloading a video.
+    from api.services import analysis as service
+
+    job = service.create("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    assert job.media is None
+    assert client.get(f"/api/analysis/{job.id}/media").status_code == 404
+    assert client.get("/api/analysis/nope/media").status_code == 404
+
+
+def test_media_serves_the_downloaded_file(client, tmp_path):
+    """The player reads from here rather than from a YouTube embed, because the
+    uploads worth asking about are the ones that refuse to embed."""
+    from api.services import analysis as service
+
+    job = service.create("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    clip = tmp_path / "clip.mp4"
+    clip.write_bytes(b"\x00\x00\x00\x18ftypmp42not-really-a-video")
+    job.media = clip
+
+    response = client.get(f"/api/analysis/{job.id}/media")
+    assert response.status_code == 200
+    assert response.headers["content-type"] == "video/mp4"
+    assert response.content == clip.read_bytes()
