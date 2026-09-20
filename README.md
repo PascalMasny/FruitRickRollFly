@@ -134,6 +134,7 @@ the song.
 | `api/` | FastAPI app; SSE stream so the browser can watch a track play |
 | `web/` | React frontend; real hemibrain neuropils in three.js, on one screen |
 | `training/meshes.py` | pulls those neuropils out of the hemibrain; a build step, not a runtime one |
+| `brain/eye.py` | a visual pathway: ommatidia, correlators, wide-field cells. Measured, and not shipped — see finding 7 |
 | `docs/BRAIN.md` | what is a fly and what is an engineering choice, number by number |
 | `docs/FINDINGS.md` | what the measurements said, including the unwelcome parts |
 | `models/` | the shipped fly, its metrics, and the out-of-fold traces |

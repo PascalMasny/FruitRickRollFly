@@ -359,6 +359,67 @@ computed that way and should be read as indicative only; the real-audio table
 in 6b was not, and stands. `BrainConfig`'s docstring now says this outright:
 take the config from `FlyBrain.load(...).config`, never from the defaults.
 
+## 7. The fly can watch, and it does not help
+
+The question was whether the fly could be made to *see* the video rather than
+only hear it. The answer is that the pathway works, the biology is sound, and
+the fly learns almost nothing from it.
+
+**What was built.** A Drosophila eye is about 750 ommatidia, so a frame becomes
+a 32x24 hexagonal picture and no amount of wanting will get a face out of it.
+What flies are extraordinary at is time -- flicker fusion near 200 Hz against
+our sixty -- so the pathway is a motion pathway, and the textbook one:
+ommatidia feed Reichardt correlators (a delayed signal from one facet
+multiplied by its neighbour's undelayed one, minus the mirror of that product),
+and those are pooled into twelve wide-field tangential cells standing in for
+the lobula plate. Twelve fields, four directions each, plus twelve flicker
+channels, is sixty a frame -- the ear's number on purpose, so three sub-frames
+makes 180 receptors either way and the same calyx reads either sense.
+
+**What it scored.** Pooled out-of-fold percept AUC, same folds, same circuit,
+same everything but the sense:
+
+| | rendition | unheard upload |
+|---|---|---|
+| ear | **0.780** | **0.971** |
+| eye | 0.621 | 0.631 |
+
+Above a coin flip, and nowhere near enough. `frrf-train` **refused to ship a
+visual fly at all**: no commit rule reaches even a 0.70 specificity floor at
+full upload recall, which is the trainer's own guard working exactly as
+intended. `models/fly_eye.npz` does not exist and the application is unchanged.
+
+**Two things the attempt turned up that were worth the trip.**
+
+*A great many uploads are photographs.* Thirty-eight percent of the positives
+in this corpus are a still cover image with the audio behind it, against
+sixteen percent of the negatives -- so in this corpus **being a still image is
+correlated with being the target**, P(positive | static) = 0.53 against a base
+rate of 0.32. Normalising each video by its own peak activity turned those
+photographs' compression shimmer into something that looked like choreography,
+and the circuit could have learned that correlation and scored for it. It is a
+fact about how the corpus was collected, not about the song. The eye now gates
+on how confident it is that anything moved at all, and a photograph reads
+0.00000 where a music video reads 0.03.
+
+*Training a second sense found a silent corruption in the first.* `load_times`
+read the default feature directory whatever `load_corpus` had been given, so
+training on sight paired the eye's confidences with the ear's clock. It
+happened to crash here because the two have different percept counts. Had they
+matched, it would have produced a plausible, entirely wrong model in silence.
+
+**Why it does not work, as far as the measurement shows.** The motion
+statistics of a 1987 pop video are not very different from the motion
+statistics of other pop videos, at twelve wide-field channels and thirty frames
+a second. The one fold that does well -- extended-mix, AUC 0.948 -- is a
+visualiser with distinctive strobing, which is the pathway recognising an
+upload rather than the song. That is the same failure the ear has, and vision
+makes it worse: a piano cover contains no Rick Astley at all, so sight cannot
+help the rendition case, which is the one that is actually weak.
+
+Kept anyway: `brain/eye.py`, `frrf-watch`, and `models/traces-eye.npz`, because
+the negative result is only worth having if the evidence for it is re-readable.
+
 ---
 
 ## What this points at

@@ -15,6 +15,10 @@ data/audio/*
 !data/audio/.gitkeep
 data/features/*
 !data/features/.gitkeep
+data/video/*
+!data/video/.gitkeep
+data/features-eye/*
+!data/features-eye/.gitkeep
 data/cache/*
 !data/cache/.gitkeep
 

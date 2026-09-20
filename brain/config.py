@@ -152,6 +152,49 @@ certainty would. In practice the useful statistic is how *often* the fly says
 yes, not by how much, and a saturating input curve measures exactly that. It
 is also what neurons do."""
 
+# ── the eye ──────────────────────────────────────────────────────────────────
+
+EYE_COLUMNS = 32
+EYE_ROWS = 24
+"""768 ommatidia, hexagonally arranged, which is about what one Drosophila eye
+has. It is also, deliberately, far too few to see a face: this pathway cannot
+learn what anybody looks like, and the claim it is allowed to make is only ever
+about motion."""
+
+EYE_FPS = 30.0
+"""Engineering, and a compromise the fly would not accept. Flicker fusion in
+Drosophila runs near 200 Hz; ordinary video is 24 to 30, so the sampling rate
+here is set by what YouTube serves rather than by the animal."""
+
+EYE_TAU = 0.05
+"""The delay arm of the correlator, in seconds. A Reichardt detector multiplies
+a delayed signal from one facet by the undelayed signal from its neighbour; the
+time constant sets which speeds it answers to. 50 ms puts the peak response in
+the range of a cut, a camera move and a dance step, which is what a music video
+is made of."""
+
+EYE_ACTIVITY_FLOOR = 0.01
+"""The smallest motion worth calling motion, before per-video normalisation.
+
+A great many uploads of a song are a still photograph with the audio behind
+it, and a still photograph has an honest motion signal of exactly zero. Scaling
+each video by its own peak turns that zero into a division by the noise floor,
+and a JPEG's compression shimmer comes back looking like a dance. Measured on
+this corpus the raw peak is 0.024 for a track that moves and 0.000005 for one
+that does not -- five orders of magnitude, which is the difference between a
+music video and a photograph, and which normalisation without a floor erases
+completely. Below this the video is reported as what it is: nothing happening.
+"""
+
+EYE_FIELDS_X = 4
+EYE_FIELDS_Y = 3
+"""Twelve wide-field tangential cells. The lobula plate pools thousands of
+correlators into a few dozen of these per side -- HS and VS cells -- and twelve
+fields, each reporting four directions, plus twelve flicker channels, comes to
+sixty channels a frame. That is the ear's number, on purpose: three sub-frames
+of sixty is 180 receptors either way, so the same calyx can read either sense
+without knowing which it is looking at."""
+
 DA_STREAK_CONFIDENCE = 0.97
 DA_STREAK_SECONDS = 0.60
 """A third way to commit, and the only one that does not care how long the
@@ -324,6 +367,13 @@ class BrainConfig:
     da_slope: float = DA_SLOPE
     da_gain: float = DA_GAIN
     da_commit: float = DA_COMMIT
+    eye_columns: int = EYE_COLUMNS
+    eye_rows: int = EYE_ROWS
+    eye_fps: float = EYE_FPS
+    eye_tau: float = EYE_TAU
+    eye_activity_floor: float = EYE_ACTIVITY_FLOOR
+    eye_fields_x: int = EYE_FIELDS_X
+    eye_fields_y: int = EYE_FIELDS_Y
     da_streak_confidence: float = DA_STREAK_CONFIDENCE
     da_streak_seconds: float = DA_STREAK_SECONDS
     da_burst_seconds: float = DA_BURST_SECONDS
@@ -331,6 +381,16 @@ class BrainConfig:
     da_burst_max_seconds: float = DA_BURST_MAX_SECONDS
 
     compartments: tuple[str, ...] = field(default=("approach", "avoidance"))
+
+    @property
+    def eye_channels_per_subframe(self) -> int:
+        """Four directions per field, plus one flicker channel per field."""
+        fields = self.eye_fields_x * self.eye_fields_y
+        return fields * 5
+
+    @property
+    def eye_receptors(self) -> int:
+        return self.eye_channels_per_subframe * self.subframes
 
     @property
     def channels_per_subframe(self) -> int:

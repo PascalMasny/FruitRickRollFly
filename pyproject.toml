@@ -36,6 +36,7 @@ frrf-train = "training.train:main"
 frrf-evaluate = "training.evaluate:main"
 frrf-meshes = "training.meshes:main"
 frrf-commitment = "training.commitment:main"
+frrf-watch = "training.watch:main"
 
 [build-system]
 requires = ["hatchling"]

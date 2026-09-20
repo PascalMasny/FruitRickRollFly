@@ -369,10 +369,19 @@ def _seconds(value: float | None) -> str:
     return "never" if value is None else f"{value:.1f}s"
 
 
-def load_times(tracks: list[Track]) -> dict[str, np.ndarray]:
+def load_times(tracks: list[Track], directory: Path | None = None) -> dict[str, np.ndarray]:
+    """Percept times, from the same directory the percepts themselves came from.
+
+    The directory argument is not decoration. This used to read the default
+    feature directory whatever `load_corpus` had been given, so training a
+    second sense paired one sense's confidences with the other's clock -- which
+    is a silent corruption everywhere the two happen to have the same number of
+    percepts, and a crash only where they do not.
+    """
     times = {}
     for track in tracks:
-        with np.load(track.feature_path()) as data:
+        path = track.feature_path() if directory is None else track.feature_path(directory)
+        with np.load(path) as data:
             times[track.id] = data["t"]
     return times
 
@@ -439,6 +448,17 @@ def main(argv: list[str] | None = None) -> int:
             "expect the specificity floor to be unreachable; see docs/FINDINGS.md."
         ),
     )
+    parser.add_argument(
+        "--min-activity", type=float, default=0.0,
+        help=(
+            "drop tracks whose mean receptor activity is below this. For the eye, "
+            "a still-image upload is not a hard example, it is an absent one"
+        ),
+    )
+    parser.add_argument(
+        "--features", type=Path, default=None,
+        help="percept directory; data/features-eye trains the same circuit on sight",
+    )
     parser.add_argument("--out", type=Path, default=MODEL_PATH)
     parser.add_argument("--metrics", type=Path, default=METRICS_PATH)
     parser.add_argument(
@@ -462,8 +482,32 @@ def main(argv: list[str] | None = None) -> int:
     config = BrainConfig(**{k: v for k, v in overrides.items() if v is not None})
 
     manifest = Manifest.load(include_holdout=args.with_holdout)
-    corpus = load_corpus(manifest.trainable())
-    times = load_times(corpus.tracks)
+    trainable = manifest.trainable()
+    if args.min_activity > 0:
+        # A track with no motion carries no visual evidence either way, and in
+        # this corpus being a still image is *correlated with being the target*
+        # -- many Rickroll uploads are audio re-ups over a cover. Left in, the
+        # circuit can learn that correlation, which is a fact about how the
+        # corpus was collected and not about the song.
+        kept = []
+        for track in trainable:
+            path = (
+                track.feature_path() if args.features is None
+                else track.feature_path(args.features)
+            )
+            if not path.exists():
+                continue
+            with np.load(path) as data:
+                if float(data["receptors"].mean()) >= args.min_activity:
+                    kept.append(track)
+        print(f"{len(kept)}/{len(trainable)} tracks above activity {args.min_activity}")
+        trainable = kept
+    corpus = (
+        load_corpus(trainable, args.features)
+        if args.features is not None
+        else load_corpus(trainable)
+    )
+    times = load_times(corpus.tracks, args.features)
     print(
         f"corpus: {len(corpus.target)} percepts from {len(corpus.tracks)} tracks, "
         f"{int((corpus.target > 0).sum())} rickroll / {int((corpus.target < 0).sum())} other"
