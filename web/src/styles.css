@@ -158,27 +158,6 @@ a:hover { color: var(--amber); }
 }
 .brain-hud-soft { color: var(--bone-faint); }
 
-.ear {
-  flex: none;
-  margin-top: 9px;
-  padding-top: 8px;
-  border-top: 1px solid var(--line-soft);
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.ear-canvas { flex: 1; min-width: 0; display: block; width: 100%; }
-.ear-key {
-  font-family: var(--mono);
-  font-size: 0.56rem;
-  line-height: 1.7;
-  color: var(--bone-faint);
-  white-space: nowrap;
-}
-.ear-key b { display: block; font-weight: 400; }
-.ear-key .mel { color: #c9a227; }
-.ear-key .chroma { color: #8a6fb0; }
-
 /* ── the input bar ────────────────────────────────────────────────────────── */
 
 .bar { grid-area: bar; }

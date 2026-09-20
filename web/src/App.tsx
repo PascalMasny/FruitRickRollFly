@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState } from 'react'
 import BrainView from './components/BrainView'
-import Ear from './components/Ear'
 import StageStrip from './components/StageStrip'
 import Stats from './components/Stats'
 import Timeline from './components/Timeline'
@@ -107,22 +106,10 @@ export default function App() {
 
       <section className="panel brain">
         <div className="panel-head">
-          <span className="label">mushroom body</span>
-          <span className="label">right hemisphere, measured</span>
+          <span className="label">kenyon cells</span>
+          <span className="label">5 % firing at a time</span>
         </div>
-        {card && (
-          <>
-            <BrainView circuit={card.circuit} frame={frame} live={Boolean(frame)} />
-            <div className="ear">
-              <Ear circuit={card.circuit} frame={frame} />
-              <div className="ear-key">
-                <b className="mel">{card.circuit.melBands} tonotopic</b>
-                <b className="chroma">{card.circuit.chromaBands} pitch classes</b>
-                <b>&times;{card.circuit.subframes} sub-frames</b>
-              </div>
-            </div>
-          </>
-        )}
+        {card && <BrainView circuit={card.circuit} frame={frame} live={Boolean(frame)} />}
       </section>
 
       <section className="panel bar">

@@ -118,23 +118,20 @@ the song.
 | `docs/FINDINGS.md` | what the measurements said, including the unwelcome parts |
 | `models/` | the shipped fly, its metrics, and the out-of-fold traces |
 
-The interface is one screen and does not scroll. In the middle of it the
-mushroom body turns, and every surface in that scene is measured anatomy: the
-neuropils come from the **Janelia FlyEM hemibrain v1.2 ROI segmentation**, so
-the calyx on screen is the calyx, and the lobes that light up are the lobes
-the output neurons actually read. The 4,000 Kenyon cells are scattered inside
-the real calyx surface — sampled once at build time and rejected against the
-mesh, so a lit cell is lit somewhere a Kenyon cell could be.
+The interface is one screen and does not scroll. In the middle of it are the
+4,000 Kenyon cells, and nothing else — no neuropil surfaces, no receptors, no
+labels on an organ. What is worth watching was never the envelope: it is that
+about two hundred cells are firing at any instant and that which two hundred
+changes completely as the song moves. Each cell keeps a short tail after it
+stops firing, because at eight percepts a second an honest on/off reads as
+flicker and hides exactly that turnover.
 
-Johnston's organ is not in that scene. It sits in the antenna, outside the
-brain and outside the connectome, and inventing one to stand next to measured
-anatomy would undo the point of measuring it; the receptors are drawn flat,
-under the brain, where they can be honest about being a bar chart.
-
-The surfaces are drawn as unlit wireframe over a shell faint enough to read as
-volume: a diagram of a brain rather than a photograph of one. `frrf-meshes`
-regenerates them, and its output is committed, so a clone needs neither the
-extra dependencies nor the download.
+The positions are real. They were sampled inside the **Janelia FlyEM hemibrain
+v1.2** calyx surface and rejected against the mesh, so the cloud is the shape
+of the place these cells actually sit even with the surface no longer drawn.
+`frrf-meshes` regenerates them; the neuropil GLB it also writes is kept in
+`models/` as provenance rather than shipped to a browser that would download
+half a megabyte and never use it.
 
 The video plays from our own copy rather than from a YouTube embed. The
 uploads most worth asking about are very often the ones whose uploader has

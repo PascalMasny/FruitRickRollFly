@@ -101,7 +101,7 @@ def _sample_inside(mesh, count: int, seed: int) -> np.ndarray:
     return points[:count]
 
 
-def build(out_dir: Path, kenyon: int, seed: int, source: str) -> dict:
+def build(out_dir: Path, mesh_dir: Path, kenyon: int, seed: int, source: str) -> dict:
     import trimesh
 
     print(f"fetching {len(ROIS)} neuropil surfaces from the hemibrain")
@@ -122,10 +122,15 @@ def build(out_dir: Path, kenyon: int, seed: int, source: str) -> dict:
         mesh.apply_scale(scale)
 
     out_dir.mkdir(parents=True, exist_ok=True)
+    mesh_dir.mkdir(parents=True, exist_ok=True)
+    # The page draws the cells and not the surfaces, so the GLB is kept as
+    # provenance -- it is where the cell positions came from, and what to load
+    # if the neuropils are ever wanted back -- rather than shipped to a browser
+    # that would download half a megabyte and never use it.
     scene = trimesh.Scene()
     for entry in ROIS:
         scene.add_geometry(meshes[entry["name"]], geom_name=entry["name"])
-    glb = out_dir / "fly-brain.glb"
+    glb = mesh_dir / "fly-brain.glb"
     glb.write_bytes(scene.export(file_type="glb"))
 
     print(f"scattering {kenyon} Kenyon cells inside the calyx")
@@ -148,7 +153,7 @@ def build(out_dir: Path, kenyon: int, seed: int, source: str) -> dict:
             for entry in ROIS
         ],
     }
-    (out_dir / "fly-brain.json").write_text(json.dumps(manifest, indent=2) + "\n")
+    (mesh_dir / "fly-brain.json").write_text(json.dumps(manifest, indent=2) + "\n")
 
     print(f"wrote {glb} ({glb.stat().st_size / 1024:.0f} kB)")
     print(f"wrote {cells} ({cells.stat().st_size / 1024:.0f} kB)")
@@ -157,13 +162,16 @@ def build(out_dir: Path, kenyon: int, seed: int, source: str) -> dict:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    parser.add_argument("--out", type=Path, default=Path("web/public"))
+    parser.add_argument("--out", type=Path, default=Path("web/public"),
+                        help="where the Kenyon cell positions the page loads are written")
+    parser.add_argument("--meshes", type=Path, default=Path("models"),
+                        help="where the neuropil GLB is kept; provenance, not shipped")
     parser.add_argument("--kenyon", type=int, default=8192,
                         help="size of the Kenyon cell pool; the page takes the first N")
     parser.add_argument("--seed", type=int, default=1987)
     parser.add_argument("--source", default=HEMIBRAIN)
     args = parser.parse_args(argv)
-    build(args.out, args.kenyon, args.seed, args.source)
+    build(args.out, args.meshes, args.kenyon, args.seed, args.source)
     return 0
 
 
