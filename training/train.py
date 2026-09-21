@@ -449,6 +449,14 @@ def main(argv: list[str] | None = None) -> int:
         ),
     )
     parser.add_argument(
+        "--sense", choices=("ear", "eye"), default="ear",
+        help="which sense the percepts came from; recorded in the model",
+    )
+    parser.add_argument(
+        "--manifest", type=Path, default=None,
+        help="corpus to train on; frrf-corrections writes one with the fixes folded in",
+    )
+    parser.add_argument(
         "--min-activity", type=float, default=0.0,
         help=(
             "drop tracks whose mean receptor activity is below this. For the eye, "

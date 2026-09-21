@@ -179,12 +179,20 @@ half a megabyte and never use it.
 
 ## Telling it when it is wrong
 
-The page has three tabs. **the fly** is the live one above. **training data**
+The page has four tabs. **the fly** is the live one above. **training data**
 is the corpus, interactively: every track's out-of-fold confidence as a
 5th-to-95th spread, filterable down to the ones it missed and the ones it
 false-alarmed on, which is the fastest way to see what it actually confuses.
+**workshop** is where the flies live: which model answers for which sense,
+and buttons to run the training commands with the log streaming back.
 **notes** is a page to write on, saved to `data/notes.md` so it survives a
 restart and can be committed next to the code it is about.
+
+The workshop starts processes on the machine the server runs on, so the job
+names are a fixed set and their arguments are built from templates on the
+server. Nothing the page sends is concatenated into a command, the model name
+is matched against a pattern that cannot contain a separator, and there is no
+shell anywhere in the path. It is a local tool and it says so.
 
 When the fly gets a video wrong, drag across the response strip to mark where
 the song really is and say which it was. That lands in

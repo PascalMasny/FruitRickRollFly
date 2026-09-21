@@ -11,6 +11,7 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
+from api.services import models
 from brain.model import FlyBrain
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -23,20 +24,41 @@ class UntrainedFly(RuntimeError):
     """No trained model on disk."""
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=4)
+def _load(path: Path) -> FlyBrain:
+    return FlyBrain.load(path)
+
+
 def fly() -> FlyBrain:
-    if not MODEL_PATH.exists():
+    """Whichever ear model is currently chosen."""
+    path = models.active("ear")
+    if path is None:
         raise UntrainedFly(
-            f"no fly at {MODEL_PATH}. Run 'frrf-fetch' then 'frrf-train' first."
+            f"no fly in {models.MODEL_DIR}. Run 'frrf-fetch' then 'frrf-train' first."
         )
-    return FlyBrain.load(MODEL_PATH)
+    return _load(path)
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=4)
+def _metrics(path: Path) -> dict:
+    return json.loads(path.read_text()) if path.exists() else {}
+
+
 def metrics() -> dict:
-    if not METRICS_PATH.exists():
+    """The scores written beside whichever model is in use."""
+    path = models.active("ear")
+    if path is None:
         return {}
-    return json.loads(METRICS_PATH.read_text())
+    beside = path.parent / f"metrics-{path.stem}.json"
+    if not beside.exists() and path.stem == "fly_brain":
+        beside = METRICS_PATH
+    return _metrics(beside)
+
+
+def forget() -> None:
+    """Drop the cached fly, so a new choice or a fresh model is picked up."""
+    _load.cache_clear()
+    _metrics.cache_clear()
 
 
 def _evaluation(block: dict | None) -> dict | None:

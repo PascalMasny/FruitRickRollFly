@@ -13,7 +13,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from api.routes import analysis, brain, health, training
+from api.routes import analysis, brain, health, training, workshop
 
 ROOT = Path(__file__).resolve().parents[1]
 WEB_DIST = ROOT / "web" / "dist"
@@ -48,6 +48,7 @@ def create_app() -> FastAPI:
     app.include_router(brain.router)
     app.include_router(analysis.router)
     app.include_router(training.router)
+    app.include_router(workshop.router)
 
     if WEB_DIST.is_dir():
         # The whole build directory, not just /assets: the frontend also ships

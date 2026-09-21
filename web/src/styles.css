@@ -509,6 +509,75 @@ a:hover { color: var(--amber); }
 .correction-note:focus { outline: none; border-color: var(--amber-dim); }
 .correction-error { color: var(--eye-bright); }
 
+/* ── workshop ─────────────────────────────────────────────────────────────── */
+
+.workshop-scroll { flex: 1; min-height: 0; overflow-y: auto; padding-right: 6px; }
+.workshop .page-title { display: flex; align-items: baseline; gap: 12px; }
+
+.sense { margin-bottom: 18px; }
+.sense-head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-bottom: 4px; margin-bottom: 6px;
+}
+.sense input[type="radio"] { accent-color: var(--amber); }
+
+.options {
+  display: flex; flex-wrap: wrap; gap: 18px; align-items: center;
+  margin: 12px 0 14px;
+  font-family: var(--mono); font-size: 0.62rem; color: var(--bone-dim);
+}
+.options label { display: flex; gap: 7px; align-items: center; }
+.options input[type="number"] {
+  width: 72px; padding: 3px 7px;
+  background: var(--ink-1); border: 1px solid var(--line);
+  color: var(--bone); font-family: var(--mono); font-size: 0.66rem;
+}
+.options input[type="number"]:focus { outline: none; border-color: var(--amber-dim); }
+.options .checkbox input { accent-color: var(--amber); }
+
+.jobs { display: flex; flex-wrap: wrap; gap: 8px; }
+.job {
+  flex: 1 1 200px;
+  max-width: 280px;
+  text-align: left;
+  padding: 9px 11px;
+  background: var(--ink-1);
+  border: 1px solid var(--line);
+  color: var(--bone-dim);
+  cursor: pointer;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.job b {
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 400;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--amber);
+}
+.job span { font-size: 0.66rem; line-height: 1.45; }
+.job:hover:not(:disabled) { border-color: var(--amber-dim); }
+.job:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.run-status {
+  font-family: var(--mono); font-size: 0.6rem; font-weight: 400;
+  letter-spacing: 0.1em; text-transform: uppercase;
+}
+.run-running { color: var(--amber); }
+.run-done { color: var(--wing); }
+.run-failed { color: var(--eye-bright); }
+.run-stopped { color: var(--bone-faint); }
+
+.log {
+  max-height: 44vh;
+  overflow: auto;
+  margin-top: 8px;
+  padding: 10px 12px;
+  background: var(--ink-1);
+  border: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 0.62rem;
+  line-height: 1.6;
+  color: var(--bone-dim);
+  white-space: pre-wrap;
+}
+
 /* ── notes ────────────────────────────────────────────────────────────────── */
 
 .notes { max-width: 760px; }

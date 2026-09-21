@@ -140,3 +140,53 @@ export interface Correction {
   verdict_was: boolean | null
   committed_at: number | null
 }
+
+export interface ModelScores {
+  macroAuc: number | null
+  recall: number | null
+  specificity: number | null
+}
+
+export interface ModelInfo {
+  name: string
+  sense: 'ear' | 'eye'
+  trained: string | null
+  target: string | null
+  tracks: number | null
+  percepts: number | null
+  epochs: number | null
+  kenyonCells: number | null
+  bytes: number
+  scores: Partial<Record<'rendition' | 'upload', ModelScores>> | null
+}
+
+export interface ModelState {
+  models: ModelInfo[]
+  active: Record<string, string | null>
+  senses: string[]
+}
+
+export interface JobKind {
+  name: string
+  label: string
+  describe: string
+}
+
+export interface Run {
+  id: string
+  job: string
+  label: string
+  command: string
+  status: 'running' | 'done' | 'failed' | 'stopped'
+  code: number | null
+  started: number
+  seconds: number
+  lines: number
+  tail?: string[]
+}
+
+export interface JobState {
+  jobs: JobKind[]
+  running: Run | null
+  history: Run[]
+}

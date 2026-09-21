@@ -1,5 +1,8 @@
 import type {
   BrainCard,
+  JobState,
+  ModelState,
+  Run,
   Corpus,
   Correction,
   Frame,
@@ -72,6 +75,42 @@ export async function saveNotes(text: string): Promise<void> {
       body: JSON.stringify({ text }),
     }),
   )
+}
+
+export async function fetchModels(): Promise<ModelState> {
+  return readJson<ModelState>(await fetch('/api/models'))
+}
+
+export async function chooseModel(sense: string, name: string | null): Promise<ModelState> {
+  return readJson<ModelState>(
+    await fetch('/api/models/active', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ sense, name }),
+    }),
+  )
+}
+
+export async function fetchJobs(): Promise<JobState> {
+  return readJson<JobState>(await fetch('/api/jobs'))
+}
+
+export async function startJob(job: string, options: Record<string, unknown>): Promise<Run> {
+  return readJson<Run>(
+    await fetch('/api/jobs', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ job, options }),
+    }),
+  )
+}
+
+export async function fetchRun(id: string, tail = 400): Promise<Run> {
+  return readJson<Run>(await fetch(`/api/jobs/${id}?tail=${tail}`))
+}
+
+export async function stopRun(id: string): Promise<Run> {
+  return readJson<Run>(await fetch(`/api/jobs/${id}/stop`, { method: 'POST' }))
 }
 
 export interface StreamHandlers {

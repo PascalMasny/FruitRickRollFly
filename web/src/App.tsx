@@ -12,13 +12,15 @@ import type { BrainCard } from './lib/types'
 import { useAnalysis } from './lib/useAnalysis'
 import { useFrameAt, useReplay } from './lib/usePlayhead'
 import Notes from './views/Notes'
+import Workshop from './views/Workshop'
 import TrainingData from './views/TrainingData'
 
-type Tab = 'fly' | 'training' | 'notes'
+type Tab = 'fly' | 'corpus' | 'workshop' | 'notes'
 
 const TABS: [Tab, string][] = [
   ['fly', 'the fly'],
-  ['training', 'training data'],
+  ['corpus', 'training data'],
+  ['workshop', 'workshop'],
   ['notes', 'notes'],
 ]
 
@@ -136,7 +138,9 @@ export default function App() {
     return (
       <main className={`shell shell-page ${tab === 'notes' ? 'shell-scroll' : ''}`}>
         {masthead}
-        {tab === 'training' ? <TrainingData /> : <Notes />}
+        {tab === 'corpus' && <TrainingData />}
+        {tab === 'workshop' && <Workshop />}
+        {tab === 'notes' && <Notes />}
       </main>
     )
   }

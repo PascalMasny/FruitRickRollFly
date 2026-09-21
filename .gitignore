@@ -26,6 +26,7 @@ data/cache/*
 data/corrections.jsonl
 data/notes.md
 data/manifest-with-corrections.json
+data/active-models.json
 
 # Runtime
 .DS_Store
