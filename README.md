@@ -139,8 +139,14 @@ the song.
 | `docs/FINDINGS.md` | what the measurements said, including the unwelcome parts |
 | `models/` | the shipped fly, its metrics, and the out-of-fold traces |
 
-The interface is one screen and does not scroll. In the middle of it are the
-4,000 Kenyon cells, and nothing else — no neuropil surfaces, no receptors, no
+The interface is one screen and does not scroll: four panels, being the four
+things worth looking at at once — the cells, the video, the numbers, and the
+animal. That last one is a fly sitting in front of a monitor watching whatever
+was pasted in, on a texture of the very same `<video>` element the panel above
+plays, so the two can never drift apart. It leans towards the screen as the
+dopamine pool fills and its wings go when it commits.
+
+The cells panel holds the 4,000 Kenyon cells, and nothing else — no neuropil surfaces, no receptors, no
 labels on an organ. What is worth watching was never the envelope: it is that
 about two hundred cells are firing at any instant and that which two hundred
 changes completely as the song moves. Each cell keeps a short tail after it

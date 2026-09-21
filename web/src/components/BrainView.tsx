@@ -9,7 +9,7 @@ interface Props {
   live: boolean
 }
 
-const QUIET = new THREE.Color(0x2a2520)
+const QUIET = new THREE.Color(0x6d5f4c)
 const LIT = new THREE.Color(0xf6e8c8)
 const APPROACH = new THREE.Color(0xe0912f)
 const AVOIDANCE = new THREE.Color(0xb3121f)
@@ -103,7 +103,7 @@ export default function BrainView({ circuit, frame, live }: Props) {
           colors[i * 3] = QUIET.r
           colors[i * 3 + 1] = QUIET.g
           colors[i * 3 + 2] = QUIET.b
-          sizes[i] = 0.05
+          sizes[i] = 0.062
         }
 
         const geometry = new THREE.BufferGeometry()
@@ -219,14 +219,14 @@ export default function BrainView({ circuit, frame, live }: Props) {
             if (value !== 0) {
               level[i] = 0
               colors.setXYZ(i, QUIET.r, QUIET.g, QUIET.b)
-              sizes.setX(i, 0.05)
+              sizes.setX(i, 0.062)
             }
             continue
           }
           level[i] = value * keep
           shade.copy(QUIET).lerp(hot, value)
           colors.setXYZ(i, shade.r, shade.g, shade.b)
-          sizes.setX(i, 0.05 + 0.22 * value)
+          sizes.setX(i, 0.062 + 0.24 * value)
         }
         colors.needsUpdate = true
         sizes.needsUpdate = true
