@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import type { Circuit, Frame } from '../lib/types'
 
@@ -74,51 +73,15 @@ export default function BrainView({ circuit, frame, live }: Props) {
     const world = new THREE.Group()
     scene.add(world)
 
-    Promise.all([
-      fetch('kenyon-cells.bin').then(async (response) => {
+    fetch('kenyon-cells.bin')
+      .then(async (response) => {
         if (!response.ok) throw new Error(`kenyon-cells.bin: ${response.status}`)
         return new Float32Array(await response.arrayBuffer())
-      }),
-      // The outline is optional: without it the cells still work, they are
-      // just harder to place.
-      new GLTFLoader().loadAsync('fly-brain-outline.glb').catch(() => null),
-    ])
-      .then(([pool, outline]) => {
+      })
+      .then((pool) => {
         if (disposed) return
         const count = Math.min(circuit.kenyonCells, Math.floor(pool.length / 3))
         const positions = pool.slice(0, count * 3)
-
-        /* The border: the whole brain as a faint wireframe, so the cloud is
-           placeable. A cluster of dots on its own could be anything; inside
-           this it is visibly a calyx, and visibly in one hemisphere of a head
-           that has two enormous eyes. The cells and the outline are written by
-           the same build step in the same frame, so nothing here re-centres
-           them against each other -- the calyx lands where the calyx is. */
-        if (outline) {
-          /* The border: the real neuropils, drawn as soft translucent volumes
-             rather than as wireframe. Wireframe was tried and sixty-three
-             overlapping meshes' worth of internal edges is a tangle you
-             cannot see the cells through; convex hulls were tried and they
-             turn an organ into a polyhedron. Additive shells accumulate where
-             the tissue is deep, which is how an x-ray of a brain looks and
-             how a brain reads. */
-          const shells: THREE.Mesh[] = []
-          outline.scene.traverse((object) => {
-            if (object instanceof THREE.Mesh) shells.push(object)
-          })
-          for (const shell of shells) {
-            const isCalyx = shell.name.toLowerCase().includes('calyx')
-            shell.material = new THREE.MeshBasicMaterial({
-              color: isCalyx ? 0x9a80c8 : 0x4a3a6b,
-              transparent: true,
-              opacity: isCalyx ? 0.1 : 0.04,
-              side: THREE.DoubleSide,
-              depthWrite: false,
-              blending: THREE.AdditiveBlending,
-            })
-          }
-          world.add(outline.scene)
-        }
 
         const colors = new Float32Array(count * 3)
         const sizes = new Float32Array(count)
@@ -173,32 +136,17 @@ export default function BrainView({ circuit, frame, live }: Props) {
            framing the whole brain put the one thing worth looking at in a
            corner. The brain now sits around the cloud instead of the cloud
            sitting in the brain's margin. */
+        /* Framed on the cloud alone. There is no outline to frame against any
+           more: the picture is the cells firing, and everything drawn around
+           them turned out to be something to see past. */
         geometry.computeBoundingSphere()
-        const cells = geometry.boundingSphere
-          ? geometry.boundingSphere.center.clone()
-          : new THREE.Vector3()
-        const bounds = new THREE.Box3().setFromObject(world)
-        // Weighted towards the cells but not on top of them: aiming straight
-        // at the calyx pushed the brain out of the bottom of the frame, and
-        // aiming at the brain put the cells in a corner. This keeps the cloud
-        // high and central with the whole head still around it.
-        const focus = bounds.getCenter(new THREE.Vector3()).lerp(cells, 0.34)
-        const corners = [bounds.min, bounds.max].flatMap((v) => [v.x, v.y, v.z])
-        const reach = Math.max(
-          ...[0, 1].flatMap((i) =>
-            [0, 1].flatMap((j) =>
-              [0, 1].map((k) =>
-                new THREE.Vector3(corners[i * 3], corners[j * 3 + 1], corners[k * 3 + 2])
-                  .distanceTo(focus),
-              ),
-            ),
-          ),
-        )
-        world.position.sub(focus)
-        camera.position.set(reach * 0.32, reach * 0.26, reach * 1.72)
+        const sphere = geometry.boundingSphere
+        const reach = sphere ? sphere.radius : 3
+        if (sphere) world.position.sub(sphere.center)
+        camera.position.set(reach * 0.8, reach * 0.5, reach * 2.1)
         controls.target.set(0, 0, 0)
-        controls.minDistance = reach * 0.35
-        controls.maxDistance = reach * 4
+        controls.minDistance = reach * 0.8
+        controls.maxDistance = reach * 6
 
         rig.current = {
           colors: colorAttr,

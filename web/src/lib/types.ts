@@ -93,3 +93,50 @@ export interface BrainCard {
     commitment: string | null
   }
 }
+
+/** A track in the training corpus, with what the fly made of it out of fold. */
+export interface Spread {
+  p05: number
+  median: number
+  p95: number
+  peak: number
+  percepts: number
+  seconds: number
+}
+
+export interface CorpusTrack {
+  id: string
+  title: string
+  kind: string
+  group: string
+  use: string
+  positive: boolean
+  watchUrl: string
+  spread: Partial<Record<'rendition' | 'upload', Spread>>
+  verdict: Partial<Record<'rendition' | 'upload', { committed: boolean; latency: number | null }>>
+}
+
+export interface Corpus {
+  target: string | null
+  curationRules: unknown
+  tracks: CorpusTrack[]
+  performance: {
+    rendition: Record<string, number>
+    upload: Record<string, number>
+  }
+}
+
+/** A span of a video somebody labelled by hand after the fly got it wrong. */
+export interface Correction {
+  id: string
+  at: string
+  video_id: string
+  label: 'rickroll' | 'not-rickroll'
+  start: number
+  end: number
+  title: string
+  url: string
+  note: string
+  verdict_was: boolean | null
+  committed_at: number | null
+}

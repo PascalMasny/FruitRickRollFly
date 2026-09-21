@@ -6,6 +6,7 @@ interface Props {
   src: string | null
   failed: boolean
   onElement(element: HTMLVideoElement | null): void
+  onPlaying(playing: boolean): void
   onTime(seconds: number): void
   seekTo: number | null
 }
@@ -22,7 +23,15 @@ interface Props {
  * Position is read on an animation frame rather than from `timeupdate`, which
  * fires about four times a second -- too coarse for a brain drawn at eight.
  */
-export default function VideoPreview({ video, src, failed, onElement, onTime, seekTo }: Props) {
+export default function VideoPreview({
+  video,
+  src,
+  failed,
+  onElement,
+  onPlaying,
+  onTime,
+  seekTo,
+}: Props) {
   const element = useRef<HTMLVideoElement | null>(null)
 
   useEffect(() => {
@@ -68,6 +77,9 @@ export default function VideoPreview({ video, src, failed, onElement, onTime, se
             playsInline
             preload="metadata"
             onSeeked={(event) => onTime(event.currentTarget.currentTime)}
+            onPlay={() => onPlaying(true)}
+            onPause={() => onPlaying(false)}
+            onEnded={() => onPlaying(false)}
           />
         ) : (
           <div className="video-pending">

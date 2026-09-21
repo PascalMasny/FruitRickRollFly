@@ -28,6 +28,7 @@ frrf-meshes                      # optional: rebuild the neuropil surfaces (comm
 frrf-train                       # cross-validate, tune the commit rule, ship a fly
 frrf-evaluate                    # draw what cross-validation found
 frrf-insights                    # draw what it was trained on, and write docs/TRAINING.md
+frrf-corrections                 # fold hand-marked spans back into the corpus
 
 cd web && npm install && npm run build && cd ..
 uvicorn api.main:app             # API and frontend on one origin, one process
@@ -138,6 +139,7 @@ the song.
 | `web/` | React frontend; real hemibrain neuropils in three.js, on one screen |
 | `training/meshes.py` | pulls those neuropils out of the hemibrain; a build step, not a runtime one |
 | `brain/eye.py` | a visual pathway: ommatidia, correlators, wide-field cells. Measured, and not shipped — see finding 7 |
+| `training/corrections.py` | folds hand-marked spans back into training data |
 | `docs/BRAIN.md` | what is a fly and what is an engineering choice, number by number |
 | `docs/FINDINGS.md` | what the measurements said, including the unwelcome parts |
 | `docs/TRAINING.md` | what the fly was trained on, drawn: the corpus, every track's spread, and sound against sight |
@@ -174,6 +176,33 @@ of the place these cells actually sit even with the surface no longer drawn.
 `frrf-meshes` regenerates them; the neuropil GLB it also writes is kept in
 `models/` as provenance rather than shipped to a browser that would download
 half a megabyte and never use it.
+
+## Telling it when it is wrong
+
+The page has three tabs. **the fly** is the live one above. **training data**
+is the corpus, interactively: every track's out-of-fold confidence as a
+5th-to-95th spread, filterable down to the ones it missed and the ones it
+false-alarmed on, which is the fastest way to see what it actually confuses.
+**notes** is a page to write on, saved to `data/notes.md` so it survives a
+restart and can be committed next to the code it is about.
+
+When the fly gets a video wrong, drag across the response strip to mark where
+the song really is and say which it was. That lands in
+`data/corrections.jsonl` as an append-only log — append-only because the
+history of what was said about a video is itself worth keeping — and
+`frrf-corrections` turns each span into cached percepts and writes a merged
+manifest:
+
+```bash
+frrf-corrections
+frrf-train --manifest data/manifest-with-corrections.json
+```
+
+Each correction is its own fold group, keyed on the video it came from, so two
+spans of one video can never be split across a fold boundary. These are the
+most useful labels the project can get: nobody bothers to correct a case the
+fly already handles, so every one of them is out of distribution by
+definition.
 
 The verdict does not wait for the picture. The fly needs the audio and nothing
 else, so the audio is fetched first — in the same call that returns the title,

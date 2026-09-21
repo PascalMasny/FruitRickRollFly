@@ -481,7 +481,11 @@ def main(argv: list[str] | None = None) -> int:
     }
     config = BrainConfig(**{k: v for k, v in overrides.items() if v is not None})
 
-    manifest = Manifest.load(include_holdout=args.with_holdout)
+    manifest = (
+        Manifest.load(args.manifest, include_holdout=args.with_holdout)
+        if args.manifest is not None
+        else Manifest.load(include_holdout=args.with_holdout)
+    )
     trainable = manifest.trainable()
     if args.min_activity > 0:
         # A track with no motion carries no visual evidence either way, and in

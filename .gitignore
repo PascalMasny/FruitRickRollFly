@@ -22,6 +22,11 @@ data/features-eye/*
 data/cache/*
 !data/cache/.gitkeep
 
+# Corrections and notes are the user's, and the merged manifest is derived
+data/corrections.jsonl
+data/notes.md
+data/manifest-with-corrections.json
+
 # Runtime
 .DS_Store
 *.log

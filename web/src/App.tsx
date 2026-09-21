@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
 import BrainView from './components/BrainView'
+import CorrectionBar from './components/CorrectionBar'
 import FlyView from './components/FlyView'
 import StageStrip from './components/StageStrip'
 import Stats from './components/Stats'
@@ -10,14 +11,27 @@ import { fetchBrain } from './lib/api'
 import type { BrainCard } from './lib/types'
 import { useAnalysis } from './lib/useAnalysis'
 import { useFrameAt, useReplay } from './lib/usePlayhead'
+import Notes from './views/Notes'
+import TrainingData from './views/TrainingData'
+
+type Tab = 'fly' | 'training' | 'notes'
+
+const TABS: [Tab, string][] = [
+  ['fly', 'the fly'],
+  ['training', 'training data'],
+  ['notes', 'notes'],
+]
 
 export default function App() {
+  const [tab, setTab] = useState<Tab>('fly')
   const [card, setCard] = useState<BrainCard | null>(null)
   const [cardError, setCardError] = useState<string | null>(null)
   const analysis = useAnalysis()
   const [videoTime, setVideoTime] = useState(0)
   const [seekTo, setSeekTo] = useState<number | null>(null)
   const [player, setPlayer] = useState<HTMLVideoElement | null>(null)
+  const [playing, setPlaying] = useState(false)
+  const [span, setSpan] = useState<[number, number] | null>(null)
 
   const duration = analysis.frames.length
     ? (analysis.frames[analysis.frames.length - 1]?.t ?? 0)
@@ -37,6 +51,8 @@ export default function App() {
   useEffect(() => {
     if (analysis.stage === 'queued') {
       setVideoTime(0)
+      setPlaying(false)
+      setSpan(null)
       replay.stop()
     }
     // replay is stable enough for this; only the stage transition matters.
@@ -61,6 +77,47 @@ export default function App() {
   const busy = ['queued', 'resolving', 'fetching', 'hearing', 'judging'].includes(analysis.stage)
   const committed = Boolean(analysis.summary?.verdict)
 
+  const masthead = (
+    <header className="masthead">
+      <div>
+        <h1>
+          Fruit<span className="accent">Rick</span>Roll<span className="accent">Fly</span>
+        </h1>
+        <p className="tagline">A Drosophila mushroom body that has learned exactly one song.</p>
+      </div>
+      <nav className="tabs">
+        {TABS.map(([key, label]) => (
+          <button
+            key={key}
+            type="button"
+            className={`tab ${tab === key ? 'tab-on' : ''}`}
+            onClick={() => setTab(key)}
+          >
+            {label}
+          </button>
+        ))}
+      </nav>
+      {card && tab === 'fly' && (
+        <dl className="masthead-meta">
+          <div>
+            <dt>target</dt>
+            <dd>{card.target}</dd>
+          </div>
+          <div>
+            <dt>corpus</dt>
+            <dd>
+              {card.corpus.tracks} tracks, {card.corpus.percepts?.toLocaleString()} percepts
+            </dd>
+          </div>
+          <div>
+            <dt>trained</dt>
+            <dd>{card.trained}</dd>
+          </div>
+        </dl>
+      )}
+    </header>
+  )
+
   if (cardError) {
     return (
       <main className="shell" style={{ display: 'grid', placeItems: 'center' }}>
@@ -75,36 +132,18 @@ export default function App() {
     )
   }
 
+  if (tab !== 'fly') {
+    return (
+      <main className={`shell shell-page ${tab === 'notes' ? 'shell-scroll' : ''}`}>
+        {masthead}
+        {tab === 'training' ? <TrainingData /> : <Notes />}
+      </main>
+    )
+  }
+
   return (
     <main className="shell">
-      <header className="masthead">
-        <div>
-          <h1>
-            Fruit<span className="accent">Rick</span>Roll<span className="accent">Fly</span>
-          </h1>
-          <p className="tagline">
-            A Drosophila mushroom body that has learned exactly one song.
-          </p>
-        </div>
-        {card && (
-          <dl className="masthead-meta">
-            <div>
-              <dt>target</dt>
-              <dd>{card.target}</dd>
-            </div>
-            <div>
-              <dt>corpus</dt>
-              <dd>
-                {card.corpus.tracks} tracks, {card.corpus.percepts?.toLocaleString()} percepts
-              </dd>
-            </div>
-            <div>
-              <dt>trained</dt>
-              <dd>{card.trained}</dd>
-            </div>
-          </dl>
-        )}
-      </header>
+      {masthead}
 
       <section className="panel bar">
         <UrlInput onSubmit={analysis.run} busy={busy} disabled={!card} />
@@ -139,6 +178,7 @@ export default function App() {
               src={analysis.mediaUrl}
               failed={analysis.mediaFailed}
               onElement={setPlayer}
+              onPlaying={setPlaying}
               onTime={onTime}
               seekTo={seekTo}
             />
@@ -178,22 +218,39 @@ export default function App() {
           <span className="label">the animal</span>
           <span className="label">Drosophila melanogaster</span>
         </div>
-        <FlyView video={player} dopamine={frame?.dopamine ?? 0} committed={committed} />
+        <FlyView
+          video={player}
+          dopamine={frame?.dopamine ?? 0}
+          committed={committed}
+          playing={playing || replay.running}
+        />
       </section>
 
       <section className="panel time">
         <div className="panel-head">
           <span className="label">the whole response</span>
-          <span className="label">click to seek</span>
+          <span className="label">click to seek &middot; drag to correct</span>
         </div>
         {card && analysis.frames.length > 0 ? (
-          <Timeline
-            frames={analysis.frames}
-            summary={analysis.summary}
-            at={at}
-            commitThreshold={card.circuit.commitThreshold}
-            onSeek={seek}
-          />
+          <>
+            <Timeline
+              frames={analysis.frames}
+              summary={analysis.summary}
+              at={at}
+              commitThreshold={card.circuit.commitThreshold}
+              onSeek={seek}
+              span={span}
+              onSpan={setSpan}
+            />
+            {analysis.video && (
+              <CorrectionBar
+                video={analysis.video}
+                summary={analysis.summary}
+                span={span}
+                onClear={() => setSpan(null)}
+              />
+            )}
+          </>
         ) : (
           <p className="hint">
             {card?.performance.unheardUpload && card.performance.unheardRendition

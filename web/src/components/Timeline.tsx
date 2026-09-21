@@ -1,3 +1,4 @@
+import { useRef, useState } from 'react'
 import type { Frame, Summary } from '../lib/types'
 
 interface Props {
@@ -6,6 +7,9 @@ interface Props {
   at: number
   commitThreshold: number
   onSeek(seconds: number): void
+  /** A span dragged across the strip, for correcting what the fly said. */
+  span?: [number, number] | null
+  onSpan?(span: [number, number] | null): void
 }
 
 const W = 1000
@@ -29,7 +33,21 @@ function path(frames: Frame[], pick: (f: Frame) => number, span: number): string
  * Clicking it seeks, so the video and the fly stay locked together whichever
  * one you drive.
  */
-export default function Timeline({ frames, summary, at, commitThreshold, onSeek }: Props) {
+export default function Timeline({
+  frames,
+  summary,
+  at,
+  commitThreshold,
+  onSeek,
+  span = null,
+  onSpan,
+}: Props) {
+  /* Click seeks, drag marks. The two are told apart by distance rather than
+     by a modifier key, because a modifier is a thing to remember and four
+     pixels is not. */
+  const anchor = useRef<number | null>(null)
+  const [dragging, setDragging] = useState<[number, number] | null>(null)
+
   const dense = frames.filter(Boolean)
   if (dense.length === 0) return null
   const duration = dense[dense.length - 1].t
@@ -39,9 +57,34 @@ export default function Timeline({ frames, summary, at, commitThreshold, onSeek 
       <svg
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
-        onClick={(event) => {
+        onPointerDown={(event) => {
+          if (!onSpan) return
           const box = event.currentTarget.getBoundingClientRect()
-          onSeek(((event.clientX - box.left) / box.width) * duration)
+          anchor.current = ((event.clientX - box.left) / box.width) * duration
+          event.currentTarget.setPointerCapture(event.pointerId)
+        }}
+        onPointerMove={(event) => {
+          if (anchor.current == null) return
+          const box = event.currentTarget.getBoundingClientRect()
+          const here = ((event.clientX - box.left) / box.width) * duration
+          if (Math.abs(here - anchor.current) * (box.width / duration) < 4) return
+          setDragging([Math.min(anchor.current, here), Math.max(anchor.current, here)])
+        }}
+        onPointerUp={(event) => {
+          const start = anchor.current
+          anchor.current = null
+          const box = event.currentTarget.getBoundingClientRect()
+          const here = ((event.clientX - box.left) / box.width) * duration
+          if (start == null) return
+          if (dragging) {
+            onSpan?.([
+              Math.max(0, Math.min(start, here)),
+              Math.min(duration, Math.max(start, here)),
+            ])
+            setDragging(null)
+          } else {
+            onSeek(here)
+          }
         }}
         role="slider"
         aria-label="Response timeline; click to seek"
@@ -51,6 +94,15 @@ export default function Timeline({ frames, summary, at, commitThreshold, onSeek 
         tabIndex={0}
       >
         <line x1="0" y1={H / 2} x2={W} y2={H / 2} className="tl-grid" />
+        {(dragging ?? span) && (
+          <rect
+            x={((dragging ?? span)![0] / duration) * W}
+            y="0"
+            width={(((dragging ?? span)![1] - (dragging ?? span)![0]) / duration) * W}
+            height={H}
+            className="tl-span"
+          />
+        )}
         <line
           x1="0"
           y1={H - commitThreshold * H}

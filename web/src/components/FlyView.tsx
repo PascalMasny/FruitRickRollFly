@@ -6,6 +6,8 @@ interface Props {
   /** Dopamine, 0..1. The fly leans in when it starts to recognise the song. */
   dopamine: number
   committed: boolean
+  /** Whether the video is actually running. Nothing moves when it is not. */
+  playing: boolean
 }
 
 const CHITIN = 0xb08850
@@ -26,7 +28,7 @@ const WING_REST = 0.62
  * doing this work is a few millimetres of insect, and it leans towards the
  * screen as its dopamine rises.
  */
-export default function FlyView({ video, dopamine, committed }: Props) {
+export default function FlyView({ video, dopamine, committed, playing }: Props) {
   const host = useRef<HTMLDivElement>(null)
   const rig = useRef<{
     fly: THREE.Group
@@ -36,7 +38,7 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     staticMaterial: THREE.ShaderMaterial
     screenMaterial: THREE.MeshBasicMaterial
     live: boolean
-    target: { dopamine: number; committed: boolean }
+    target: { dopamine: number; committed: boolean; playing: boolean }
   } | null>(null)
 
   useEffect(() => {
@@ -111,21 +113,47 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     })
     const screenMaterial = new THREE.MeshBasicMaterial({ color: 0x0b0b0b })
     const monitor = new THREE.Group()
-    const screen = new THREE.Mesh(new THREE.PlaneGeometry(3.1, 1.74), staticMaterial)
-    screen.position.y = 0.95
+
+    /* A CRT, which means a tube: the picture sits on a bulged glass face, the
+       cabinet tapers back towards the neck, and the whole thing is deep
+       rather than flat. Four to three, because a set this shape never was
+       anything else. */
+    const glass = new THREE.PlaneGeometry(2.5, 1.88, 14, 11)
+    const vertices = glass.attributes.position
+    for (let i = 0; i < vertices.count; i += 1) {
+      const u = vertices.getX(i) / 1.25
+      const v = vertices.getY(i) / 0.94
+      vertices.setZ(i, 0.2 * (1 - 0.55 * u * u - 0.55 * v * v))
+    }
+    glass.computeVertexNormals()
+    const screen = new THREE.Mesh(glass, staticMaterial)
+    screen.position.set(0, 0.95, 0.12)
     monitor.add(screen)
-    const bezel = new THREE.Mesh(
-      new THREE.PlaneGeometry(3.32, 1.98),
-      new THREE.MeshBasicMaterial({ color: 0x17130f }),
-    )
-    bezel.position.set(0, 0.95, -0.02)
+
+    const caseMaterial = new THREE.MeshStandardMaterial({
+      color: 0x2b2722, roughness: 0.75, metalness: 0.05, flatShading: true,
+    })
+    const bezel = new THREE.Mesh(new THREE.BoxGeometry(2.96, 2.34, 0.34), caseMaterial)
+    bezel.position.set(0, 0.95, -0.06)
     monitor.add(bezel)
-    const stand = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.05, 0.3, 0.42, 5),
-      new THREE.MeshStandardMaterial({ color: 0x1d1a16, roughness: 0.7 }),
-    )
-    stand.position.set(0, -0.2, -0.05)
-    monitor.add(stand)
+    const tube = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 0.62, 1.9, 4), caseMaterial)
+    tube.rotation.set(Math.PI / 2, Math.PI / 4, 0)
+    tube.position.set(0, 0.95, -1.18)
+    monitor.add(tube)
+
+    const knobMaterial = new THREE.MeshStandardMaterial({
+      color: 0x100e0c, roughness: 0.6, flatShading: true,
+    })
+    for (let i = 0; i < 2; i += 1) {
+      const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.1, 6), knobMaterial)
+      knob.rotation.x = Math.PI / 2
+      knob.position.set(1.2, 0.42 - i * 0.3, 0.12)
+      monitor.add(knob)
+    }
+
+    const feet = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.16, 1.8), caseMaterial)
+    feet.position.set(0, -0.3, -0.5)
+    monitor.add(feet)
     monitor.position.set(1.85, -0.2, -0.5)
     monitor.rotation.y = -0.62
     scene.add(monitor)
@@ -266,7 +294,7 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     const state = {
       fly, screen, glow, wings, staticMaterial, screenMaterial,
       live: false,
-      target: { dopamine: 0, committed: false },
+      target: { dopamine: 0, committed: false, playing: false },
     }
     rig.current = state
 
@@ -288,21 +316,25 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     const tick = () => {
       raf = requestAnimationFrame(tick)
       const t = clock.getElapsedTime()
-      const { dopamine: da, committed: sure } = state.target
+      const { dopamine: da, committed: sure, playing: running } = state.target
 
       // Leans towards the screen as the pool fills, and its wings go when it
       // is certain. A fly that likes something does not sit still.
       // Leans along its own line of sight towards the monitor.
-      // Leaning in means moving along its own line of sight, not along x.
-      state.fly.position.x = perch.x + lean.x * da
-      state.fly.position.z = perch.z + lean.z * da
-      state.fly.position.y = perch.y + 0.03 * Math.sin(t * 2.2)
-      state.fly.rotation.z = 0.05 * Math.sin(t * 1.7) * (0.3 + da)
+      /* Still unless something is playing. An animal bobbing at a dead
+         screen reads as restless, or as a glitch; attention is the thing
+         being drawn here, and attention has an object. Leaning in moves
+         along its own line of sight rather than along x. */
+      const alive = running ? 1 : 0
+      state.fly.position.x = perch.x + lean.x * da * alive
+      state.fly.position.z = perch.z + lean.z * da * alive
+      state.fly.position.y = perch.y + 0.03 * Math.sin(t * 2.2) * alive
+      state.fly.rotation.z = 0.05 * Math.sin(t * 1.7) * (0.3 + da) * alive
       // Still until it is sure. A fly that is merely suspicious sits there;
       // the wings are what it does about a Rickroll, so they are reserved for
       // one rather than spent on the approach.
-      const beat = sure ? 26 : 0
-      const amplitude = sure ? 0.5 : 0
+      const beat = sure && running ? 26 : 0
+      const amplitude = sure && running ? 0.5 : 0
       const flap = WING_REST + Math.sin(t * beat) * amplitude
       state.wings[0].rotation.x = flap
       state.wings[1].rotation.x = flap
@@ -362,7 +394,8 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     if (!state) return
     state.target.dopamine = Math.max(0, Math.min(1, dopamine))
     state.target.committed = committed
-  }, [dopamine, committed])
+    state.target.playing = playing
+  }, [dopamine, committed, playing])
 
   return <div ref={host} className="fly-host" />
 }

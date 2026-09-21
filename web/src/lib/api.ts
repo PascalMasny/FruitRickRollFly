@@ -1,4 +1,12 @@
-import type { BrainCard, Frame, Stage, Summary, Video } from './types'
+import type {
+  BrainCard,
+  Corpus,
+  Correction,
+  Frame,
+  Stage,
+  Summary,
+  Video,
+} from './types'
 
 export class ApiError extends Error {}
 
@@ -20,6 +28,48 @@ export async function submit(url: string): Promise<{ id: string; events: string 
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ url }),
+    }),
+  )
+}
+
+export async function fetchCorpus(): Promise<Corpus> {
+  return readJson<Corpus>(await fetch('/api/corpus'))
+}
+
+export async function fetchCorrections(): Promise<{ count: number; corrections: Correction[] }> {
+  return readJson(await fetch('/api/corrections'))
+}
+
+export async function postCorrection(body: {
+  videoId: string
+  label: 'rickroll' | 'not-rickroll'
+  start: number
+  end: number
+  title?: string
+  url?: string
+  note?: string
+  verdictWas?: boolean | null
+  committedAt?: number | null
+}): Promise<Correction> {
+  return readJson<Correction>(
+    await fetch('/api/corrections', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    }),
+  )
+}
+
+export async function fetchNotes(): Promise<string> {
+  return (await readJson<{ text: string }>(await fetch('/api/notes'))).text
+}
+
+export async function saveNotes(text: string): Promise<void> {
+  await readJson(
+    await fetch('/api/notes', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
     }),
   )
 }

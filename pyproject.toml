@@ -38,6 +38,7 @@ frrf-meshes = "training.meshes:main"
 frrf-commitment = "training.commitment:main"
 frrf-watch = "training.watch:main"
 frrf-insights = "training.insights:main"
+frrf-corrections = "training.corrections:main"
 
 [build-system]
 requires = ["hatchling"]
