@@ -95,18 +95,22 @@ export default function BrainView({ circuit, frame, live }: Props) {
            the same build step in the same frame, so nothing here re-centres
            them against each other -- the calyx lands where the calyx is. */
         if (outline) {
+          /* The border: the real neuropils, drawn as soft translucent volumes
+             rather than as wireframe. Wireframe was tried and sixty-three
+             overlapping meshes' worth of internal edges is a tangle you
+             cannot see the cells through; convex hulls were tried and they
+             turn an organ into a polyhedron. Additive shells accumulate where
+             the tissue is deep, which is how an x-ray of a brain looks and
+             how a brain reads. */
           outline.scene.traverse((object) => {
             if (!(object instanceof THREE.Mesh)) return
-            const lines = new THREE.LineSegments(
-              new THREE.WireframeGeometry(object.geometry),
-              new THREE.LineBasicMaterial({
-                color: 0x8a7aa8, transparent: true, opacity: 0.3, depthWrite: false,
-              }),
-            )
-            world.add(lines)
             object.material = new THREE.MeshBasicMaterial({
-              color: 0x231a33, transparent: true, opacity: 0.22,
-              side: THREE.BackSide, depthWrite: false,
+              color: 0x4a3a6b,
+              transparent: true,
+              opacity: 0.055,
+              side: THREE.DoubleSide,
+              depthWrite: false,
+              blending: THREE.AdditiveBlending,
             })
           })
           world.add(outline.scene)

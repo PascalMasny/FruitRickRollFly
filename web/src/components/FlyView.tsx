@@ -78,7 +78,7 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     bezel.position.set(0, 0.95, -0.02)
     monitor.add(bezel)
     const stand = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.05, 0.3, 0.42, 6),
+      new THREE.CylinderGeometry(0.05, 0.3, 0.42, 5),
       new THREE.MeshStandardMaterial({ color: 0x1d1a16, roughness: 0.7 }),
     )
     stand.position.set(0, -0.2, -0.05)
@@ -103,23 +103,23 @@ export default function FlyView({ video, dopamine, committed }: Props) {
         color: colour, roughness: rough, metalness: 0.25, flatShading: true,
       })
 
-    const abdomen = new THREE.Mesh(new THREE.IcosahedronGeometry(0.42, 1), shell(CHITIN_DARK))
+    const abdomen = new THREE.Mesh(new THREE.IcosahedronGeometry(0.46, 0), shell(CHITIN_DARK))
     abdomen.scale.set(0.78, 0.72, 1.55)
     abdomen.position.set(0, 0, 0.62)
     fly.add(abdomen)
     // The bands a Drosophila abdomen actually has.
     for (let i = 0; i < 3; i += 1) {
-      const band = new THREE.Mesh(new THREE.TorusGeometry(0.3 - i * 0.03, 0.035, 4, 10), shell(0x3a2a14))
+      const band = new THREE.Mesh(new THREE.TorusGeometry(0.3 - i * 0.03, 0.04, 3, 8), shell(0x3a2a14))
       band.rotation.y = Math.PI / 2
       band.position.set(0, 0.02, 0.38 + i * 0.26)
       fly.add(band)
     }
 
-    const thorax = new THREE.Mesh(new THREE.IcosahedronGeometry(0.4, 1), shell(CHITIN))
+    const thorax = new THREE.Mesh(new THREE.IcosahedronGeometry(0.42, 0), shell(CHITIN))
     thorax.scale.set(1.0, 0.95, 1.1)
     fly.add(thorax)
 
-    const head = new THREE.Mesh(new THREE.IcosahedronGeometry(0.3, 1), shell(0xa07a44))
+    const head = new THREE.Mesh(new THREE.IcosahedronGeometry(0.32, 0), shell(0xa07a44))
     head.position.set(0, 0.1, -0.44)
     fly.add(head)
 
@@ -131,14 +131,14 @@ export default function FlyView({ video, dopamine, committed }: Props) {
       emissiveIntensity: 0.18, flatShading: true,
     })
     for (const side of [-1, 1]) {
-      const eye = new THREE.Mesh(new THREE.IcosahedronGeometry(0.235, 1), eyeMaterial)
+      const eye = new THREE.Mesh(new THREE.IcosahedronGeometry(0.25, 0), eyeMaterial)
       eye.position.set(side * 0.2, 0.13, -0.45)
       eye.scale.set(0.9, 1.05, 1.0)
       fly.add(eye)
     }
     for (const side of [-1, 1]) {
       const arista = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.012, 0.004, 0.34, 4),
+        new THREE.CylinderGeometry(0.014, 0.004, 0.34, 3),
         shell(0x2a2018, 0.9),
       )
       arista.position.set(side * 0.09, 0.3, -0.58)
@@ -151,16 +151,16 @@ export default function FlyView({ video, dopamine, committed }: Props) {
        door is the consequence. */
     const padMaterial = shell(0x1b1b1f, 0.8)
     const bandMaterial = shell(0x2c2c33, 0.6)
-    const band = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.032, 4, 12, Math.PI), bandMaterial)
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.038, 3, 7, Math.PI), bandMaterial)
     band.position.set(0, 0.22, -0.46)
     band.rotation.set(0.35, Math.PI / 2, 0)
     fly.add(band)
     for (const side of [-1, 1]) {
-      const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.13, 0.09, 6), padMaterial)
+      const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.135, 0.1, 5), padMaterial)
       cup.position.set(side * 0.3, -0.06, -0.6)
       cup.rotation.set(0, 0, Math.PI / 2)
       fly.add(cup)
-      const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.34, 4), bandMaterial)
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.34, 3), bandMaterial)
       arm.position.set(side * 0.31, 0.1, -0.53)
       arm.rotation.set(-0.5, 0, 0)
       fly.add(arm)
@@ -180,11 +180,18 @@ export default function FlyView({ video, dopamine, committed }: Props) {
       pivot.rotation.set(WING_REST, -0.95, 0)
       pivot.scale.x = side
 
+      // An explicit six-sided wing rather than a subdivided curve: at this
+      // facet count a bezier collapses into a sliver, and a flat polygon is
+      // what low poly means anyway.
       const shape = new THREE.Shape()
       shape.moveTo(0, 0)
-      shape.bezierCurveTo(0.3, 0.3, 0.85, 0.34, 1.05, 0.05)
-      shape.bezierCurveTo(0.85, -0.2, 0.35, -0.2, 0, 0)
-      const wing = new THREE.Mesh(new THREE.ShapeGeometry(shape, 18), wingMaterial)
+      shape.lineTo(0.3, 0.26)
+      shape.lineTo(0.78, 0.24)
+      shape.lineTo(1.05, 0.02)
+      shape.lineTo(0.72, -0.19)
+      shape.lineTo(0.28, -0.17)
+      shape.closePath()
+      const wing = new THREE.Mesh(new THREE.ShapeGeometry(shape), wingMaterial)
       wing.rotation.x = -Math.PI / 2
       wing.scale.setScalar(0.92)
       pivot.add(wing)
@@ -192,7 +199,7 @@ export default function FlyView({ video, dopamine, committed }: Props) {
       // An outline, because a transparent membrane seen nearly edge-on in a
       // dark room is otherwise not there at all.
       const outline = new THREE.LineLoop(
-        new THREE.BufferGeometry().setFromPoints(shape.getPoints(40)),
+        new THREE.BufferGeometry().setFromPoints(shape.getPoints()),
         new THREE.LineBasicMaterial({ color: 0xbcd2e8, transparent: true, opacity: 0.55 }),
       )
       outline.rotation.x = -Math.PI / 2
@@ -206,7 +213,7 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     const legMaterial = shell(0x2f2415, 0.85)
     for (const side of [-1, 1]) {
       for (let i = 0; i < 3; i += 1) {
-        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.012, 0.62, 4), legMaterial)
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.026, 0.012, 0.62, 3), legMaterial)
         leg.position.set(side * 0.34, -0.3, -0.24 + i * 0.32)
         leg.rotation.set(0.25 - i * 0.22, 0, side * (0.75 + i * 0.08))
         fly.add(leg)

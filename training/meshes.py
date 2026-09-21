@@ -156,39 +156,24 @@ def build_outline(volume, out_dir: Path, centre: np.ndarray, scale: float) -> di
     else:
         midline = float(np.concatenate([p.vertices[:, 0] for p in pieces.values()]).max())
 
-    optic = {"ME(R)", "LO(R)", "LOP(R)", "AME(R)"}
+    # The real neuropil shapes, not their convex hulls. Hulls were tried and
+    # they turn an organ into a polyhedron: every concavity that makes a brain
+    # look like a brain is exactly what a hull throws away. These are the
+    # measured surfaces, drawn softly enough that the internal boundaries
+    # never become a wireframe tangle.
+    parts = list(pieces.values())
 
-    def hull(names: list[str], flip: bool = False):
-        cloud = np.concatenate([pieces[n].vertices for n in names if n in pieces])
-        if flip:
-            cloud = cloud.copy()
-            cloud[:, 0] = 2.0 * midline - cloud[:, 0]
-        return trimesh.Trimesh(vertices=cloud).convex_hull
-
-    # Three hulls, not sixty-three wireframes. Drawing every neuropil's own
-    # edges produced a tangle you could not see the cells through; the shape
-    # that says "fly" is the silhouette -- a central mass with an enormous eye
-    # on either side -- and three convex hulls carry exactly that and nothing
-    # else.
-    central = [n for n in pieces if n not in optic]
-
-    def mirrored_cloud(names: list[str]) -> np.ndarray:
-        """Both halves of a set, so a partial volume reads as a whole brain."""
-        cloud = np.concatenate([pieces[n].vertices for n in names if n in pieces])
-        other = cloud.copy()
-        other[:, 0] = 2.0 * midline - other[:, 0]
-        return np.concatenate([cloud, other])
-
-    # The central mass gets mirrored too. The hemibrain is a partial volume --
-    # mostly one hemisphere, with only slivers of the other -- so reflecting
-    # just the optic lobes left them floating a hemisphere's width away from a
-    # central brain that stopped at the midline.
-    parts = [
-        trimesh.Trimesh(vertices=mirrored_cloud(central)).convex_hull,
-        hull(sorted(optic)),
-        hull(sorted(optic), flip=True),
-    ]
-    mirrored = sorted(n for n in MIRROR if n in pieces)
+    # And the whole thing is mirrored, because the hemibrain is a partial
+    # volume: mostly one hemisphere with only slivers of the other, plus a
+    # single optic lobe. Reflected, it reads as the brain it came out of.
+    # Reflections are not measurements, which is why this file is only ever
+    # used for an outline and never for anything the fly is scored on.
+    for piece in list(parts):
+        flipped = piece.copy()
+        flipped.vertices[:, 0] = 2.0 * midline - flipped.vertices[:, 0]
+        flipped.invert()
+        parts.append(flipped)
+    mirrored = sorted(pieces)
 
     whole = trimesh.util.concatenate(parts)
     whole.apply_translation(-centre)
