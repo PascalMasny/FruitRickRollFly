@@ -27,6 +27,7 @@ frrf-fetch                       # download the corpus and turn it into percepts
 frrf-meshes                      # optional: rebuild the neuropil surfaces (committed already)
 frrf-train                       # cross-validate, tune the commit rule, ship a fly
 frrf-evaluate                    # draw what cross-validation found
+frrf-insights                    # draw what it was trained on, and write docs/TRAINING.md
 
 cd web && npm install && npm run build && cd ..
 uvicorn api.main:app             # API and frontend on one origin, one process
@@ -116,8 +117,10 @@ best reachable upload specificity from 0.977 to 0.897, below the floor the
 commit rule is held to. The fly has partly learned *Stock Aitken Waterman,
 1987, that voice* rather than *this song*.
 
-That measurement, and the four others around it, are written up in
-**[docs/FINDINGS.md](docs/FINDINGS.md)**. The short version: more epochs will
+That measurement, and the others around it, are written up in
+**[docs/FINDINGS.md](docs/FINDINGS.md)**, and the corpus underneath them —
+what it contains, and what the fly makes of every single track — is drawn in
+**[docs/TRAINING.md](docs/TRAINING.md)**. The short version: more epochs will
 not help, a different decision rule will not help, more hard negatives make it
 worse, a longer percept window makes it much worse, and the constraint is that
 the representation is anchored to the surface of one recording rather than to
@@ -137,6 +140,7 @@ the song.
 | `brain/eye.py` | a visual pathway: ommatidia, correlators, wide-field cells. Measured, and not shipped — see finding 7 |
 | `docs/BRAIN.md` | what is a fly and what is an engineering choice, number by number |
 | `docs/FINDINGS.md` | what the measurements said, including the unwelcome parts |
+| `docs/TRAINING.md` | what the fly was trained on, drawn: the corpus, every track's spread, and sound against sight |
 | `models/` | the shipped fly, its metrics, and the out-of-fold traces |
 
 The interface is one screen and does not scroll: four panels, being the four

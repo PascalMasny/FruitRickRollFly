@@ -33,6 +33,9 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     screen: THREE.Mesh
     glow: THREE.PointLight
     wings: THREE.Group[]
+    staticMaterial: THREE.ShaderMaterial
+    screenMaterial: THREE.MeshBasicMaterial
+    live: boolean
     target: { dopamine: number; committed: boolean }
   } | null>(null)
 
@@ -65,10 +68,50 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     key.position.set(4, 2, 2)
     scene.add(key)
 
-    // ── the screen ──────────────────────────────────────────────────────────
+    /* ── the screen ─────────────────────────────────────────────────────────
+       With nothing pasted in there is nothing to watch, and a black rectangle
+       does not say that -- it says broken. So the monitor carries no signal
+       the way a monitor with no input does: snow, scanlines, and a roll bar
+       working its way down. */
+    const staticMaterial = new THREE.ShaderMaterial({
+      uniforms: { uTime: { value: 0 } },
+      vertexShader: `
+        varying vec2 vUv;
+        void main() {
+          vUv = uv;
+          gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+        }
+      `,
+      fragmentShader: `
+        uniform float uTime;
+        varying vec2 vUv;
+
+        float hash(vec2 p) {
+          return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453123);
+        }
+
+        void main() {
+          // Quantised in time so the snow crawls at a believable rate rather
+          // than strobing at whatever the display happens to run at.
+          float frame = floor(uTime * 18.0);
+          float snow = hash(floor(vUv * vec2(220.0, 130.0)) + frame);
+          snow = 0.26 + 0.5 * snow;
+
+          float scan = 0.86 + 0.14 * sin(vUv.y * 420.0);
+          float roll = fract(vUv.y + uTime * 0.13);
+          float bar = smoothstep(0.0, 0.06, roll) * smoothstep(0.22, 0.14, roll);
+          vec3 colour = vec3(snow * scan) * (0.4 + 0.5 * bar);
+
+          // A vignette, so it reads as a tube and not as a texture.
+          vec2 d = vUv - 0.5;
+          colour *= 1.0 - 0.9 * dot(d, d);
+          gl_FragColor = vec4(colour * vec3(0.82, 0.86, 1.0), 1.0);
+        }
+      `,
+    })
     const screenMaterial = new THREE.MeshBasicMaterial({ color: 0x0b0b0b })
     const monitor = new THREE.Group()
-    const screen = new THREE.Mesh(new THREE.PlaneGeometry(3.1, 1.74), screenMaterial)
+    const screen = new THREE.Mesh(new THREE.PlaneGeometry(3.1, 1.74), staticMaterial)
     screen.position.y = 0.95
     monitor.add(screen)
     const bezel = new THREE.Mesh(
@@ -221,7 +264,8 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     scene.add(floor)
 
     const state = {
-      fly, screen, glow, wings,
+      fly, screen, glow, wings, staticMaterial, screenMaterial,
+      live: false,
       target: { dopamine: 0, committed: false },
     }
     rig.current = state
@@ -262,7 +306,9 @@ export default function FlyView({ video, dopamine, committed }: Props) {
       const flap = WING_REST + Math.sin(t * beat) * amplitude
       state.wings[0].rotation.x = flap
       state.wings[1].rotation.x = flap
-      state.glow.intensity = 5 + 3 * da
+      // An untuned screen flickers; a playing one does not.
+      state.glow.intensity = state.live ? 5 + 3 * da : 2.6 + 0.6 * Math.sin(t * 9.0)
+      if (!state.live) state.staticMaterial.uniforms.uTime.value = t
 
       renderer.render(scene, camera)
     }
@@ -279,6 +325,8 @@ export default function FlyView({ video, dopamine, committed }: Props) {
           else material.dispose()
         }
       })
+      staticMaterial.dispose()
+      screenMaterial.dispose()
       renderer.dispose()
       renderer.domElement.remove()
       rig.current = null
@@ -289,19 +337,24 @@ export default function FlyView({ video, dopamine, committed }: Props) {
   useEffect(() => {
     const state = rig.current
     if (!state) return
-    const material = state.screen.material as THREE.MeshBasicMaterial
     if (!video) {
-      material.map = null
-      material.color.setHex(0x0b0b0b)
-      material.needsUpdate = true
+      state.screen.material = state.staticMaterial
+      state.live = false
       return
     }
     const texture = new THREE.VideoTexture(video)
     texture.colorSpace = THREE.SRGBColorSpace
-    material.map = texture
-    material.color.setHex(0xffffff)
-    material.needsUpdate = true
-    return () => texture.dispose()
+    state.screenMaterial.map = texture
+    state.screenMaterial.color.setHex(0xffffff)
+    state.screenMaterial.needsUpdate = true
+    state.screen.material = state.screenMaterial
+    state.live = true
+    return () => {
+      texture.dispose()
+      state.screenMaterial.map = null
+      state.screen.material = state.staticMaterial
+      state.live = false
+    }
   }, [video])
 
   useEffect(() => {
