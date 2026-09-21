@@ -102,17 +102,33 @@ export default function BrainView({ circuit, frame, live }: Props) {
              turn an organ into a polyhedron. Additive shells accumulate where
              the tissue is deep, which is how an x-ray of a brain looks and
              how a brain reads. */
+          const shells: THREE.Mesh[] = []
           outline.scene.traverse((object) => {
-            if (!(object instanceof THREE.Mesh)) return
-            object.material = new THREE.MeshBasicMaterial({
-              color: 0x4a3a6b,
+            if (object instanceof THREE.Mesh) shells.push(object)
+          })
+          for (const shell of shells) {
+            const isCalyx = shell.name.toLowerCase().includes('calyx')
+            shell.material = new THREE.MeshBasicMaterial({
+              color: isCalyx ? 0xb59adf : 0x4a3a6b,
               transparent: true,
-              opacity: 0.055,
+              opacity: isCalyx ? 0.16 : 0.04,
               side: THREE.DoubleSide,
               depthWrite: false,
               blending: THREE.AdditiveBlending,
             })
-          })
+            if (isCalyx) {
+              // A wire cup around the cells. It is the structure they are in,
+              // and drawing it is the difference between a cloud inside a
+              // brain and a cloud hovering over one.
+              const cup = new THREE.LineSegments(
+                new THREE.WireframeGeometry(shell.geometry),
+                new THREE.LineBasicMaterial({
+                  color: 0xd8c4ff, transparent: true, opacity: 0.26, depthWrite: false,
+                }),
+              )
+              shell.add(cup)
+            }
+          }
           world.add(outline.scene)
         }
 
@@ -164,16 +180,37 @@ export default function BrainView({ circuit, frame, live }: Props) {
         )
         world.add(points)
 
-        // Framed on whatever actually got loaded, so the view is right with
-        // or without the outline.
+        /* Centred on the cells, not on the brain. The calyx really is up and
+           off to one side -- that is where a mushroom body lives -- but
+           framing the whole brain put the one thing worth looking at in a
+           corner. The brain now sits around the cloud instead of the cloud
+           sitting in the brain's margin. */
+        geometry.computeBoundingSphere()
+        const cells = geometry.boundingSphere
+          ? geometry.boundingSphere.center.clone()
+          : new THREE.Vector3()
         const bounds = new THREE.Box3().setFromObject(world)
-        const middle = bounds.getCenter(new THREE.Vector3())
-        const reach = bounds.getSize(new THREE.Vector3()).length() / 2
-        world.position.sub(middle)
-        camera.position.set(reach * 0.55, reach * 0.42, reach * 1.55)
+        // Weighted towards the cells but not on top of them: aiming straight
+        // at the calyx pushed the brain out of the bottom of the frame, and
+        // aiming at the brain put the cells in a corner. This keeps the cloud
+        // high and central with the whole head still around it.
+        const focus = bounds.getCenter(new THREE.Vector3()).lerp(cells, 0.34)
+        const corners = [bounds.min, bounds.max].flatMap((v) => [v.x, v.y, v.z])
+        const reach = Math.max(
+          ...[0, 1].flatMap((i) =>
+            [0, 1].flatMap((j) =>
+              [0, 1].map((k) =>
+                new THREE.Vector3(corners[i * 3], corners[j * 3 + 1], corners[k * 3 + 2])
+                  .distanceTo(focus),
+              ),
+            ),
+          ),
+        )
+        world.position.sub(focus)
+        camera.position.set(reach * 0.32, reach * 0.26, reach * 1.72)
         controls.target.set(0, 0, 0)
-        controls.minDistance = reach * 0.6
-        controls.maxDistance = reach * 5
+        controls.minDistance = reach * 0.35
+        controls.maxDistance = reach * 4
 
         rig.current = {
           colors: colorAttr,

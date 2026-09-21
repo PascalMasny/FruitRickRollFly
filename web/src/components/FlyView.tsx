@@ -11,7 +11,7 @@ interface Props {
 const CHITIN = 0xb08850
 const CHITIN_DARK = 0x6b4f26
 const EYE = 0xb3121f
-const WING_REST = 0.5
+const WING_REST = 0.62
 // Wings held a little above flat, so the screen has something to catch.
 
 /**
@@ -146,26 +146,6 @@ export default function FlyView({ video, dopamine, committed }: Props) {
       fly.add(arista)
     }
 
-    /* Headphones. The joke is also the point: everything this animal knows
-       about the song it knows through Johnston's organ, and the panel next
-       door is the consequence. */
-    const padMaterial = shell(0x1b1b1f, 0.8)
-    const bandMaterial = shell(0x2c2c33, 0.6)
-    const band = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.038, 3, 7, Math.PI), bandMaterial)
-    band.position.set(0, 0.22, -0.46)
-    band.rotation.set(0.35, Math.PI / 2, 0)
-    fly.add(band)
-    for (const side of [-1, 1]) {
-      const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.135, 0.1, 5), padMaterial)
-      cup.position.set(side * 0.3, -0.06, -0.6)
-      cup.rotation.set(0, 0, Math.PI / 2)
-      fly.add(cup)
-      const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.024, 0.024, 0.34, 3), bandMaterial)
-      arm.position.set(side * 0.31, 0.1, -0.53)
-      arm.rotation.set(-0.5, 0, 0)
-      fly.add(arm)
-    }
-
     const wings: THREE.Group[] = []
     const wingMaterial = new THREE.MeshPhysicalMaterial({
       color: 0xd8e6f6, transparent: true, opacity: 0.62, roughness: 0.1,
@@ -274,8 +254,11 @@ export default function FlyView({ video, dopamine, committed }: Props) {
       state.fly.position.z = perch.z + lean.z * da
       state.fly.position.y = perch.y + 0.03 * Math.sin(t * 2.2)
       state.fly.rotation.z = 0.05 * Math.sin(t * 1.7) * (0.3 + da)
-      const beat = sure ? 26 : 3 + 10 * da
-      const amplitude = sure ? 0.85 : 0.06 + 0.5 * da
+      // Still until it is sure. A fly that is merely suspicious sits there;
+      // the wings are what it does about a Rickroll, so they are reserved for
+      // one rather than spent on the approach.
+      const beat = sure ? 26 : 0
+      const amplitude = sure ? 0.5 : 0
       const flap = WING_REST + Math.sin(t * beat) * amplitude
       state.wings[0].rotation.x = flap
       state.wings[1].rotation.x = flap

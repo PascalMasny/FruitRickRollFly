@@ -178,10 +178,25 @@ def build_outline(volume, out_dir: Path, centre: np.ndarray, scale: float) -> di
     whole = trimesh.util.concatenate(parts)
     whole.apply_translation(-centre)
     whole.apply_scale(scale)
+
+    # The calyx goes out separately so the page can draw it a little stronger
+    # than the rest. The Kenyon cells sit at the brain's dorsal surface, where
+    # there is least tissue in front of them, and against a uniform haze they
+    # read as floating on top of the brain rather than sitting inside it. An
+    # outlined cup around them fixes that, and it is the correct structure to
+    # outline: it is the one they are in.
+    calyx = pieces.get("CA(R)")
+    if calyx is not None:
+        calyx = calyx.copy()
+        calyx.apply_translation(-centre)
+        calyx.apply_scale(scale)
+
     out_dir.mkdir(parents=True, exist_ok=True)
     path = out_dir / "fly-brain-outline.glb"
     scene = trimesh.Scene()
     scene.add_geometry(whole, geom_name="brain")
+    if calyx is not None:
+        scene.add_geometry(calyx, geom_name="calyx")
     path.write_bytes(scene.export(file_type="glb"))
     print(f"wrote {path} ({path.stat().st_size / 1024:.0f} kB, {len(whole.vertices)} vertices)")
     return {
