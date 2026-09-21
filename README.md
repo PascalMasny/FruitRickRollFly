@@ -150,11 +150,11 @@ is merely suspicious sits there.
 The cells panel holds the 4,000 Kenyon cells inside a wireframe of the whole
 brain — a central mass with an enormous eye either side — because a cluster of
 dots on its own could be anything, and inside that outline it is visibly a
-calyx in one hemisphere of a fly's head. The calyx itself is drawn as a wire cup
-around the cloud, because the Kenyon cells sit at the brain's dorsal surface
-where there is least tissue in front of them and against a uniform haze they
-read as floating on top of the brain rather than sitting inside it. The rest
-of the outline is the real hemibrain neuropils, drawn as soft translucent
+calyx in one hemisphere of a fly's head. The calyx is drawn a little
+stronger than its surroundings, because the Kenyon cells sit at the brain's
+dorsal surface where there is least tissue in front of them and against a
+perfectly uniform haze they read as floating on top of the brain rather than
+sitting inside it. The outline is the real hemibrain neuropils, drawn as soft translucent
 volumes so the tissue accumulates where it is deep; the hemibrain is a partial volume, so the whole thing is mirrored
 across the midline, and being a reflection rather than a measurement it is
 only ever drawn as an outline. Otherwise the panel is the cells and nothing else — no neuropil surfaces, no receptors, no

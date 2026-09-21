@@ -109,25 +109,13 @@ export default function BrainView({ circuit, frame, live }: Props) {
           for (const shell of shells) {
             const isCalyx = shell.name.toLowerCase().includes('calyx')
             shell.material = new THREE.MeshBasicMaterial({
-              color: isCalyx ? 0xb59adf : 0x4a3a6b,
+              color: isCalyx ? 0x9a80c8 : 0x4a3a6b,
               transparent: true,
-              opacity: isCalyx ? 0.16 : 0.04,
+              opacity: isCalyx ? 0.1 : 0.04,
               side: THREE.DoubleSide,
               depthWrite: false,
               blending: THREE.AdditiveBlending,
             })
-            if (isCalyx) {
-              // A wire cup around the cells. It is the structure they are in,
-              // and drawing it is the difference between a cloud inside a
-              // brain and a cloud hovering over one.
-              const cup = new THREE.LineSegments(
-                new THREE.WireframeGeometry(shell.geometry),
-                new THREE.LineBasicMaterial({
-                  color: 0xd8c4ff, transparent: true, opacity: 0.26, depthWrite: false,
-                }),
-              )
-              shell.add(cup)
-            }
           }
           world.add(outline.scene)
         }
