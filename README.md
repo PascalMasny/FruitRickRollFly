@@ -146,7 +146,14 @@ was pasted in, on a texture of the very same `<video>` element the panel above
 plays, so the two can never drift apart. It leans towards the screen as the
 dopamine pool fills and its wings go when it commits.
 
-The cells panel holds the 4,000 Kenyon cells, and nothing else — no neuropil surfaces, no receptors, no
+The cells panel holds the 4,000 Kenyon cells inside a wireframe of the whole
+brain — a central mass with an enormous eye either side — because a cluster of
+dots on its own could be anything, and inside that outline it is visibly a
+calyx in one hemisphere of a fly's head. The outline is three convex hulls of
+the real hemibrain neuropils, 10 kB; the hemibrain is a partial volume, so the
+central mass and the missing optic lobe are mirrored across the midline, and
+being reflections rather than measurements they are only ever drawn as an
+outline. Otherwise the panel is the cells and nothing else — no neuropil surfaces, no receptors, no
 labels on an organ. What is worth watching was never the envelope: it is that
 about two hundred cells are firing at any instant and that which two hundred
 changes completely as the song moves. Each cell keeps a short tail after it

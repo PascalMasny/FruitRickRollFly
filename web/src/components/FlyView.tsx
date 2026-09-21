@@ -11,7 +11,7 @@ interface Props {
 const CHITIN = 0xb08850
 const CHITIN_DARK = 0x6b4f26
 const EYE = 0xb3121f
-const WING_REST = 0.3
+const WING_REST = 0.5
 // Wings held a little above flat, so the screen has something to catch.
 
 /**
@@ -78,7 +78,7 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     bezel.position.set(0, 0.95, -0.02)
     monitor.add(bezel)
     const stand = new THREE.Mesh(
-      new THREE.CylinderGeometry(0.05, 0.3, 0.42, 16),
+      new THREE.CylinderGeometry(0.05, 0.3, 0.42, 6),
       new THREE.MeshStandardMaterial({ color: 0x1d1a16, roughness: 0.7 }),
     )
     stand.position.set(0, -0.2, -0.05)
@@ -95,42 +95,50 @@ export default function FlyView({ video, dopamine, committed }: Props) {
 
     // ── the fly ─────────────────────────────────────────────────────────────
     const fly = new THREE.Group()
+    // Low poly throughout: few facets and flat shading, so every surface is
+    // a plane you can see the edge of. An insect is the right subject for it
+    // -- it is chitin plates all the way down.
     const shell = (colour: number, rough = 0.45) =>
-      new THREE.MeshStandardMaterial({ color: colour, roughness: rough, metalness: 0.25 })
+      new THREE.MeshStandardMaterial({
+        color: colour, roughness: rough, metalness: 0.25, flatShading: true,
+      })
 
-    const abdomen = new THREE.Mesh(new THREE.SphereGeometry(0.42, 26, 20), shell(CHITIN_DARK))
+    const abdomen = new THREE.Mesh(new THREE.IcosahedronGeometry(0.42, 1), shell(CHITIN_DARK))
     abdomen.scale.set(0.78, 0.72, 1.55)
     abdomen.position.set(0, 0, 0.62)
     fly.add(abdomen)
     // The bands a Drosophila abdomen actually has.
     for (let i = 0; i < 3; i += 1) {
-      const band = new THREE.Mesh(new THREE.TorusGeometry(0.3 - i * 0.03, 0.035, 8, 24), shell(0x241a0e))
+      const band = new THREE.Mesh(new THREE.TorusGeometry(0.3 - i * 0.03, 0.035, 4, 10), shell(0x3a2a14))
       band.rotation.y = Math.PI / 2
       band.position.set(0, 0.02, 0.38 + i * 0.26)
       fly.add(band)
     }
 
-    const thorax = new THREE.Mesh(new THREE.SphereGeometry(0.4, 26, 20), shell(CHITIN))
+    const thorax = new THREE.Mesh(new THREE.IcosahedronGeometry(0.4, 1), shell(CHITIN))
     thorax.scale.set(1.0, 0.95, 1.1)
     fly.add(thorax)
 
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.3, 24, 18), shell(0x7d5c34))
+    const head = new THREE.Mesh(new THREE.IcosahedronGeometry(0.3, 1), shell(0xa07a44))
     head.position.set(0, 0.1, -0.44)
     fly.add(head)
 
     // Red compound eyes, which on a fly are most of the head.
+    // A compound eye is a lattice of facets, so a low-poly sphere is not a
+    // simplification here -- it is closer to the thing than a smooth one.
     const eyeMaterial = new THREE.MeshStandardMaterial({
-      color: EYE, roughness: 0.25, metalness: 0.1, emissive: EYE, emissiveIntensity: 0.12,
+      color: EYE, roughness: 0.3, metalness: 0.1, emissive: EYE,
+      emissiveIntensity: 0.18, flatShading: true,
     })
     for (const side of [-1, 1]) {
-      const eye = new THREE.Mesh(new THREE.SphereGeometry(0.235, 22, 16), eyeMaterial)
+      const eye = new THREE.Mesh(new THREE.IcosahedronGeometry(0.235, 1), eyeMaterial)
       eye.position.set(side * 0.2, 0.13, -0.45)
       eye.scale.set(0.9, 1.05, 1.0)
       fly.add(eye)
     }
     for (const side of [-1, 1]) {
       const arista = new THREE.Mesh(
-        new THREE.CylinderGeometry(0.012, 0.004, 0.34, 6),
+        new THREE.CylinderGeometry(0.012, 0.004, 0.34, 4),
         shell(0x2a2018, 0.9),
       )
       arista.position.set(side * 0.09, 0.3, -0.58)
@@ -138,9 +146,29 @@ export default function FlyView({ video, dopamine, committed }: Props) {
       fly.add(arista)
     }
 
+    /* Headphones. The joke is also the point: everything this animal knows
+       about the song it knows through Johnston's organ, and the panel next
+       door is the consequence. */
+    const padMaterial = shell(0x1b1b1f, 0.8)
+    const bandMaterial = shell(0x2c2c33, 0.6)
+    const band = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.032, 4, 12, Math.PI), bandMaterial)
+    band.position.set(0, 0.22, -0.46)
+    band.rotation.set(0.35, Math.PI / 2, 0)
+    fly.add(band)
+    for (const side of [-1, 1]) {
+      const cup = new THREE.Mesh(new THREE.CylinderGeometry(0.115, 0.13, 0.09, 6), padMaterial)
+      cup.position.set(side * 0.3, -0.06, -0.6)
+      cup.rotation.set(0, 0, Math.PI / 2)
+      fly.add(cup)
+      const arm = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, 0.34, 4), bandMaterial)
+      arm.position.set(side * 0.31, 0.1, -0.53)
+      arm.rotation.set(-0.5, 0, 0)
+      fly.add(arm)
+    }
+
     const wings: THREE.Group[] = []
     const wingMaterial = new THREE.MeshPhysicalMaterial({
-      color: 0xeaf2ff, transparent: true, opacity: 0.5, roughness: 0.08,
+      color: 0xd8e6f6, transparent: true, opacity: 0.62, roughness: 0.1,
       transmission: 0.5, side: THREE.DoubleSide
     })
     for (const side of [-1, 1]) {
@@ -149,13 +177,13 @@ export default function FlyView({ video, dopamine, committed }: Props) {
          the beat on its x, so the flap cannot fight the resting pose. */
       const pivot = new THREE.Group()
       pivot.position.set(side * 0.13, 0.22, 0.12)
-      pivot.rotation.set(WING_REST, -1.05, 0)
+      pivot.rotation.set(WING_REST, -0.95, 0)
       pivot.scale.x = side
 
       const shape = new THREE.Shape()
       shape.moveTo(0, 0)
-      shape.bezierCurveTo(0.35, 0.2, 1.0, 0.24, 1.3, 0.02)
-      shape.bezierCurveTo(1.0, -0.13, 0.4, -0.13, 0, 0)
+      shape.bezierCurveTo(0.3, 0.3, 0.85, 0.34, 1.05, 0.05)
+      shape.bezierCurveTo(0.85, -0.2, 0.35, -0.2, 0, 0)
       const wing = new THREE.Mesh(new THREE.ShapeGeometry(shape, 18), wingMaterial)
       wing.rotation.x = -Math.PI / 2
       wing.scale.setScalar(0.92)
@@ -178,7 +206,7 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     const legMaterial = shell(0x2f2415, 0.85)
     for (const side of [-1, 1]) {
       for (let i = 0; i < 3; i += 1) {
-        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.012, 0.62, 6), legMaterial)
+        const leg = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.012, 0.62, 4), legMaterial)
         leg.position.set(side * 0.34, -0.3, -0.24 + i * 0.32)
         leg.rotation.set(0.25 - i * 0.22, 0, side * (0.75 + i * 0.08))
         fly.add(leg)
@@ -188,8 +216,13 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     // Facing the monitor across the frame, and a little larger than life so
     // it survives a panel this short.
     fly.scale.setScalar(1.45)
-    fly.position.set(-1.5, -0.25, 0.5)
-    fly.rotation.y = -2.05
+    const perch = new THREE.Vector3(-1.5, -0.25, 0.5)
+    fly.position.copy(perch)
+    /* Aimed at the monitor rather than eyeballed. The fly's front is its
+       local -z, so the heading is taken from the vector to the screen instead
+       of a hand-tuned angle that was, in fact, wrong by forty degrees. */
+    const facing = new THREE.Vector3().subVectors(monitor.position, perch)
+    fly.rotation.y = Math.atan2(-facing.x, -facing.z)
     scene.add(fly)
 
     const floor = new THREE.Mesh(
@@ -217,6 +250,8 @@ export default function FlyView({ video, dopamine, committed }: Props) {
     observer.observe(element)
     resize()
 
+    const lean = facing.clone().normalize().multiplyScalar(0.55)
+
     let raf = 0
     const clock = new THREE.Clock()
     const tick = () => {
@@ -227,9 +262,10 @@ export default function FlyView({ video, dopamine, committed }: Props) {
       // Leans towards the screen as the pool fills, and its wings go when it
       // is certain. A fly that likes something does not sit still.
       // Leans along its own line of sight towards the monitor.
-      state.fly.position.x = -1.5 + 0.5 * da
-      state.fly.position.z = 0.5 - 0.22 * da
-      state.fly.position.y = -0.25 + 0.03 * Math.sin(t * 2.2)
+      // Leaning in means moving along its own line of sight, not along x.
+      state.fly.position.x = perch.x + lean.x * da
+      state.fly.position.z = perch.z + lean.z * da
+      state.fly.position.y = perch.y + 0.03 * Math.sin(t * 2.2)
       state.fly.rotation.z = 0.05 * Math.sin(t * 1.7) * (0.3 + da)
       const beat = sure ? 26 : 3 + 10 * da
       const amplitude = sure ? 0.85 : 0.06 + 0.5 * da

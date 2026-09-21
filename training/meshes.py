@@ -101,6 +101,125 @@ def _sample_inside(mesh, count: int, seed: int) -> np.ndarray:
     return points[:count]
 
 
+OUTLINE_LOD = 2
+"""The coarsest level the hemibrain publishes. For a silhouette that is not a
+compromise: twenty to six hundred vertices a neuropil is exactly enough to say
+*fly brain* and small enough to ship."""
+
+MIRROR = {"ME(R)", "LO(R)", "LOP(R)", "AME(R)"}
+"""The hemibrain is a partial volume with only the right optic lobes in it. A
+brain with one eye does not read as a brain, so these four are mirrored across
+the midline to stand in for the left ones. The mirrored half is a reflection
+and not a measurement, which is why it is only ever drawn as an outline."""
+
+
+def build_outline(volume, out_dir: Path, centre: np.ndarray, scale: float) -> dict:
+    """A whole-brain silhouette, for the panel that draws the Kenyon cells.
+
+    The cells alone are legible but unplaceable -- a cloud of dots could be
+    anything. This is the envelope they sit in, drawn as a faint wireframe, so
+    it is visible that the cloud is a calyx and the calyx is in a fly's head.
+
+    Takes the same centring and scale the Kenyon cells were written in, so the
+    cloud lands where the calyx actually is rather than in the middle of the
+    head.
+    """
+    import trimesh
+
+    labels = _segment_labels(volume)
+    pieces: dict[str, object] = {}
+    for sid, label in labels.items():
+        try:
+            fetched = volume.mesh.get(sid, lod=OUTLINE_LOD)
+        except Exception:
+            continue
+        mesh = list(fetched.values())[0] if isinstance(fetched, dict) else fetched
+        if len(mesh.vertices) < 4:
+            continue
+        pieces[label] = trimesh.Trimesh(
+            vertices=_orient(mesh.vertices), faces=np.asarray(mesh.faces)
+        )
+    if not pieces:
+        raise SystemExit("no outline meshes came back")
+
+    # The midline, taken as the mean x of every neuropil the dataset happens to
+    # have on both sides. Those pairs straddle it by definition, so their
+    # average is the plane to reflect the missing optic lobes through.
+    straddling = [
+        name[:-3] for name in pieces if name.endswith("(L)") and f"{name[:-3]}(R)" in pieces
+    ]
+    if straddling:
+        midline = float(np.mean([
+            pieces[f"{name}{side}"].vertices[:, 0].mean()
+            for name in straddling for side in ("(L)", "(R)")
+        ]))
+    else:
+        midline = float(np.concatenate([p.vertices[:, 0] for p in pieces.values()]).max())
+
+    optic = {"ME(R)", "LO(R)", "LOP(R)", "AME(R)"}
+
+    def hull(names: list[str], flip: bool = False):
+        cloud = np.concatenate([pieces[n].vertices for n in names if n in pieces])
+        if flip:
+            cloud = cloud.copy()
+            cloud[:, 0] = 2.0 * midline - cloud[:, 0]
+        return trimesh.Trimesh(vertices=cloud).convex_hull
+
+    # Three hulls, not sixty-three wireframes. Drawing every neuropil's own
+    # edges produced a tangle you could not see the cells through; the shape
+    # that says "fly" is the silhouette -- a central mass with an enormous eye
+    # on either side -- and three convex hulls carry exactly that and nothing
+    # else.
+    central = [n for n in pieces if n not in optic]
+
+    def mirrored_cloud(names: list[str]) -> np.ndarray:
+        """Both halves of a set, so a partial volume reads as a whole brain."""
+        cloud = np.concatenate([pieces[n].vertices for n in names if n in pieces])
+        other = cloud.copy()
+        other[:, 0] = 2.0 * midline - other[:, 0]
+        return np.concatenate([cloud, other])
+
+    # The central mass gets mirrored too. The hemibrain is a partial volume --
+    # mostly one hemisphere, with only slivers of the other -- so reflecting
+    # just the optic lobes left them floating a hemisphere's width away from a
+    # central brain that stopped at the midline.
+    parts = [
+        trimesh.Trimesh(vertices=mirrored_cloud(central)).convex_hull,
+        hull(sorted(optic)),
+        hull(sorted(optic), flip=True),
+    ]
+    mirrored = sorted(n for n in MIRROR if n in pieces)
+
+    whole = trimesh.util.concatenate(parts)
+    whole.apply_translation(-centre)
+    whole.apply_scale(scale)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    path = out_dir / "fly-brain-outline.glb"
+    scene = trimesh.Scene()
+    scene.add_geometry(whole, geom_name="brain")
+    path.write_bytes(scene.export(file_type="glb"))
+    print(f"wrote {path} ({path.stat().st_size / 1024:.0f} kB, {len(whole.vertices)} vertices)")
+    return {
+        "vertices": int(len(whole.vertices)),
+        "faces": int(len(whole.faces)),
+        "mirrored": mirrored,
+        "midline": midline,
+    }
+
+
+def _segment_labels(volume) -> dict:
+    import json as _json
+    import urllib.request
+
+    url = volume.meta.join(volume.meta.cloudpath, "segment_properties", "info")
+    url = url.replace("gs://", "https://storage.googleapis.com/").replace("precomputed://", "")
+    with urllib.request.urlopen(url, timeout=30) as response:  # noqa: S310
+        info = _json.loads(response.read())
+    inline = info["inline"]
+    labels = next(p["values"] for p in inline["properties"] if p["id"] == "label")
+    return {int(i): label for i, label in zip(inline["ids"], labels, strict=True)}
+
+
 def build(out_dir: Path, mesh_dir: Path, kenyon: int, seed: int, source: str) -> dict:
     import trimesh
 
@@ -154,6 +273,13 @@ def build(out_dir: Path, mesh_dir: Path, kenyon: int, seed: int, source: str) ->
         ],
     }
     (mesh_dir / "fly-brain.json").write_text(json.dumps(manifest, indent=2) + "\n")
+
+    from cloudvolume import CloudVolume
+
+    outline = build_outline(
+        CloudVolume(source, use_https=True, progress=False), out_dir, centre, scale
+    )
+    manifest["outline"] = outline
 
     print(f"wrote {glb} ({glb.stat().st_size / 1024:.0f} kB)")
     print(f"wrote {cells} ({cells.stat().st_size / 1024:.0f} kB)")

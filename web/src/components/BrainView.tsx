@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import type { Circuit, Frame } from '../lib/types'
 
@@ -70,31 +71,45 @@ export default function BrainView({ circuit, frame, live }: Props) {
     controls.autoRotate = true
     controls.autoRotateSpeed = 0.5
 
-    let points: THREE.Points | null = null
+    const world = new THREE.Group()
+    scene.add(world)
 
-    fetch('kenyon-cells.bin')
-      .then(async (response) => {
+    Promise.all([
+      fetch('kenyon-cells.bin').then(async (response) => {
         if (!response.ok) throw new Error(`kenyon-cells.bin: ${response.status}`)
         return new Float32Array(await response.arrayBuffer())
-      })
-      .then((pool) => {
+      }),
+      // The outline is optional: without it the cells still work, they are
+      // just harder to place.
+      new GLTFLoader().loadAsync('fly-brain-outline.glb').catch(() => null),
+    ])
+      .then(([pool, outline]) => {
         if (disposed) return
         const count = Math.min(circuit.kenyonCells, Math.floor(pool.length / 3))
         const positions = pool.slice(0, count * 3)
 
-        // Centre the cloud on itself and scale it to a known size, so the
-        // framing does not depend on where in the brain the calyx happens to
-        // sit or on what units the extractor used.
-        const box = new THREE.Box3().setFromBufferAttribute(
-          new THREE.BufferAttribute(positions, 3),
-        )
-        const centre = box.getCenter(new THREE.Vector3())
-        const span = Math.max(...box.getSize(new THREE.Vector3()).toArray())
-        const scale = 6 / (span || 1)
-        for (let i = 0; i < count; i += 1) {
-          positions[i * 3] = (positions[i * 3] - centre.x) * scale
-          positions[i * 3 + 1] = (positions[i * 3 + 1] - centre.y) * scale
-          positions[i * 3 + 2] = (positions[i * 3 + 2] - centre.z) * scale
+        /* The border: the whole brain as a faint wireframe, so the cloud is
+           placeable. A cluster of dots on its own could be anything; inside
+           this it is visibly a calyx, and visibly in one hemisphere of a head
+           that has two enormous eyes. The cells and the outline are written by
+           the same build step in the same frame, so nothing here re-centres
+           them against each other -- the calyx lands where the calyx is. */
+        if (outline) {
+          outline.scene.traverse((object) => {
+            if (!(object instanceof THREE.Mesh)) return
+            const lines = new THREE.LineSegments(
+              new THREE.WireframeGeometry(object.geometry),
+              new THREE.LineBasicMaterial({
+                color: 0x8a7aa8, transparent: true, opacity: 0.3, depthWrite: false,
+              }),
+            )
+            world.add(lines)
+            object.material = new THREE.MeshBasicMaterial({
+              color: 0x231a33, transparent: true, opacity: 0.22,
+              side: THREE.BackSide, depthWrite: false,
+            })
+          })
+          world.add(outline.scene)
         }
 
         const colors = new Float32Array(count * 3)
@@ -116,7 +131,7 @@ export default function BrainView({ circuit, frame, live }: Props) {
         /* A shader rather than PointsMaterial: a firing cell has to be both
            brighter and larger than a silent one, and PointsMaterial has a
            single size for the whole cloud. */
-        points = new THREE.Points(
+        const points = new THREE.Points(
           geometry,
           new THREE.ShaderMaterial({
             transparent: true,
@@ -143,12 +158,18 @@ export default function BrainView({ circuit, frame, live }: Props) {
             `,
           }),
         )
-        scene.add(points)
+        world.add(points)
 
-        camera.position.set(4.2, 2.6, 7.4)
+        // Framed on whatever actually got loaded, so the view is right with
+        // or without the outline.
+        const bounds = new THREE.Box3().setFromObject(world)
+        const middle = bounds.getCenter(new THREE.Vector3())
+        const reach = bounds.getSize(new THREE.Vector3()).length() / 2
+        world.position.sub(middle)
+        camera.position.set(reach * 0.55, reach * 0.42, reach * 1.55)
         controls.target.set(0, 0, 0)
-        controls.minDistance = 4
-        controls.maxDistance = 22
+        controls.minDistance = reach * 0.6
+        controls.maxDistance = reach * 5
 
         rig.current = {
           colors: colorAttr,
@@ -240,10 +261,15 @@ export default function BrainView({ circuit, frame, live }: Props) {
       cancelAnimationFrame(raf)
       observer.disconnect()
       controls.dispose()
-      if (points) {
-        points.geometry.dispose()
-        ;(points.material as THREE.Material).dispose()
-      }
+      world.traverse((object) => {
+        if (object instanceof THREE.Mesh || object instanceof THREE.Points ||
+            object instanceof THREE.LineSegments) {
+          object.geometry.dispose()
+          const material = object.material
+          if (Array.isArray(material)) material.forEach((m) => m.dispose())
+          else material.dispose()
+        }
+      })
       renderer.dispose()
       renderer.domElement.remove()
       rig.current = null
