@@ -11,9 +11,10 @@ import asyncio
 import json
 from collections.abc import AsyncIterator
 
-from fastapi import APIRouter, BackgroundTasks, HTTPException
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from fastapi.responses import FileResponse, StreamingResponse
 
+from api.ratelimit import limit
 from api.schemas import AnalysisAccepted, AnalysisRequest
 from api.services import analysis
 from api.services import fly as fly_service
@@ -26,7 +27,12 @@ HEARTBEAT_SECONDS = 15.0
 while a long video downloads."""
 
 
-@router.post("/api/analysis", response_model=AnalysisAccepted, status_code=202)
+@router.post(
+    "/api/analysis",
+    response_model=AnalysisAccepted,
+    status_code=202,
+    dependencies=[Depends(limit)],
+)
 async def submit(request: AnalysisRequest, background: BackgroundTasks) -> AnalysisAccepted:
     """Validate the link and start the pipeline.
 

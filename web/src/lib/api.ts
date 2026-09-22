@@ -1,5 +1,6 @@
 import type {
   BrainCard,
+  Health,
   JobState,
   ModelState,
   Run,
@@ -23,6 +24,10 @@ async function readJson<T>(response: Response): Promise<T> {
 
 export async function fetchBrain(): Promise<BrainCard> {
   return readJson<BrainCard>(await fetch('/api/brain'))
+}
+
+export async function fetchHealth(): Promise<Health> {
+  return readJson<Health>(await fetch('/api/health'))
 }
 
 export async function submit(url: string): Promise<{ id: string; events: string }> {

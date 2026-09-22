@@ -19,8 +19,9 @@ from typing import Any
 
 import numpy as np
 
+from api import settings
+from api.services import cache, youtube
 from api.services import fly as fly_service
-from api.services import youtube
 from brain.audio import decode
 from brain.model import Response
 
@@ -50,6 +51,7 @@ class Job:
     url: str
     stage: Stage = Stage.QUEUED
     video: dict | None = None
+    audio: Path | None = None
     media: Path | None = None
     summary: dict | None = None
     error: str | None = None
@@ -82,6 +84,28 @@ class Job:
 _JOBS: dict[str, Job] = {}
 _ORDER: list[str] = []
 _MAX_JOBS = 64
+
+_GATE: asyncio.Semaphore | None = None
+_GATE_SIZE = 0
+
+
+def _gate() -> asyncio.Semaphore:
+    """How many analyses may be in flight.
+
+    Each one holds a decoded track, a percept matrix and a yt-dlp download, and
+    the work is CPU-bound once the audio lands. Without this the only limit was
+    asyncio's default thread pool, which is thirty-two -- thirty-two
+    simultaneous decodes on two cores is not throughput, it is a memory
+    profile. Waiting jobs sit in `queued` and the client watches them there.
+
+    Rebuilt when the setting moves, which only happens in tests; a live change
+    would lose the count of what is currently held.
+    """
+    global _GATE, _GATE_SIZE
+    size = settings.max_concurrent()
+    if _GATE is None or _GATE_SIZE != size:
+        _GATE, _GATE_SIZE = asyncio.Semaphore(size), size
+    return _GATE
 
 
 def get(job_id: str) -> Job | None:
@@ -167,7 +191,9 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
         # anything was most of the wait: on a cold run the two yt-dlp
         # extractions and the video download were 94 percent of it, against
         # five percent for hearing the thing.
-        path, video = youtube.fetch_audio(identifier, fly_service.CACHE_DIR)
+        limit = settings.max_video_seconds()
+        path, video = youtube.fetch_audio(identifier, fly_service.CACHE_DIR, limit)
+        job.audio = path
         job.video = video.to_dict()
         emit("video", video=job.video)
 
@@ -175,7 +201,7 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
         # behind the analysis and announced whenever it lands.
         def with_pictures() -> None:
             try:
-                job.media = youtube.fetch_media(identifier, fly_service.CACHE_DIR)
+                job.media = youtube.fetch_media(identifier, fly_service.CACHE_DIR, limit)
                 emit("media", url=f"/api/analysis/{job.id}/media", ok=True)
             except Exception as error:  # the verdict does not depend on this
                 emit("media", url=None, ok=False, detail=f"{type(error).__name__}: {error}")
@@ -185,7 +211,7 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
 
         stage(Stage.HEARING)
         brain = fly_service.fly()
-        samples = decode(path, brain.config.sample_rate)
+        samples = decode(path, brain.config.sample_rate, max_seconds=limit)
         receptors, t = brain.ear.percepts(samples)
         emit("heard", percepts=int(len(receptors)), seconds=round(float(t[-1]), 2))
 
@@ -197,7 +223,9 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
         job.summary = summarise(response, video.duration, time.perf_counter() - started)
         emit("summary", summary=job.summary)
         stage(Stage.DONE)
-    except youtube.NotYouTube as error:
+    except (youtube.NotYouTube, youtube.TooLong) as error:
+        # Both of these are the caller's fault and readable as they stand, so
+        # they go out as themselves rather than as a class name and a repr.
         job.error = str(error)
         job.stage = Stage.FAILED
         emit("error", message=job.error, kind_detail="not-youtube")
@@ -218,9 +246,24 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
                 emit("media", url=None, ok=False, detail="the video is taking too long")
         emit("end")
         loop.call_soon_threadsafe(job.finished.set)
+        # Nothing ever removed what the downloads left behind, which made
+        # data/cache an allocation any caller could drive one video at a time.
+        # Swept here, where a job has just stopped needing its own files --
+        # every other job's are named and spared.
+        cache.sweep(
+            fly_service.CACHE_DIR,
+            settings.cache_budget_bytes(),
+            keep={
+                path
+                for other in list(_JOBS.values())
+                for path in (other.audio, other.media)
+                if path is not None and other is not job
+            },
+        )
 
 
 async def run(job: Job) -> None:
-    """Start the pipeline. Returns as soon as the worker thread is scheduled."""
+    """Start the pipeline, once there is room for it."""
     loop = asyncio.get_running_loop()
-    await asyncio.to_thread(_work, job, loop)
+    async with _gate():
+        await asyncio.to_thread(_work, job, loop)

@@ -7,7 +7,7 @@ import Stats from './components/Stats'
 import Timeline from './components/Timeline'
 import UrlInput from './components/UrlInput'
 import VideoPreview from './components/VideoPreview'
-import { fetchBrain } from './lib/api'
+import { fetchBrain, fetchHealth } from './lib/api'
 import type { BrainCard } from './lib/types'
 import { useAnalysis } from './lib/useAnalysis'
 import { useFrameAt, useReplay } from './lib/usePlayhead'
@@ -24,10 +24,17 @@ const TABS: [Tab, string][] = [
   ['notes', 'notes'],
 ]
 
+/** Tabs whose endpoints only exist where the server is in admin mode. The
+    workshop starts processes on the host and the notes page writes files to
+    it, so a public deployment does not register either -- and a tab that 404s
+    is worse than a tab that is not there. */
+const ADMIN_TABS: Tab[] = ['workshop', 'notes']
+
 export default function App() {
   const [tab, setTab] = useState<Tab>('fly')
   const [card, setCard] = useState<BrainCard | null>(null)
   const [cardError, setCardError] = useState<string | null>(null)
+  const [admin, setAdmin] = useState(false)
   const analysis = useAnalysis()
   const [videoTime, setVideoTime] = useState(0)
   const [seekTo, setSeekTo] = useState<number | null>(null)
@@ -48,6 +55,11 @@ export default function App() {
     fetchBrain()
       .then(setCard)
       .catch((error) => setCardError(String(error.message ?? error)))
+    // A failure here is not fatal: no answer means no admin surface, which is
+    // the safe reading and the one a public deployment wants anyway.
+    fetchHealth()
+      .then((health) => setAdmin(health.admin))
+      .catch(() => setAdmin(false))
   }, [])
 
   useEffect(() => {
@@ -88,7 +100,7 @@ export default function App() {
         <p className="tagline">A Drosophila mushroom body that has learned exactly one song.</p>
       </div>
       <nav className="tabs">
-        {TABS.map(([key, label]) => (
+        {TABS.filter(([key]) => admin || !ADMIN_TABS.includes(key)).map(([key, label]) => (
           <button
             key={key}
             type="button"

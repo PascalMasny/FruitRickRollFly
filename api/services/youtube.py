@@ -42,6 +42,10 @@ class NotYouTube(ValueError):
     """The link is not a YouTube video link."""
 
 
+class TooLong(ValueError):
+    """The video is longer than this server is willing to listen to."""
+
+
 @dataclass(frozen=True)
 class Video:
     id: str
@@ -189,8 +193,8 @@ AUDIO_FORMAT = "bestaudio[abr<=160]/bestaudio/best"
 """What the fly listens to. Small, and the only thing the verdict depends on."""
 
 
-def _options(destination: Path) -> dict:
-    return {
+def _options(destination: Path, max_seconds: float | None = None) -> dict:
+    options = {
         "format": AUDIO_FORMAT,
         "outtmpl": str(destination / "%(id)s.%(ext)s"),
         "quiet": True,
@@ -199,6 +203,15 @@ def _options(destination: Path) -> dict:
         "retries": 3,
         "skip_download": True,
     }
+    if max_seconds and max_seconds > 0:
+        from yt_dlp.utils import match_filter_func
+
+        # Judged after extraction and before the download, so an eleven-hour
+        # upload costs one metadata call rather than eleven hours of disk. The
+        # strict form rejects a video whose duration is unknown, which is what
+        # a live stream looks like -- and a live stream has no end to decode.
+        options["match_filter"] = match_filter_func(f"duration < {float(max_seconds):.0f}")
+    return options
 
 
 def _describe(identifier: str, info: dict) -> Video:
@@ -211,16 +224,28 @@ def _describe(identifier: str, info: dict) -> Video:
     )
 
 
-def describe(identifier: str, destination: Path) -> Video:
+def describe(identifier: str, destination: Path, max_seconds: float | None = None) -> Video:
     """Title, channel and duration, without downloading anything."""
     import yt_dlp
 
-    with yt_dlp.YoutubeDL(_options(destination)) as ydl:
+    with yt_dlp.YoutubeDL(_options(destination, max_seconds)) as ydl:
         info = ydl.extract_info(f"https://www.youtube.com/watch?v={identifier}", download=False)
+    if info is None:
+        raise TooLong(_too_long(max_seconds))
     return _describe(identifier, info)
 
 
-def fetch_audio(identifier: str, destination: Path) -> tuple[Path, Video]:
+def _too_long(max_seconds: float | None) -> str:
+    minutes = int((max_seconds or 0) // 60)
+    return (
+        f"That video is longer than the {minutes} minutes this fly will sit through "
+        "(or it is a live stream, which has no end to listen to)."
+    )
+
+
+def fetch_audio(
+    identifier: str, destination: Path, max_seconds: float | None = None
+) -> tuple[Path, Video]:
     """Download the audio and return it with the metadata, in one round trip.
 
     Asking yt-dlp for the metadata and then asking it again to download used to
@@ -237,15 +262,16 @@ def fetch_audio(identifier: str, destination: Path) -> tuple[Path, Video]:
     destination.mkdir(parents=True, exist_ok=True)
     cached = sorted(destination.glob(f"{identifier}.audio.*"))
     if cached:
-        return cached[0], describe(identifier, destination)
+        return cached[0], describe(identifier, destination, max_seconds)
 
-    options = _options(destination) | {
+    options = _options(destination, max_seconds) | {
         "skip_download": False,
-        "format": AUDIO_FORMAT,
         "outtmpl": str(destination / "%(id)s.audio.%(ext)s"),
     }
     with yt_dlp.YoutubeDL(options) as ydl:
         info = ydl.extract_info(f"https://www.youtube.com/watch?v={identifier}", download=True)
+    if info is None:
+        raise TooLong(_too_long(max_seconds))
 
     produced = sorted(p for p in destination.glob(f"{identifier}.audio.*") if p.suffix != ".part")
     if not produced:
@@ -268,7 +294,7 @@ because it is the one thing every browser will play.
 """
 
 
-def fetch_media(identifier: str, destination: Path) -> Path:
+def fetch_media(identifier: str, destination: Path, max_seconds: float | None = None) -> Path:
     """Download the video, or return the copy already on disk."""
     import yt_dlp
 
@@ -288,7 +314,7 @@ def fetch_media(identifier: str, destination: Path) -> Path:
     for stale in cached:
         stale.unlink(missing_ok=True)
 
-    options = _options(destination) | {
+    options = _options(destination, max_seconds) | {
         "skip_download": False,
         "format": MEDIA_FORMAT,
         "merge_output_format": "mp4",

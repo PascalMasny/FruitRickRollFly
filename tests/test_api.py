@@ -119,3 +119,58 @@ def test_media_serves_the_downloaded_file(client, tmp_path):
     assert response.status_code == 200
     assert response.headers["content-type"] == "video/mp4"
     assert response.content == clip.read_bytes()
+
+
+# ── what a public address is allowed to see ──────────────────────────────────
+
+
+def test_the_admin_surface_does_not_exist_by_default(client):
+    """The workshop starts processes on the host and the notes page writes
+    files to it. Off unless asked for, and absent rather than refused: a 403
+    tells you where to keep knocking.
+
+    A write verb comes back 405 rather than 404 wherever the frontend has been
+    built, because the static mount that catches the path serves GET and HEAD
+    and nothing else. Both answers mean the same thing -- there is no such
+    route -- so both are accepted.
+    """
+    gone = {404, 405}
+    assert client.get("/api/jobs").status_code in gone
+    assert client.post("/api/jobs", json={"job": "train-ear"}).status_code in gone
+    assert client.get("/api/models").status_code in gone
+    assert client.post("/api/models/active", json={"sense": "ear"}).status_code in gone
+    assert client.get("/api/notes").status_code in gone
+    assert client.put("/api/notes", json={"text": "hello"}).status_code in gone
+
+
+def test_the_public_surface_survives_the_gate(client):
+    """Everything the interface needs to answer a link is still there."""
+    assert client.get("/api/health").status_code == 200
+    assert client.get("/api/brain").status_code == 200
+    assert client.get("/api/corpus").status_code == 200
+    assert client.get("/api/corrections").status_code == 200
+
+
+def test_the_schema_is_not_published_by_default(client):
+    """It is a map of the admin surface."""
+    assert client.get("/openapi.json").status_code == 404
+    assert client.get("/docs").status_code == 404
+
+
+def test_developing_publishes_the_schema(monkeypatch):
+    monkeypatch.setenv("FRRF_DEV", "1")
+    developing = TestClient(create_app())
+    assert developing.get("/openapi.json").status_code == 200
+
+
+def test_a_flood_of_submissions_is_refused(client, monkeypatch):
+    """Each submission makes this server talk to YouTube and burn a core."""
+    from api import ratelimit
+
+    monkeypatch.setenv("FRRF_RATE_PER_MINUTE", "3")
+    ratelimit.reset()
+    bad = {"url": "https://vimeo.com/76979871"}
+    codes = [client.post("/api/analysis", json=bad).status_code for _ in range(5)]
+    assert codes[:3] == [400, 400, 400], codes
+    assert codes[3:] == [429, 429], codes
+    ratelimit.reset()

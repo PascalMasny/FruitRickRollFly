@@ -81,6 +81,14 @@ export interface Evaluation {
   medianFirstSuspicion: number | null
 }
 
+/** What this server is: whether there is a fly, and which surfaces it offers. */
+export interface Health {
+  ok: boolean
+  admin: boolean
+  fly: { trained: string | null; target: string; sense: string } | null
+  detail?: string
+}
+
 export interface BrainCard {
   target: string
   trained: string | null

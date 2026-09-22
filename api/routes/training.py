@@ -7,8 +7,9 @@ endpoint exists so that finding one is not the end of the story.
 
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 
+from api.ratelimit import limit
 from api.services import corpus, corrections
 
 router = APIRouter(tags=["training"])
@@ -26,24 +27,10 @@ def list_corrections() -> dict:
     return {"count": len(rows), "corrections": rows}
 
 
-@router.post("/api/corrections", status_code=201)
+@router.post("/api/corrections", status_code=201, dependencies=[Depends(limit)])
 def add_correction(payload: dict) -> dict:
     try:
         correction = corrections.validate(payload)
     except corrections.InvalidCorrection as error:
         raise HTTPException(status_code=400, detail=str(error)) from error
     return corrections.append(correction).to_dict()
-
-
-@router.get("/api/notes")
-def read_notes() -> dict:
-    return {"text": corrections.read_notes()}
-
-
-@router.put("/api/notes")
-def save_notes(payload: dict) -> dict:
-    try:
-        text = corrections.write_notes(str(payload.get("text", "")))
-    except corrections.InvalidCorrection as error:
-        raise HTTPException(status_code=400, detail=str(error)) from error
-    return {"text": text, "saved": True}

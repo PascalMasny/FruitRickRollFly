@@ -34,11 +34,21 @@ class AudioDecodeError(RuntimeError):
     """ffmpeg could not turn the file into samples."""
 
 
-def decode(path: str | Path, sample_rate: int = 22_050) -> np.ndarray:
-    """Decode any container ffmpeg understands into mono float32 samples."""
+def decode(
+    path: str | Path, sample_rate: int = 22_050, max_seconds: float | None = None
+) -> np.ndarray:
+    """Decode any container ffmpeg understands into mono float32 samples.
+
+    ``max_seconds`` stops ffmpeg rather than trimming afterwards, which is the
+    difference between bounding the memory and merely regretting it: the whole
+    decode arrives here as one bytes object, at 88 MB per hour before the copy
+    below, and a file's real duration is whatever the file says rather than
+    whatever its metadata claimed.
+    """
     command = [
         "ffmpeg", "-v", "error", "-nostdin",
         "-i", str(path),
+        *(["-t", f"{float(max_seconds):.3f}"] if max_seconds and max_seconds > 0 else []),
         "-f", "f32le", "-acodec", "pcm_f32le",
         "-ac", "1", "-ar", str(sample_rate), "-",
     ]

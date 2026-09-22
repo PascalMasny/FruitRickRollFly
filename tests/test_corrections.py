@@ -15,6 +15,13 @@ def client():
 
 
 @pytest.fixture
+def admin_client(monkeypatch):
+    """The notes page writes a file on the host, so it is admin-only."""
+    monkeypatch.setenv("FRRF_ADMIN", "1")
+    return TestClient(create_app())
+
+
+@pytest.fixture
 def log(tmp_path, monkeypatch):
     path = tmp_path / "corrections.jsonl"
     monkeypatch.setattr(corrections, "CORRECTIONS_PATH", path)
@@ -91,10 +98,10 @@ def test_a_bad_correction_is_a_400(client, log):
     assert client.post("/api/corrections", json=_span(label="sort of")).status_code == 400
 
 
-def test_notes_round_trip(client, tmp_path, monkeypatch):
+def test_notes_round_trip(admin_client, tmp_path, monkeypatch):
     monkeypatch.setattr(corrections, "NOTES_PATH", tmp_path / "notes.md")
-    assert client.put("/api/notes", json={"text": "# what I think\n"}).status_code == 200
-    assert client.get("/api/notes").json()["text"] == "# what I think\n"
+    assert admin_client.put("/api/notes", json={"text": "# what I think\n"}).status_code == 200
+    assert admin_client.get("/api/notes").json()["text"] == "# what I think\n"
 
 
 def test_the_corpus_describes_every_track(client):

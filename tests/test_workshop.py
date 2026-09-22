@@ -10,7 +10,9 @@ from api.services import models, trainer
 
 
 @pytest.fixture
-def client():
+def client(monkeypatch):
+    """The workshop only exists where FRRF_ADMIN says it does."""
+    monkeypatch.setenv("FRRF_ADMIN", "1")
     return TestClient(create_app())
 
 
