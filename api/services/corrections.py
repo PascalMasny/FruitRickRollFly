@@ -21,6 +21,8 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
+from api.services import youtube
+
 ROOT = Path(__file__).resolve().parents[2]
 CORRECTIONS_PATH = ROOT / "data" / "corrections.jsonl"
 NOTES_PATH = ROOT / "data" / "notes.md"
@@ -65,6 +67,12 @@ def validate(payload: dict) -> Correction:
     video_id = str(payload.get("videoId") or payload.get("video_id") or "").strip()
     if not video_id:
         raise InvalidCorrection("which video?")
+    # Held to the same shape as a pasted link's id. This endpoint is open, and
+    # what it stores is read back by frrf-corrections, where it becomes a glob
+    # pattern and the tail of a fetch URL. Nothing downstream reaches a shell,
+    # but neither of those has any business taking an arbitrary string.
+    if not youtube.VIDEO_ID.match(video_id):
+        raise InvalidCorrection("that is not a YouTube video id")
 
     try:
         start = float(payload.get("start", 0.0))

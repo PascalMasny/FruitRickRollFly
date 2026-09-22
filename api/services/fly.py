@@ -11,7 +11,7 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from api.services import models
+from api.services import corpus, models
 from brain.model import FlyBrain
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -56,9 +56,15 @@ def metrics() -> dict:
 
 
 def forget() -> None:
-    """Drop the cached fly, so a new choice or a fresh model is picked up."""
+    """Drop everything cached off the model on disk.
+
+    The corpus summary belongs here too. It is derived from metrics.json and
+    traces.npz, both of which a training run rewrites, so leaving it behind
+    left the training-data tab describing a fly that no longer exists.
+    """
     _load.cache_clear()
     _metrics.cache_clear()
+    corpus.forget()
 
 
 def _evaluation(block: dict | None) -> dict | None:

@@ -31,7 +31,10 @@ _HOSTS_SHORTENER = {
 """Link shorteners we will follow. A Rickroll is very often hidden behind one,
 so refusing them outright would refuse the archetypal case -- but the rule
 after the redirect is exactly the rule before it: YouTube or nothing."""
-_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
+VIDEO_ID = re.compile(r"^[A-Za-z0-9_-]{11}$")
+"""What a YouTube video id is. Public because every path that accepts one from
+outside -- a pasted link, a hand-marked correction -- has to hold it to the
+same shape."""
 _PATH_PREFIXES = ("/shorts/", "/embed/", "/v/", "/live/")
 
 
@@ -97,7 +100,7 @@ def video_id(url: str) -> str:
     else:
         raise NotYouTube("This only takes YouTube links.")
 
-    if not _ID.match(found):
+    if not VIDEO_ID.match(found):
         raise NotYouTube("No video id in that link.")
     return found
 

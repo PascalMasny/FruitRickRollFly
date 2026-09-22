@@ -365,6 +365,33 @@ def check_budget(config: BrainConfig, percepts: int) -> None:
         )
 
 
+def shipped_metadata(
+    *, target: str, sense: str, epochs: int, seed: int, tracks: int, percepts: int
+) -> dict:
+    """What the saved fly says about itself.
+
+    A function rather than a literal inside ``main`` so that the one field the
+    server depends on can be asserted without a full training run. ``sense`` is
+    that field: :mod:`api.services.models` reads it to decide which sense a
+    model answers for, and while it was being dropped every eye was filed as an
+    ear and could be made the active ear. Both senses produce 180 receptors, so
+    nothing crashed -- the fly just answered with a brain trained on motion.
+    """
+    return {
+        "target": target,
+        "trained": time.strftime("%Y-%m-%d"),
+        "sense": sense,
+        "epochs": epochs,
+        "seed": seed,
+        "tracks": tracks,
+        "percepts": percepts,
+        "calibration": (
+            "confidence is calibrated on the training corpus; the accuracy figures "
+            "in metrics.json are out of fold"
+        ),
+    }
+
+
 def _seconds(value: float | None) -> str:
     return "never" if value is None else f"{value:.1f}s"
 
@@ -575,9 +602,28 @@ def main(argv: list[str] | None = None) -> int:
                 "baseline": config.da_baseline,
                 "threshold": config.da_commit,
                 "tuned_on": (
-                    "out-of-fold traces: specificity and recall on the rendition folds, "
-                    "latency on the upload folds"
+                    "out-of-fold traces: specificity and recall constrained on the "
+                    "upload folds, upload latency minimised, rendition recall "
+                    "maximised as a tie-break within LATENCY_SLACK of the quickest"
                 ),
+                # The other two commit paths are not swept, but they are part of
+                # the rule and belong in the record of it. They used to exist in
+                # metrics.json without anything writing them, so the next run
+                # silently dropped them.
+                "streak": {
+                    "confidence": config.da_streak_confidence,
+                    "seconds": config.da_streak_seconds,
+                    "note": (
+                        "ungated third path; a run of near-certainty, for a sting "
+                        "inside a long video"
+                    ),
+                },
+                "burst": {
+                    "confidence": config.da_burst_confidence,
+                    "seconds": config.da_burst_seconds,
+                    "max_video_seconds": config.da_burst_max_seconds,
+                    "note": "fast path for recordings too short for the pool to charge",
+                },
                 "curve": curve,
             },
         }
@@ -585,18 +631,14 @@ def main(argv: list[str] | None = None) -> int:
     print("\ntraining the shipped fly on the whole corpus")
     everything = np.ones(len(corpus.target), dtype=bool)
     brain = train_brain(config, corpus, everything, args.epochs, args.seed)
-    brain.metadata = {
-        "target": manifest.target,
-        "trained": time.strftime("%Y-%m-%d"),
-        "epochs": args.epochs,
-        "seed": args.seed,
-        "tracks": len(corpus.tracks),
-        "percepts": int(len(corpus.target)),
-        "calibration": (
-            "confidence is calibrated on the training corpus; the accuracy figures "
-            "in metrics.json are out of fold"
-        ),
-    }
+    brain.metadata = shipped_metadata(
+        target=manifest.target,
+        sense=args.sense,
+        epochs=args.epochs,
+        seed=args.seed,
+        tracks=len(corpus.tracks),
+        percepts=int(len(corpus.target)),
+    )
     brain.save(args.out)
     print(f"saved {args.out} ({args.out.stat().st_size / 1024:.0f} kB)")
 

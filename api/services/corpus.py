@@ -79,3 +79,13 @@ def summary() -> dict:
             "upload": metrics.get("unheard_upload", {}).get("tracks", {}),
         },
     }
+
+
+def forget() -> None:
+    """Drop the cached summary.
+
+    None of this changes without a retrain -- but a retrain is a button on the
+    workshop page, not a restart, so "cached until the process dies" meant the
+    training-data tab kept serving the previous fly's numbers.
+    """
+    summary.cache_clear()

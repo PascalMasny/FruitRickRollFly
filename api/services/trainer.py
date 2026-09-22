@@ -185,26 +185,43 @@ def start(job_name: str, options: dict | None = None) -> Run:
         _RUNS[run.id] = run
         _ORDER.append(run.id)
 
+    # Spawned here rather than inside the thread. The thread used to own the
+    # Popen, so `start` could return a run whose `process` was still None, and
+    # a stop issued in that window found nothing to terminate and reported
+    # success. The caller cannot ask to stop a run before it has the id, so
+    # spawning before returning closes it.
+    try:
+        # No shell, cwd pinned to the repository, stderr folded into stdout so
+        # the log reads in the order it happened.
+        run.process = subprocess.Popen(  # noqa: S603 - argv is built from a template
+            argv, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, bufsize=1,
+        )
+    except Exception as error:
+        run.lines.append(f"{type(error).__name__}: {error}")
+        run.status, run.code, run.finished = "failed", -1, time.time()
+        return run
+
     def pump() -> None:
+        process = run.process
+        assert process is not None and process.stdout is not None
         try:
-            # No shell, cwd pinned to the repository, stderr folded into
-            # stdout so the log reads in the order it happened.
-            process = subprocess.Popen(  # noqa: S603 - argv is built from a template
-                argv, cwd=ROOT, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
-                text=True, bufsize=1,
-            )
-            run.process = process
-            assert process.stdout is not None
             for line in process.stdout:
                 run.lines.append(line.rstrip("\n"))
             run.code = process.wait()
-            run.status = "done" if run.code == 0 else "failed"
+            if run.status != "stopped":
+                run.status = "done" if run.code == 0 else "failed"
         except Exception as error:
             run.lines.append(f"{type(error).__name__}: {error}")
             run.status = "failed"
             run.code = -1
         finally:
             run.finished = time.time()
+            # A finished run has almost certainly rewritten models/ or
+            # metrics.json, and the server holds both behind an lru_cache.
+            from api.services import fly
+
+            fly.forget()
 
     threading.Thread(target=pump, name=f"job-{run.id}", daemon=True).start()
     return run

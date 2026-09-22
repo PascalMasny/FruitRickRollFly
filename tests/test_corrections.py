@@ -131,3 +131,21 @@ def test_each_correction_is_its_own_fold_group(tmp_path):
     assert merged["corrections"]["count"] == 2
     groups = {t["group"] for t in merged["tracks"] if t["kind"] == "correction"}
     assert groups == {"fix-vid"}
+
+
+@pytest.mark.parametrize(
+    "identifier",
+    ["../../../etc/passwd", "dQw4w9WgXcQ extra", "short", "dQw4w9WgXcQdQw4w9WgXcQ", "../"],
+)
+def test_a_video_id_that_is_not_one_is_refused(identifier):
+    """This endpoint is open and what it stores is read back by
+    frrf-corrections, where the id becomes a glob pattern and the tail of a
+    fetch URL. Neither has any business taking an arbitrary string."""
+    with pytest.raises(corrections.InvalidCorrection):
+        corrections.validate(_span(videoId=identifier))
+
+
+def test_a_bad_video_id_is_a_400(client, log):
+    bad = _span(videoId="../../../etc/passwd")
+    assert client.post("/api/corrections", json=bad).status_code == 400
+    assert corrections.load(log) == []

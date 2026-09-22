@@ -141,3 +141,78 @@ def test_bad_options_are_a_400(client):
 def test_the_job_list_is_served(client):
     body = client.get("/api/jobs").json()
     assert {job["name"] for job in body["jobs"]} >= {"train-ear", "train-eye", "fetch"}
+
+
+# ── which sense a model answers for ──────────────────────────────────────────
+
+
+def test_a_recorded_sense_files_the_model_under_it(shelf):
+    """`--sense eye` used to be parsed and thrown away, so every eye was filed
+    as an ear and could be made the active ear. Both senses produce 180
+    receptors, so nothing crashed -- the fly answered with a brain trained on
+    motion."""
+    from brain.model import FlyBrain
+
+    eye = FlyBrain.load(shelf / "fly_brain.npz")
+    eye.metadata = dict(eye.metadata) | {"sense": "eye"}
+    eye.save(shelf / "fly_eye.npz")
+
+    by_name = {m.name: m.sense for m in models.available()}
+    assert by_name["fly_eye.npz"] == "eye"
+    assert by_name["fly_brain.npz"] == "ear"
+    # And the one trained on sight must not be offered as the ear's default.
+    assert models.active("ear").name == "fly_brain.npz"
+    assert models.active("eye").name == "fly_eye.npz"
+
+
+def test_the_shipped_metadata_records_the_sense():
+    from training.train import shipped_metadata
+
+    metadata = shipped_metadata(
+        target="a song", sense="eye", epochs=1, seed=0, tracks=2, percepts=3
+    )
+    assert metadata["sense"] == "eye"
+    assert set(metadata) >= {"target", "trained", "sense", "epochs", "seed", "tracks", "percepts"}
+
+
+# ── the run, and being able to stop it ───────────────────────────────────────
+
+
+@pytest.fixture
+def quiet_shelf(monkeypatch):
+    """An empty run table, so a test's process cannot be seen by another."""
+    monkeypatch.setattr(trainer, "_RUNS", {})
+    monkeypatch.setattr(trainer, "_ORDER", [])
+
+
+def test_a_run_can_be_stopped_the_instant_it_starts(quiet_shelf, monkeypatch):
+    """The Popen used to happen inside the pump thread, so `start` could return
+    a run whose process was still None -- and a stop in that window found
+    nothing to terminate and reported success anyway."""
+    import sys
+
+    monkeypatch.setitem(
+        trainer.JOBS, "sleep",
+        trainer.Job("sleep", "sleep", "a process that will not end on its own",
+                    lambda options: [sys.executable, "-c", "import time; time.sleep(30)"]),
+    )
+    run = trainer.start("sleep")
+    assert run.process is not None, "start returned before the process existed"
+
+    stopped = trainer.stop(run.id)
+    assert stopped is not None and stopped.status == "stopped"
+    assert run.process.wait(timeout=10) is not None
+    assert trainer.current() is None
+
+
+def test_forgetting_the_fly_drops_the_corpus_summary():
+    """The corpus summary is derived from metrics.json and traces.npz, both of
+    which a training run rewrites. Cached for the life of the process, the
+    training-data tab kept describing the previous fly."""
+    from api.services import corpus
+    from api.services import fly as fly_service
+
+    corpus.summary()
+    assert corpus.summary.cache_info().currsize == 1
+    fly_service.forget()
+    assert corpus.summary.cache_info().currsize == 0
