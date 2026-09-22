@@ -21,7 +21,7 @@ from dataclasses import asdict, dataclass, field
 from datetime import UTC, datetime
 from pathlib import Path
 
-from api.services import youtube
+from api.services import sources
 
 ROOT = Path(__file__).resolve().parents[2]
 CORRECTIONS_PATH = ROOT / "data" / "corrections.jsonl"
@@ -43,6 +43,7 @@ class Correction:
     label: str
     start: float
     end: float
+    source: str = sources.DEFAULT_SOURCE.key
     title: str = ""
     url: str = ""
     note: str = ""
@@ -64,15 +65,22 @@ def validate(payload: dict) -> Correction:
     if label not in LABELS:
         raise InvalidCorrection(f"label must be one of {sorted(LABELS)}")
 
+    key = str(payload.get("source") or sources.DEFAULT_SOURCE.key).strip()
+    try:
+        source = sources.by_key(key)
+    except sources.UnsupportedLink as error:
+        raise InvalidCorrection(f"no such source: {key!r}") from error
+
     video_id = str(payload.get("videoId") or payload.get("video_id") or "").strip()
     if not video_id:
         raise InvalidCorrection("which video?")
-    # Held to the same shape as a pasted link's id. This endpoint is open, and
-    # what it stores is read back by frrf-corrections, where it becomes a glob
-    # pattern and the tail of a fetch URL. Nothing downstream reaches a shell,
-    # but neither of those has any business taking an arbitrary string.
-    if not youtube.VIDEO_ID.match(video_id):
-        raise InvalidCorrection("that is not a YouTube video id")
+    # Held to the same shape as a pasted link's id, against that link's own
+    # platform. This endpoint is open, and what it stores is read back by
+    # frrf-corrections, where it becomes a glob pattern and the tail of a fetch
+    # URL. Nothing downstream reaches a shell, but neither of those has any
+    # business taking an arbitrary string.
+    if not source.id_pattern.match(video_id):
+        raise InvalidCorrection(f"that is not a {source.label} video id")
 
     try:
         start = float(payload.get("start", 0.0))
@@ -86,6 +94,7 @@ def validate(payload: dict) -> Correction:
 
     return Correction(
         video_id=video_id,
+        source=source.key,
         label=label,
         start=round(start, 3),
         end=round(end, 3),

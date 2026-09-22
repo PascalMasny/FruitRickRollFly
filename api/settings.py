@@ -13,6 +13,7 @@ during collection cannot be moved back.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 
 ADMIN = "FRRF_ADMIN"
 """Whether the workshop and the notes page exist at all.
@@ -31,6 +32,7 @@ MAX_VIDEO_SECONDS = "FRRF_MAX_VIDEO_SECONDS"
 MAX_CONCURRENT = "FRRF_MAX_CONCURRENT_ANALYSES"
 CACHE_BUDGET_GB = "FRRF_CACHE_BUDGET_GB"
 RATE_PER_MINUTE = "FRRF_RATE_PER_MINUTE"
+COOKIES_FILE = "FRRF_COOKIES_FILE"
 BEHIND_PROXY = "FRRF_BEHIND_PROXY"
 TRUSTED_HOSTS = "FRRF_TRUSTED_HOSTS"
 
@@ -122,3 +124,23 @@ def cache_budget_bytes() -> int:
 def rate_per_minute() -> int:
     """Submissions allowed per client per minute. Zero switches it off."""
     return max(0, int(_number(RATE_PER_MINUTE, 10)))
+
+
+def cookies_file() -> Path | None:
+    """A Netscape-format cookie jar handed to yt-dlp, if there is one.
+
+    Two different problems, one answer. Instagram returns an empty media
+    response to anyone who is not logged in, so without this it does not work
+    at all. And YouTube blocks datacenter address ranges -- which every host
+    worth deploying on is -- so without this it stops working the moment it
+    leaves a laptop.
+
+    Mount it read-only and treat it as a credential, because it is one:
+    whoever holds this file is logged in as that account. Use an account you
+    are willing to lose.
+    """
+    raw = os.environ.get(COOKIES_FILE, "").strip()
+    if not raw:
+        return None
+    path = Path(raw)
+    return path if path.is_file() else None

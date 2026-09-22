@@ -31,6 +31,7 @@ export default function CorrectionBar({ video, summary, span, onClear }: Props) 
     try {
       await postCorrection({
         videoId: video.id,
+        source: video.source,
         label,
         start: span[0],
         end: span[1],

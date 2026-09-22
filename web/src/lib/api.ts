@@ -50,6 +50,7 @@ export async function fetchCorrections(): Promise<{ count: number; corrections: 
 
 export async function postCorrection(body: {
   videoId: string
+  source: string
   label: 'rickroll' | 'not-rickroll'
   start: number
   end: number

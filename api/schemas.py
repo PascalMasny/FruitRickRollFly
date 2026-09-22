@@ -15,7 +15,10 @@ class AnalysisRequest(BaseModel):
         ...,
         min_length=1,
         max_length=2048,
-        description="A YouTube video link. Anything else is rejected.",
+        description=(
+            "A link to one video on YouTube, TikTok or Instagram. Anything "
+            "else is rejected; see api.services.sources."
+        ),
         examples=["https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
     )
 

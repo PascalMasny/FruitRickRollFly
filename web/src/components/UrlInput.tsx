@@ -10,6 +10,10 @@ const EXAMPLES = [
   { label: 'the classic', url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ' },
   { label: 'a hard negative', url: 'https://www.youtube.com/watch?v=BeyEGebJ1l4' },
   { label: 'a piano cover', url: 'https://www.youtube.com/watch?v=rTga41r3a4s' },
+  {
+    label: 'on tiktok',
+    url: 'https://www.tiktok.com/@rickastleyofficial/video/7680224173913885974',
+  },
 ]
 
 export default function UrlInput({ onSubmit, busy, disabled }: Props) {
@@ -24,16 +28,16 @@ export default function UrlInput({ onSubmit, busy, disabled }: Props) {
       }}
     >
       <div className="url-row">
-        <span className="url-prompt">youtube</span>
+        <span className="url-prompt">link</span>
         <input
           className="url-input"
           type="url"
           inputMode="url"
           spellCheck={false}
-          placeholder="https://www.youtube.com/watch?v=..."
+          placeholder="youtube, tiktok or instagram"
           value={value}
           onChange={(event) => setValue(event.target.value)}
-          aria-label="YouTube link"
+          aria-label="Link to a video on YouTube, TikTok or Instagram"
           disabled={disabled}
         />
         <button className="url-submit" type="submit" disabled={busy || disabled || !value.trim()}>

@@ -20,6 +20,8 @@ from pathlib import Path
 
 import numpy as np
 
+from api.services import sources
+
 ROOT = Path(__file__).resolve().parent.parent
 MANIFEST = ROOT / "training" / "manifest.json"
 AUDIO_DIR = ROOT / "data" / "audio"
@@ -41,6 +43,10 @@ class Track:
     kind: str
     use: str
     title: str
+    source: str = sources.DEFAULT_SOURCE.key
+    """Which platform this track lives on. Defaulted, because every track
+    curated before TikTok and Instagram were accepted is a YouTube one and
+    there is nothing else it could be."""
 
     @property
     def is_positive(self) -> bool:
@@ -52,7 +58,7 @@ class Track:
 
     @property
     def watch_url(self) -> str:
-        return f"https://www.youtube.com/watch?v={self.id}"
+        return sources.by_key(self.source).watch_url(self.id)
 
     def feature_path(self, directory: Path = FEATURE_DIR) -> Path:
         return directory / f"{self.id}.npz"
@@ -79,11 +85,19 @@ class Manifest:
     @classmethod
     def load(cls, path: Path = MANIFEST, include_holdout: bool = False) -> Manifest:
         raw = json.loads(Path(path).read_text())
+        tracks = [Track(**entry) for entry in raw["tracks"]]
+        # Ids name the cached audio and the cached percepts, so two tracks
+        # sharing one would silently train on the same sound twice under two
+        # labels. Cheap to check and impossible to see in a diff of 65 rows.
+        seen = [track.id for track in tracks]
+        if len(set(seen)) != len(seen):
+            twice = sorted({i for i in seen if seen.count(i) > 1})
+            raise ValueError(f"{path}: these track ids appear more than once: {twice}")
         return cls(
             target=raw["target"],
             curated=raw["curated"],
             curation_rules=raw["curation_rules"],
-            tracks=[Track(**entry) for entry in raw["tracks"]],
+            tracks=tracks,
             include_holdout=include_holdout,
         )
 

@@ -12,6 +12,8 @@ export type Stage =
 
 export interface Video {
   id: string
+  /** Which platform it came from: 'youtube' | 'tiktok' | 'instagram'. */
+  source: string
   title: string
   channel: string
   duration: number | null
@@ -114,6 +116,7 @@ export interface Spread {
 
 export interface CorpusTrack {
   id: string
+  source: string
   title: string
   kind: string
   group: string

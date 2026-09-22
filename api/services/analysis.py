@@ -20,7 +20,7 @@ from typing import Any
 import numpy as np
 
 from api import settings
-from api.services import cache, youtube
+from api.services import cache, media, sources
 from api.services import fly as fly_service
 from brain.audio import decode
 from brain.model import Response
@@ -183,7 +183,7 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
     pictures: threading.Thread | None = None
     try:
         stage(Stage.RESOLVING)
-        identifier = youtube.resolve_video_id(job.url)
+        source, identifier = sources.resolve_link(job.url)
 
         stage(Stage.FETCHING)
         # Audio only, and the metadata comes back from the same call. The fly
@@ -192,7 +192,7 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
         # extractions and the video download were 94 percent of it, against
         # five percent for hearing the thing.
         limit = settings.max_video_seconds()
-        path, video = youtube.fetch_audio(identifier, fly_service.CACHE_DIR, limit)
+        path, video = media.fetch_audio(source, identifier, fly_service.CACHE_DIR, limit)
         job.audio = path
         job.video = video.to_dict()
         emit("video", video=job.video)
@@ -201,7 +201,7 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
         # behind the analysis and announced whenever it lands.
         def with_pictures() -> None:
             try:
-                job.media = youtube.fetch_media(identifier, fly_service.CACHE_DIR, limit)
+                job.media = media.fetch_media(source, identifier, fly_service.CACHE_DIR, limit)
                 emit("media", url=f"/api/analysis/{job.id}/media", ok=True)
             except Exception as error:  # the verdict does not depend on this
                 emit("media", url=None, ok=False, detail=f"{type(error).__name__}: {error}")
@@ -223,12 +223,12 @@ def _work(job: Job, loop: asyncio.AbstractEventLoop) -> None:
         job.summary = summarise(response, video.duration, time.perf_counter() - started)
         emit("summary", summary=job.summary)
         stage(Stage.DONE)
-    except (youtube.NotYouTube, youtube.TooLong) as error:
+    except (sources.UnsupportedLink, media.TooLong, media.NeedsCredentials) as error:
         # Both of these are the caller's fault and readable as they stand, so
         # they go out as themselves rather than as a class name and a repr.
         job.error = str(error)
         job.stage = Stage.FAILED
-        emit("error", message=job.error, kind_detail="not-youtube")
+        emit("error", message=job.error, kind_detail="unsupported-link")
         emit("stage", stage=Stage.FAILED.value)
     except Exception as error:
         job.error = f"{type(error).__name__}: {error}"

@@ -3,7 +3,7 @@
 A Drosophila mushroom body model that learns to release dopamine when it hears
 a Rickroll.
 
-Paste a YouTube link. It downloads the audio, runs it through a model of the
+Paste a link — YouTube, TikTok or Instagram. It downloads the audio, runs it through a model of the
 fruit fly's olfactory learning circuit — a sparse random expansion read out by
 two output neurons, with dopamine as the only write signal — and shows you what
 the fly's dopamine did about it, second by second.
@@ -228,10 +228,23 @@ The video plays from our own copy rather than from a YouTube embed. The
 uploads most worth asking about are very often the ones whose uploader has
 disabled embedding, and for those the embed is a grey box reading *this video
 is not available*; the file the fly listened to is already on disk, so it is
-served from there. Links are still YouTube-only. A link shortener is followed —
+served from there. Links are YouTube, TikTok or Instagram, and nothing else:
+which platforms count is a product decision and it lives in
+`api/services/sources.py`, one source to a definition — its hosts, the shape of
+its ids, and the way back to a canonical URL. A link shortener is followed —
 a Rickroll is very often hidden behind one — but the rule after the redirect is
-the rule before it, and every hop has to land on a shortener or on YouTube, so
-it cannot be pointed at anything else.
+the rule before it, and every hop has to land on a shortener or on a source we
+accept, so it cannot be pointed at anything else. Each platform's own share
+link — `vm.tiktok.com`, `tiktok.com/t/`, `instagram.com/share/` — is followed
+the same way, because it carries no id that can be read off the URL.
+
+**Instagram needs credentials and YouTube will eventually.** Instagram returns
+an empty media response to anyone who is not logged in, so it does not work at
+all without a cookie jar; YouTube blocks datacenter address ranges, so it stops
+working the moment this leaves a laptop. Both take the same answer: point
+`FRRF_COOKIES_FILE` at a Netscape-format cookie file. Treat it as the
+credential it is — whoever holds it is logged in as that account — and use an
+account you are willing to lose.
 
 `models/traces.npz` holds every out-of-fold confidence timeline. Cross-validation
 is the expensive part of this project and those timelines are its real product:
@@ -267,6 +280,7 @@ variables, and every default below is the safe reading:
 | `FRRF_MAX_CONCURRENT_ANALYSES` | `2` | Analyses in flight. The rest wait in `queued`. |
 | `FRRF_CACHE_BUDGET_GB` | `5` | `data/cache` is swept to this, oldest first. |
 | `FRRF_RATE_PER_MINUTE` | `10` | Per client, on the two endpoints that cost something. |
+| `FRRF_COOKIES_FILE` | unset | Netscape cookie jar for yt-dlp. Instagram does not work without one; YouTube will not from a datacenter. |
 | `FRRF_BEHIND_PROXY` | `0` | Trust the first hop of `X-Forwarded-For`. Only true where a proxy really is in front. |
 | `FRRF_TRUSTED_HOSTS` | unset | Comma-separated `Host` allowlist. |
 | `FRRF_CORS_ORIGINS` | unset | Comma-separated. Empty in production: the frontend is served from this same origin. |

@@ -14,6 +14,8 @@ from pathlib import Path
 
 import numpy as np
 
+from api.services import sources
+
 ROOT = Path(__file__).resolve().parents[2]
 METRICS_PATH = ROOT / "models" / "metrics.json"
 TRACES_PATH = ROOT / "models" / "traces.npz"
@@ -55,8 +57,10 @@ def summary() -> dict:
     tracks = []
     for entry in manifest.get("tracks", []):
         identifier = entry["id"]
+        source = sources.by_key(entry.get("source") or sources.DEFAULT_SOURCE.key)
         tracks.append({
             "id": identifier,
+            "source": source.key,
             "title": entry.get("title", identifier),
             "kind": entry.get("kind", "unknown"),
             "group": entry.get("group", ""),
@@ -64,7 +68,7 @@ def summary() -> dict:
             # `target` in the manifest is the song's name, not a label; the
             # per-track label is the thing to compare against.
             "positive": entry.get("label") == POSITIVE_LABEL,
-            "watchUrl": f"https://www.youtube.com/watch?v={identifier}",
+            "watchUrl": source.watch_url(identifier),
             "spread": spreads.get(identifier, {}),
             "verdict": verdicts.get(identifier, {}),
         })

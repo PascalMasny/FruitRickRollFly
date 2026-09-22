@@ -18,7 +18,7 @@ from api.ratelimit import limit
 from api.schemas import AnalysisAccepted, AnalysisRequest
 from api.services import analysis
 from api.services import fly as fly_service
-from api.services.youtube import NotYouTube, is_shortener, video_id
+from api.services.sources import UnsupportedLink, find, needs_resolving
 
 router = APIRouter(tags=["analysis"])
 
@@ -38,7 +38,7 @@ async def submit(request: AnalysisRequest, background: BackgroundTasks) -> Analy
 
     The link is checked here as well as in the worker, so a bad paste comes
     back as a 400 with a readable reason instead of as a failed job the client
-    has to subscribe to in order to discover. Shorteners are the exception:
+    has to subscribe to in order to discover. Redirects are the exception:
     they are resolved in the worker, because deciding about one means making a
     request.
     """
@@ -47,14 +47,14 @@ async def submit(request: AnalysisRequest, background: BackgroundTasks) -> Analy
     except fly_service.UntrainedFly as error:
         raise HTTPException(status_code=503, detail=str(error)) from error
 
-    # A shortener cannot be checked without following it, and following it
+    # A redirect cannot be checked without following it, and following it
     # needs the network, so it is let through here and resolved in the worker
-    # -- where, if it does not land on YouTube, it fails like any other link
-    # that is not YouTube. Everything else is still refused before any fetch.
-    if not is_shortener(request.url):
+    # -- where, if it does not land on a source we accept, it fails like any
+    # other link that does not. Everything else is refused before any fetch.
+    if not needs_resolving(request.url):
         try:
-            video_id(request.url)
-        except NotYouTube as error:
+            find(request.url)
+        except UnsupportedLink as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
     job = analysis.create(request.url)

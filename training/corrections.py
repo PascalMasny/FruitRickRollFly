@@ -27,8 +27,9 @@ from pathlib import Path
 
 import numpy as np
 
+from api.services import sources
 from api.services.corrections import CORRECTIONS_PATH, load
-from api.services.youtube import fetch_audio
+from api.services.media import fetch_audio
 from brain.audio import decode, level
 from brain.config import BrainConfig
 from brain.model import FlyBrain
@@ -41,6 +42,18 @@ MERGED_MANIFEST = ROOT / "data" / "manifest-with-corrections.json"
 MIN_SECONDS = 1.5
 """Shorter than this and a span cannot fill even one percept window, so it
 would contribute nothing but a label."""
+
+
+def _group(correction: dict) -> str:
+    """The fold group a correction belongs to.
+
+    Keyed on the video it was cut from, and on the platform as well, because
+    the id spaces overlap: an eleven-digit TikTok id is a well-formed YouTube
+    id. Two unrelated videos sharing a group would put one in training while
+    the other was held out and call the result a held-out score.
+    """
+    key = correction.get("source") or sources.DEFAULT_SOURCE.key
+    return f"fix-{key}-{correction['video_id']}"
 
 
 def featurise(
@@ -62,7 +75,8 @@ def featurise(
         with np.load(destination, allow_pickle=False) as data:
             return identifier, int(len(data["receptors"]))
 
-    path, _ = fetch_audio(correction["video_id"], cache_dir)
+    source = sources.by_key(correction.get("source") or sources.DEFAULT_SOURCE.key)
+    path, _ = fetch_audio(source, correction["video_id"], cache_dir)
     samples = decode(path, config.sample_rate)
     start = int(float(correction["start"]) * config.sample_rate)
     stop = min(len(samples), int(float(correction["end"]) * config.sample_rate))
@@ -80,7 +94,7 @@ def featurise(
         t=t,
         video_id=np.array(identifier),
         label=np.array(correction["label"]),
-        group=np.array(f"fix-{correction['video_id']}"),
+        group=np.array(_group(correction)),
         seconds=np.float32(clip.size / config.sample_rate),
         truncated=np.bool_(False),
     )
@@ -141,8 +155,9 @@ def main(argv: list[str] | None = None) -> int:
         total += count
         tracks.append({
             "id": identifier,
+            "source": correction.get("source") or sources.DEFAULT_SOURCE.key,
             "label": correction["label"].replace("not-rickroll", "other"),
-            "group": f"fix-{correction['video_id']}",
+            "group": _group(correction),
             "kind": "correction",
             "use": "train",
             "title": (
