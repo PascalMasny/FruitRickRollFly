@@ -29,10 +29,16 @@ frrf-train                       # cross-validate, tune the commit rule, ship a 
 frrf-evaluate                    # draw what cross-validation found
 frrf-insights                    # draw what it was trained on, and write docs/TRAINING.md
 frrf-corrections                 # fold hand-marked spans back into the corpus
+frrf-watch                       # optional: fetch the corpus as video, for the eye
+frrf-commitment                  # optional: re-sweep the commit rule on saved traces
 
 cd web && npm install && npm run build && cd ..
-uvicorn api.main:app             # API and frontend on one origin, one process
+FRRF_ADMIN=1 FRRF_DEV=1 uvicorn api.main:app    # one origin, one process
 ```
+
+`FRRF_ADMIN=1` is what puts the workshop and the notes page there. They start
+processes on this machine and write files to it, which is the point on a
+laptop and is why they are off by default; see **Put it somewhere** below.
 
 Training holds itself to a memory ceiling — 8 GB by default, `--memory-budget`
 or `FRRF_MEMORY_BUDGET_GB` to move it. It projects its peak before starting,
@@ -233,10 +239,59 @@ every figure and every commit-rule experiment is a function of them, so
 re-asking a question of the model costs a file read rather than thirteen folds
 of retraining.
 
+## Put it somewhere
+
+```bash
+docker compose up -d --build       # after pointing Caddyfile at your domain
+```
+
+Two stages: node builds the frontend, then a `python:3.13-slim` that carries
+ffmpeg, the trained fly, and nothing from `data/`. Caddy terminates TLS in
+front of it. `data/` is a volume; `models/` comes from the image, so a deploy
+ships a fly rather than hoping one is on the disk.
+
+**One worker, and it is not a default worth changing.** The analysis jobs, the
+training runs, the rate-limit window and the caches in front of the model all
+live in one process's memory. A second worker sees none of them and answers
+half the event streams with a 404. Scaling out means moving that state
+somewhere shared first.
+
+What changes between a laptop and a public address is a set of environment
+variables, and every default below is the safe reading:
+
+| | default | |
+|---|---|---|
+| `FRRF_ADMIN` | `0` | Whether the workshop and the notes page are registered at all. They start processes on the host. |
+| `FRRF_DEV` | `0` | Serves `/docs` and the schema, and lets Vite's origin through CORS. |
+| `FRRF_MAX_VIDEO_SECONDS` | `1200` | Refused before the download, by yt-dlp, and again at decode by ffmpeg. |
+| `FRRF_MAX_CONCURRENT_ANALYSES` | `2` | Analyses in flight. The rest wait in `queued`. |
+| `FRRF_CACHE_BUDGET_GB` | `5` | `data/cache` is swept to this, oldest first. |
+| `FRRF_RATE_PER_MINUTE` | `10` | Per client, on the two endpoints that cost something. |
+| `FRRF_BEHIND_PROXY` | `0` | Trust the first hop of `X-Forwarded-For`. Only true where a proxy really is in front. |
+| `FRRF_TRUSTED_HOSTS` | unset | Comma-separated `Host` allowlist. |
+| `FRRF_CORS_ORIGINS` | unset | Comma-separated. Empty in production: the frontend is served from this same origin. |
+
+The workshop is not something to put on a public interface behind a password.
+Leave `FRRF_ADMIN=0`, publish nothing, and reach it down an SSH tunnel when
+you want it:
+
+```bash
+ssh -L 8000:127.0.0.1:8000 you@host
+```
+
+**The thing most likely to break this is not in this repository.** YouTube
+blocks datacenter address ranges, and every major host is one. Expect
+`Sign in to confirm you're not a bot` and plan for it before anything else: a
+cookies file, a PO-token provider, or egress that is not a datacenter. A
+commercial VPN is not a fix -- those exit through datacenter ranges too, ones
+that have been used for exactly this for years. And yt-dlp goes stale within
+weeks of a YouTube change, so rebuild on a schedule rather than pinning it and
+forgetting.
+
 ## Develop
 
 ```bash
-pytest          # 104 tests
+pytest          # 180 tests
 ruff check .
 ```
 
@@ -246,7 +301,9 @@ The architecture is Drosophila's. The parameters that are the fly's say so in
 `brain/config.py`; the ones that are engineering say that too. The song is
 Stock, Aitken and Waterman's, 1987.
 
-The neuropil surfaces in `web/public/fly-brain.glb` are from the [Janelia FlyEM
+The neuropil surfaces in `models/fly-brain.glb`, and the Kenyon cell positions
+in `web/public/kenyon-cells.bin` sampled inside the calyx of them, are from the
+[Janelia FlyEM
 hemibrain](https://www.janelia.org/project-team/flyem/hemibrain) v1.2 ROI
 segmentation, used under CC BY 4.0. They are the only part of this repository
 that is someone else's measurement rather than our arithmetic.

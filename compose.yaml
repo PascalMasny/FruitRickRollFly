@@ -1,0 +1,52 @@
+# The public deployment: one fly, one reverse proxy, no admin surface.
+#
+# For a machine you are sitting at, set FRRF_ADMIN=1 and drop the proxy. For a
+# machine with an address, leave it exactly as it is and reach the workshop
+# over an SSH tunnel:
+#
+#     ssh -L 8000:127.0.0.1:8000 you@host
+#
+# which needs FRRF_ADMIN=1 and a port published on the loopback only. Putting
+# the workshop on the public interface behind a password is the third-best
+# option and it is a long way third: it starts processes on the host.
+
+services:
+  fly:
+    build: .
+    restart: unless-stopped
+    expose: ["8000"]
+    volumes:
+      # Only the cache, the corrections and the notes. models/ comes from the
+      # image, so a deploy ships the fly rather than hoping one is on the disk.
+      - frrf-data:/app/data
+    environment:
+      FRRF_ADMIN: "0"
+      FRRF_BEHIND_PROXY: "1"
+      FRRF_MAX_VIDEO_SECONDS: "1200"
+      FRRF_MAX_CONCURRENT_ANALYSES: "2"
+      FRRF_CACHE_BUDGET_GB: "5"
+      FRRF_RATE_PER_MINUTE: "10"
+    # decode() holds a whole track as float32. The ceiling is here as well as
+    # in the settings, because the settings are a promise and this is a limit.
+    mem_limit: 2g
+    deploy:
+      resources:
+        limits:
+          cpus: "1.8"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on: [fly]
+
+volumes:
+  frrf-data:
+  caddy-data:
+  caddy-config:

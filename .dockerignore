@@ -1,0 +1,33 @@
+# The corpus and everything derived from it. Large, rebuildable, and not ours
+# to redistribute -- and an image that carries 500 MB of Rick Astley is an
+# image nobody will push twice.
+data/audio/*
+data/video/*
+data/cache/*
+data/features/*
+data/features-eye/*
+data/corrections.jsonl
+data/notes.md
+data/manifest-with-corrections.json
+data/active-models.json
+
+# Built in the image, from source, by a stage that has node.
+web/node_modules/
+web/dist/
+
+# Local only.
+.venv/
+.git/
+.github/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.DS_Store
+*.log
+
+# Needed to build the meshes, and the meshes are committed.
+models/fly-brain.glb
+models/traces-eye.npz
+docs/img/

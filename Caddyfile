@@ -1,0 +1,22 @@
+# Replace with the name you pointed at this machine. Caddy takes the
+# certificate from Let's Encrypt on its own; there is nothing else to do.
+fly.example.com {
+	reverse_proxy fly:8000 {
+		# Not optional. The entire interface is a server-sent event stream,
+		# and a proxy that buffers it shows a spinner until the analysis is
+		# over and then draws the whole thing at once.
+		flush_interval -1
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+		# The 3D view compiles its own shaders and the fonts come from Google.
+		# media-src carries blob: because the player reads our own copy of the
+		# video rather than a YouTube embed.
+		Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; media-src 'self' blob:; connect-src 'self'; frame-ancestors 'none'"
+	}
+
+	encode zstd gzip
+}

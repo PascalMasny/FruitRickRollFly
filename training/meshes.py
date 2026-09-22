@@ -277,7 +277,7 @@ def build(out_dir: Path, mesh_dir: Path, kenyon: int, seed: int, source: str) ->
     from cloudvolume import CloudVolume
 
     outline = build_outline(
-        CloudVolume(source, use_https=True, progress=False), out_dir, centre, scale
+        CloudVolume(source, use_https=True, progress=False), mesh_dir, centre, scale
     )
     manifest["outline"] = outline
 
