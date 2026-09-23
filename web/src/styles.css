@@ -362,6 +362,17 @@ body {
     inset 2px 2px 0 var(--black), inset -2px -2px 0 var(--silver-lt);
 }
 .brain-host { position: absolute; inset: 3px; }
+
+/* Nicht optional, und ihr Fehlen sieht man nur auf einem Retina-Schirm.
+   three.js wird hier mit setSize(w, h, false) aufgerufen, das letzte Argument
+   heisst "fass den Style nicht an": es setzt nur den Backing Store auf
+   w * devicePixelRatio und ueberlaesst die Anzeigegroesse dem Stylesheet. Ohne
+   diese beiden Zeilen faellt das Canvas auf seine intrinsische Groesse zurueck,
+   also auf einem Geraet mit dPR 2 auf das Doppelte des Panels, laeuft ueber und
+   legt sich ueber die Nachbarfelder. Bei dPR 1 stimmt es zufaellig, weshalb es
+   in jedem Screenshot dieser Sitzung richtig aussah. */
+.brain-host canvas,
+.fly-host canvas { display: block; width: 100%; height: 100%; }
 .brain-status {
   position: absolute; inset: 0;
   display: grid; place-items: center;
