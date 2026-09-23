@@ -94,3 +94,51 @@ def test_the_positive_groups_are_not_one_recording(manifest):
     but one is the same master, there is nothing to generalise from."""
     groups = Counter(t.group for t in manifest.tracks if t.label == "rickroll")
     assert len(groups) >= 8, f"only {len(groups)} distinct positive groups"
+
+
+# ── folds ────────────────────────────────────────────────────────────────────
+
+
+def _manifest_with(uploads: int, negatives: int, tmp_path):
+    from training.corpus import Manifest
+
+    tracks = [
+        {"id": f"up{i:09d}", "label": "rickroll", "group": "studio-1987",
+         "kind": "studio", "use": "train", "title": f"upload {i}"}
+        for i in range(uploads)
+    ] + [
+        {"id": f"neg{i:08d}", "label": "other", "group": f"neg-{i}",
+         "kind": "music", "use": "train", "title": f"negative {i}"}
+        for i in range(negatives)
+    ]
+    path = tmp_path / "m.json"
+    path.write_text(json.dumps({
+        "target": "x", "curated": "today", "curation_rules": [], "tracks": tracks,
+    }))
+    return Manifest.load(path)
+
+
+@pytest.mark.parametrize("uploads", [3, 6, 9, 12, 13, 14, 16, 20])
+def test_every_negative_group_is_held_out_exactly_once(uploads, tmp_path):
+    """The deal has to partition. The stride used to be len(uploads) // per_fold
+    while the fold count is a ceiling division: equal only when the uploads
+    divide evenly, and at thirteen uploads ten of the forty-one negative groups
+    were held out twice. They were then double-weighted in the pooled upload
+    specificity, which is the number the commit rule's floor is measured
+    against."""
+    from training.train import upload_folds
+
+    manifest = _manifest_with(uploads, 41, tmp_path)
+    folds = upload_folds(manifest)
+    seen = Counter(group for fold in folds for group in fold.held_out_groups)
+    assert set(seen) == {f"neg-{i}" for i in range(41)}, "a negative group is never held out"
+    assert set(seen.values()) == {1}, f"held out more than once: {sorted(seen.items())[:4]}"
+
+
+def test_every_upload_is_held_out_exactly_once(tmp_path):
+    from training.train import upload_folds
+
+    manifest = _manifest_with(13, 41, tmp_path)
+    seen = Counter(i for fold in upload_folds(manifest) for i in fold.held_out_ids)
+    assert len(seen) == 13
+    assert set(seen.values()) == {1}

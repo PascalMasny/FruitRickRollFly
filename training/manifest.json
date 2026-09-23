@@ -8,7 +8,8 @@
     "Hard negatives are deliberate: the rest of Rick Astley's catalogue, other Stock Aitken Waterman productions from the same studio and the same year, and a different song that happens to be called Never Gonna Give You Up.",
     "Speech and non-music are in the corpus because people will paste lectures and news clips into the box.",
     "Fourteen further hard negatives (more uploads of the two Astley singles the fly was measured confusing with the target, plus Mel & Kim, Sinitta, Jason Donovan and Kylie Minogue) are carried at use=holdout. They are fetched and kept reproducible but not trained on: adding them to the training set drops the best reachable held-out upload specificity from 0.977 to 0.897, below the floor the commit rule is held to, so adopting them is a product decision about that floor and not a curation one. See docs/FINDINGS.md.",
-    "A short from TikTok or Instagram is grouped by the recording it uses, not by the platform it is on. Almost every one of them plays the 1987 master, which means group studio-1987 -- giving them a group of their own would put that master on both sides of every split and turn a held-out score into a measurement of nothing. They are also the wrong data for the number that needs help: the upload figure is already 0.971 and already leaky by construction, while the rendition figure is 0.704. What moves that one is a rendition nobody has heard -- somebody singing it, playing it, arranging it differently -- whatever platform it arrives on."
+    "A short from TikTok or Instagram is grouped by the recording it uses, not by the platform it is on. Almost every one of them plays the 1987 master, which means group studio-1987 -- giving them a group of their own would put that master on both sides of every split and turn a held-out score into a measurement of nothing. They are also the wrong data for the number that needs help: the upload figure is already 0.971 and already leaky by construction, while the rendition figure is 0.704. What moves that one is a rendition nobody has heard -- somebody singing it, playing it, arranging it differently -- whatever platform it arrives on.",
+    "Ein degradiertes Positiv ist kein Geschenk. Der kanonische Rickroll-Upload oHg5SJYRHA0 ist bandbegrenzt, und auf ihm zu trainieren zwingt den Schaltkreis, dumpfes Audio als den Song zu akzeptieren. Genau das ist aber, was andere Astley-Singles wie den Song aussehen l\u00e4sst, denn was sie unterscheidet, sind die H\u00f6hen, die dort fehlen. Er liegt deshalb auf use=holdout, wie die harten Negative aus Befund 4: geladen und reproduzierbar, aber nicht trainiert."
   ],
   "tracks": [
     {
@@ -112,8 +113,8 @@
       "label": "rickroll",
       "group": "studio-1987",
       "kind": "studio",
-      "use": "train",
-      "title": "RickRoll'D (2007 upload, muffled: ~31% less energy above 3 kHz)"
+      "use": "holdout",
+      "title": "RickRoll'D (2007, dumpf: ~31 % weniger Energie \u00fcber 3 kHz; use=holdout, siehe Befund 8)"
     },
     {
       "id": "OWGRrOo7l5E",

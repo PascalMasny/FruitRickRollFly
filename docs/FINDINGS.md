@@ -445,6 +445,89 @@ lesbar ist.
 
 ---
 
+## 8. Hilft der kanonische Rickroll? Nein, er bricht den Boden.
+
+`oHg5SJYRHA0` ist der Link, den seit 2007 tatsächlich alle geschickt bekommen
+haben, und er war nicht im Korpus. Die Fliege sagt zu ihm **nein**.
+
+Nicht knapp, und nicht aus dem Grund, nach dem es aussieht. Der Schaltkreis
+kennt den Track: 82,8 % der Perzepte liegen über der Hälfte, der Peak bei 0,963.
+Alle drei Commit-Pfade verfehlen ihn trotzdem.
+
+| Pfad | warum er nicht feuert |
+|---|---|
+| Pool | lädt erst über Konfidenz 0,860, und nur 21,1 % des Tracks liegen dort. Peak-Dopamin 0,446 gegen Schwelle 0,60 |
+| Burst | auf 25 s geschränkt, das Video ist 213 s |
+| Serie | braucht 0,97, und der Track erreicht 0,97 an keiner einzigen Stelle |
+
+**Und „dumpf" heißt hier nicht leise.** Lautstärke ist das eine, was ohnehin
+behandelt wird: `level()` normalisiert den RMS und die Verstärkungsregelung
+verwirft absolute Pegel. Gemessen wurde stattdessen das Spektrum.
+
+| | tief (20–300 Hz) | mittel | hoch (3–11 kHz) |
+|---|---|---|---|
+| dieser Upload | 6,34 | 2,32 | **0,37** |
+| das Master | 5,23 | 1,93 | **0,54** |
+
+Rund 31 % weniger relative Energie über 3 kHz. Der Track ist **bandbegrenzt**,
+und eine breitbandige Schräglage übersteht einen Antennallobus, der innerhalb
+von Pools normalisiert.
+
+**Ihn ins Training zu nehmen scheitert.** Mit ihm im Korpus erreicht keine der
+252 Commit-Regeln den 0,95-Boden mehr; das Beste sind **0,841**. Mit der
+ausgelieferten Regel gemessen wird alles schlechter, nicht nur die Spezifität:
+
+| | 65 Tracks | 66 Tracks |
+|---|---|---|
+| Darbietung Recall / Spezifität | 0,619 / 0,909 | **0,545 / 0,886** |
+| Upload Recall / Spezifität | 1,000 / 0,977 | **0,923 / 0,909** |
+
+Und es kommt ein neuer Falschalarm dazu: **Rick Astley, Hold Me In Your Arms**,
+bei 52,4 s. Wieder eine Astley-Single, wieder derselbe Fehlschlag wie in Befund
+3 und 4.
+
+Die Deutung, die passt, und sie ist unangenehm sauber: **ein degradiertes
+Positiv ist kein Geschenk.** Auf einem bandbegrenzten Rickroll zu trainieren
+zwingt den Schaltkreis, dumpfes Audio als den Song zu akzeptieren. Aber die
+Höhen sind genau das, was andere Astley-Singles vom Ziel trennt. Ihm
+beizubringen, den dumpfen Rickroll zu nehmen, bringt ihm bei, dumpfen Astley
+allgemein zu nehmen.
+
+Das ist das Spiegelbild von Befund 4. Dort brachen vierzehn harte Negative den
+Boden, hier bricht ihn ein einzelnes degradiertes Positiv, und die Behandlung
+ist dieselbe: der Track liegt auf `use: "holdout"`, wird geladen und bleibt
+reproduzierbar, aber es wird nicht auf ihm trainiert. Ihn zu übernehmen heißt,
+den Spezifitätsboden auf 0,84 zu senken, und das ist eine Produktentscheidung
+und kein Hyperparameter.
+
+Die Spuren dieses Laufs liegen als `models/traces-muffled.npz` bei, damit der
+negative Befund nachlesbar bleibt.
+
+### 8b. Ein dreizehnter Upload hat die Fold-Aufteilung stillschweigend zerlegt
+
+Beim ersten Lauf meldete derselbe Aufbau **0,944** statt 0,841, und der
+Unterschied war ein Fehler, den erst dieser Track ausgelöst hat.
+
+`upload_folds` teilt die Negative reihum aus, damit jede negative Gruppe genau
+einmal zurückgehalten wird. Die Schrittweite dafür war
+`len(uploads) // per_fold`, die Anzahl der Folds ist aber eine
+Aufrundungsdivision. Bei zwölf Uploads in Dreiergruppen ist beides vier, und
+deshalb ist es nie aufgefallen. Bei dreizehn sind es vier gegen **fünf**.
+
+Die Folge: **zehn der einundvierzig negativen Gruppen wurden zweimal
+zurückgehalten** und damit in genau der gepoolten Upload-Spezifität doppelt
+gewichtet, an der der Boden der Commit-Regel gemessen wird. Der Docstring
+behauptete weiterhin, die Upload-Folds deckten alle 41 Gruppen genau einmal ab.
+
+Der Fehler war dabei **schmeichelhaft**: 0,944 mit Fehler gegen 0,841 ohne. Wäre
+der Boden knapp erreicht worden, hätte dieses Projekt eine Fliege ausgeliefert,
+deren Hauptzahl auf doppelt gezählten Negativen beruht.
+
+Behoben, und die Aufteilung ist jetzt getestet, für jede Upload-Anzahl von drei
+bis zwanzig.
+
+---
+
 ## Worauf das hindeutet
 
 Nicht auf mehr Daten und nicht auf eine bessere Entscheidungsregel. Auf die
@@ -544,6 +627,25 @@ positives here are still images against 16 % of negatives, so *being a
 photograph is correlated with being the target* in this corpus, which the eye
 now gates against; and training a second sense exposed a silent bug that paired
 one sense's confidences with the other's clock.
+
+**8. The canonical Rickroll breaks the floor.** `oHg5SJYRHA0`, the link everyone
+has actually been sent since 2007, was not in the corpus and the fly says no to
+it: 82.8 % of percepts over half and a peak of 0.963, yet all three paths miss
+(the pool charges only above 0.860 and only 21.1 % of the track is there; the
+burst is gated to 25 s against 213 s; the streak wants 0.97 and the track never
+reaches it). "Muffled" here is not loudness, which is already handled: the
+upload carries ~31 % less relative energy above 3 kHz. Training on it fails
+outright, with the best reachable specificity 0.841 against the 0.95 floor, and
+under the shipped rule everything gets worse (rendition 0.619/0.909 → 0.545/
+0.886, upload 1.000/0.977 → 0.923/0.909) with a new false alarm on another
+Astley single. **A degraded positive is not a gift:** teaching the circuit to
+accept band-limited audio as the song teaches it to accept band-limited Astley
+generally, because the treble is exactly what separates them. Carried at
+`use: "holdout"`, mirroring finding 4. A sub-finding: the thirteenth upload
+exposed a fold bug, where the round-robin stride was `len(uploads) // per_fold`
+while the fold count is a ceiling division, so ten of forty-one negative groups
+were held out twice and double-weighted in the pooled specificity. The bug was
+*flattering* (0.944 against 0.841); it is fixed and now tested.
 
 **What it points at:** the representation, not the data or the rule. Next:
 re-weighting chroma against mel, and tempo invariance (sub-frames of a fixed

@@ -110,13 +110,24 @@ def rendition_folds(manifest: Manifest) -> list[Fold]:
 
 
 def upload_folds(manifest: Manifest, per_fold: int = 3) -> list[Fold]:
-    """Folds over individual uploads of the master recording."""
+    """Folds over individual uploads of the master recording.
+
+    The negatives are dealt out round-robin so that every negative group is
+    held out exactly once across the folds. The stride has to be the number of
+    folds, and the number of folds is a ceiling division: with twelve uploads
+    in threes it is four either way, which is why ``len(uploads) // per_fold``
+    went unnoticed, and with thirteen it is five against four. At that point
+    the deal stops partitioning and ten of the forty-one negative groups get
+    held out twice, which double-weights them in exactly the pooled
+    specificity the commit rule's floor is measured against.
+    """
     uploads = [t.id for t in manifest.trainable() if t.group == STUDIO_GROUP]
     negatives = manifest.groups(label="other")
+    n_folds = -(-len(uploads) // per_fold) if uploads else 0
     folds = []
-    for i in range(0, len(uploads), per_fold):
+    for index, i in enumerate(range(0, len(uploads), per_fold)):
         chunk = uploads[i : i + per_fold]
-        share = set(negatives[i // per_fold :: max(1, len(uploads) // per_fold)])
+        share = set(negatives[index::n_folds])
         folds.append(
             Fold(
                 name=f"uploads {i + 1}-{i + len(chunk)}",
