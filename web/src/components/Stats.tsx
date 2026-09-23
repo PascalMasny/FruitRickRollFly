@@ -50,7 +50,7 @@ export default function Stats({ card, frame, summary, committed }: Props) {
             ? `dopamine crossed threshold at ${seconds(summary?.committedAt)}`
             : summary
               ? 'the pool never reached threshold'
-              : 'paste a YouTube link'}
+              : 'paste a link'}
         </span>
       </div>
 

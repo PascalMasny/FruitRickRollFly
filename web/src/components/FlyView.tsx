@@ -53,7 +53,15 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
     camera.position.set(0.1, 0.8, 5.9)
     camera.lookAt(0.15, 0.1, 0)
 
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    /* As in BrainView: without WebGL this threw, and an uncaught throw in an
+       effect takes the whole tree with it. The fly is decoration. */
+    let renderer: THREE.WebGLRenderer
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    } catch (error) {
+      console.error('the animal: no WebGL', error)
+      return
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.toneMapping = THREE.ACESFilmicToneMapping
     renderer.toneMappingExposure = 1.25

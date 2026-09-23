@@ -59,7 +59,22 @@ export default function BrainView({ circuit, frame, live }: Props) {
 
     const scene = new THREE.Scene()
     const camera = new THREE.PerspectiveCamera(38, 1, 0.1, 200)
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    /* A browser with WebGL switched off, or a machine with no GPU to give it,
+       threw here -- and with nothing catching it the whole application
+       unmounted and the page went blank. The cells are the best thing on it
+       and they are still not worth the verdict, so this degrades to the panel
+       saying so and everything else carries on. */
+    let renderer: THREE.WebGLRenderer
+    try {
+      renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    } catch (error) {
+      console.error('kenyon cells: no WebGL', error)
+      // The one render this costs is on a machine that cannot draw the panel
+      // anyway, which is the event that caused the change.
+      // oxlint-disable-next-line react/set-state-in-effect
+      setStatus('failed')
+      return
+    }
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     element.appendChild(renderer.domElement)
 
