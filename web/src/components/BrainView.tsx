@@ -100,6 +100,12 @@ export default function BrainView({ circuit, frame, live }: Props) {
     const world = new THREE.Group()
     scene.add(world)
 
+    /* Set once the cell positions have landed, and called again on every
+       resize. The camera used to sit at a hard-coded 2.1 times the cloud's
+       radius, which frames it correctly at exactly one panel shape and leaves
+       it as a small blob floating in a large empty box at every other. */
+    let frame: (() => void) | null = null
+
     fetch('kenyon-cells.bin')
       .then(async (response) => {
         if (!response.ok) throw new Error(`kenyon-cells.bin: ${response.status}`)
@@ -176,10 +182,28 @@ export default function BrainView({ circuit, frame, live }: Props) {
         const sphere = geometry.boundingSphere
         const reach = sphere ? sphere.radius : 3
         if (sphere) world.position.sub(sphere.center)
-        camera.position.set(reach * 0.8, reach * 0.5, reach * 2.1)
         controls.target.set(0, 0, 0)
-        controls.minDistance = reach * 0.8
-        controls.maxDistance = reach * 6
+        camera.position.set(reach * 0.8, reach * 0.5, reach * 2.1)
+
+        /* How far back the cloud has to sit to fill the panel: far enough that
+           its radius fits inside whichever of the two fields of view is the
+           tighter one. The orbit direction is whatever the viewer (or the
+           auto-rotation) has left it at, so only the distance moves. */
+        frame = () => {
+          const vFov = (camera.fov * Math.PI) / 180
+          const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect)
+          /* Eight tenths of the bounding radius, not all of it. The sphere
+             encloses the outliers, and a cloud is thin out there: fitting it
+             whole leaves the dense middle, which is the part worth seeing, as
+             a small blob with a wide empty margin around it. */
+          const distance = (reach * 0.78) / Math.sin(Math.min(vFov, hFov) / 2)
+          const direction = camera.position.clone().sub(controls.target)
+          if (direction.lengthSq() === 0) direction.set(0.8, 0.5, 2.1)
+          camera.position.copy(controls.target).addScaledVector(direction.normalize(), distance)
+          controls.minDistance = distance * 0.35
+          controls.maxDistance = distance * 3
+        }
+        frame()
 
         rig.current = {
           colors: colorAttr,
@@ -215,6 +239,7 @@ export default function BrainView({ circuit, frame, live }: Props) {
                 Math.PI,
             )
       camera.updateProjectionMatrix()
+      frame?.()
     }
     const observer = new ResizeObserver(resize)
     observer.observe(element)

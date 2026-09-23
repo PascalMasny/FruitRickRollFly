@@ -339,12 +339,42 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
     }
     rig.current = state
 
+    /* The animal and the thing it is watching, as one box. The camera used to
+       sit at a fixed point and only have its aspect corrected, which crops
+       whatever does not fit: on a short wide panel that is the fly's legs and
+       the monitor's foot. Framing against the box means the pair stays whole
+       at any panel shape, and the composition (fly left, screen right, both
+       readable) is the direction from the box's centre, kept as it was. */
+    scene.updateMatrixWorld(true)
+    const subject = new THREE.Box3().setFromObject(fly).union(
+      new THREE.Box3().setFromObject(monitor),
+    )
+    const centre = subject.getCenter(new THREE.Vector3())
+    const extent = subject.getSize(new THREE.Vector3())
+    const direction = camera.position.clone().sub(new THREE.Vector3(0.15, 0.1, 0)).normalize()
+
     const resize = () => {
       const { clientWidth: w, clientHeight: h } = element
       if (w === 0 || h === 0) return
       renderer.setSize(w, h, false)
       camera.aspect = w / h
       camera.updateProjectionMatrix()
+
+      const vFov = (camera.fov * Math.PI) / 180
+      const hFov = 2 * Math.atan(Math.tan(vFov / 2) * camera.aspect)
+      // A tenth of headroom, which is also what the fly leans into when the
+      // dopamine rises without being allowed to leave the frame.
+      const distance =
+        Math.max(
+          ((extent.y / 2) * 1.02) / Math.tan(vFov / 2),
+          ((extent.x / 2) * 1.02) / Math.tan(hFov / 2),
+        ) +
+        // A quarter of the depth, not half: the monitor's tube runs a long way
+        // back and is mostly behind the screen, so charging the full half
+        // pushes the camera out until the pair is a pair of dots.
+        extent.z * 0.25
+      camera.position.copy(centre).addScaledVector(direction, distance)
+      camera.lookAt(centre)
     }
     const observer = new ResizeObserver(resize)
     observer.observe(element)
