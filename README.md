@@ -21,7 +21,9 @@ Ton ──► Johnston-Organ ──► Antennallobus ──► Kenyon-Zellen ─
 
 Links die 4.000 Kenyon-Zellen an ihren echten Hemibrain-Positionen, rund 200
 davon feuern gleichzeitig. Rechts das Video, das die Fliege gerade hört, und
-darunter sie selbst, vor dem Monitor, in dem Raum in dem dieser Song herkommt.
+darunter sie selbst, vor dem Monitor, in dem Raum aus dem dieser Song kommt.
+Unten der ganze Verlauf: Konfidenz, Dopamin, Aversion, und die Linie, an der sie
+sich festgelegt hat.
 
 ## Was drin ist
 
