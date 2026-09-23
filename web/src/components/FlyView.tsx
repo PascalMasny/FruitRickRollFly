@@ -67,15 +67,19 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
     renderer.toneMappingExposure = 1.25
     element.appendChild(renderer.domElement)
 
-    /* Lit almost entirely by the monitor, which is the point of the picture:
-       the only light in the room is the thing it is watching. A little cold
-       ambient keeps the far side of the animal from going to pure black. */
-    scene.add(new THREE.AmbientLight(0x9fb0c4, 0.55))
-    const rim = new THREE.DirectionalLight(0x8fa6c0, 0.55)
+    /* Lit mostly by the monitor, which is the point of the picture: the
+       brightest thing in the room is the thing it is watching. The key used to
+       be a warm 0xffdca8 at 1.1 and that, more than any material, was why the
+       whole room read brown. It is now the cold overhead fluorescent an office
+       of this period actually had, and the monitor's own glow is blue-white,
+       which is what a CRT emits rather than the candlelight it was standing in
+       before. */
+    scene.add(new THREE.AmbientLight(0xb9c2cc, 0.62))
+    const rim = new THREE.DirectionalLight(0x97a6ba, 0.5)
     rim.position.set(-5, 3, 2)
     scene.add(rim)
-    const key = new THREE.DirectionalLight(0xffdca8, 1.1)
-    key.position.set(4, 2, 2)
+    const key = new THREE.DirectionalLight(0xe9eff6, 0.78)
+    key.position.set(4, 5, 2)
     scene.add(key)
 
     /* ── the screen ─────────────────────────────────────────────────────────
@@ -138,8 +142,10 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
     screen.position.set(0, 0.95, 0.12)
     monitor.add(screen)
 
+    /* Putty. Every computer sold between about 1987 and 2001 was this colour,
+       and it is the single thing that dates the picture hardest. */
     const caseMaterial = new THREE.MeshStandardMaterial({
-      color: 0x2b2722, roughness: 0.75, metalness: 0.05, flatShading: true,
+      color: 0xd0c8b2, roughness: 0.82, metalness: 0.02, flatShading: true,
     })
     const bezel = new THREE.Mesh(new THREE.BoxGeometry(2.96, 2.34, 0.34), caseMaterial)
     bezel.position.set(0, 0.95, -0.06)
@@ -150,7 +156,7 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
     monitor.add(tube)
 
     const knobMaterial = new THREE.MeshStandardMaterial({
-      color: 0x100e0c, roughness: 0.6, flatShading: true,
+      color: 0x6f6a5c, roughness: 0.6, flatShading: true,
     })
     for (let i = 0; i < 2; i += 1) {
       const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.1, 6), knobMaterial)
@@ -168,7 +174,7 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
 
     // The screen is the only real light in the room, which is what watching
     // something in the dark looks like.
-    const glow = new THREE.PointLight(0xffe8c0, 14, 16, 2)
+    const glow = new THREE.PointLight(0xc8dcff, 14, 16, 2)
     glow.position.set(0.9, 0.9, 0.6)
     scene.add(glow)
 
@@ -291,13 +297,40 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
     fly.rotation.y = Math.atan2(-facing.x, -facing.z)
     scene.add(fly)
 
-    const floor = new THREE.Mesh(
-      new THREE.PlaneGeometry(24, 24),
-      new THREE.MeshStandardMaterial({ color: 0x0d0b09, roughness: 0.95 }),
+    /* ── the room ───────────────────────────────────────────────────────────
+       The animal used to sit on a black plane in a void. It is watching a
+       computer, so it is on the desk the computer is on, in an office with a
+       wall behind it -- which costs four boxes and is the difference between a
+       scene and a subject on a backdrop. */
+    const desk = new THREE.Mesh(
+      new THREE.PlaneGeometry(40, 40),
+      // Grey laminate, the surface every one of these machines stood on.
+      new THREE.MeshStandardMaterial({ color: 0x8e887c, roughness: 0.9 }),
     )
-    floor.rotation.x = -Math.PI / 2
-    floor.position.y = -0.92
-    scene.add(floor)
+    desk.rotation.x = -Math.PI / 2
+    desk.position.y = -0.92
+    scene.add(desk)
+
+    const wall = new THREE.Mesh(
+      new THREE.PlaneGeometry(40, 24),
+      // Magnolia, because every office was. It is there to catch the glow.
+      new THREE.MeshStandardMaterial({ color: 0xa9a494, roughness: 1 }),
+    )
+    wall.position.set(0, 4, -7)
+    scene.add(wall)
+
+    const keyboard = new THREE.Group()
+    const deck = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.12, 0.78), caseMaterial)
+    keyboard.add(deck)
+    const keys = new THREE.Mesh(
+      new THREE.BoxGeometry(1.92, 0.05, 0.6),
+      new THREE.MeshStandardMaterial({ color: 0xbdb5a1, roughness: 0.85, flatShading: true }),
+    )
+    keys.position.y = 0.08
+    keyboard.add(keys)
+    keyboard.position.set(1.7, -0.86, 1.45)
+    keyboard.rotation.y = -0.52
+    scene.add(keyboard)
 
     const state = {
       fly, screen, glow, wings, staticMaterial, screenMaterial,

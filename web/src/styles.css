@@ -368,18 +368,33 @@ body {
 
 /* ── video ───────────────────────────────────────────────────────────────── */
 
-.video { padding: 3px; }
+/* `.panel.video`, not `.video`: VideoPreview renders its own wrapper inside
+   this section, and while both answered to the same name the inner one took
+   the panel's layout without the panel's constraints -- it could not shrink,
+   so a loaded video pushed it straight through the bottom of its own box and
+   over the CRT below. */
+.panel.video { padding: 3px; display: flex; flex-direction: column; }
+.video-stack { flex: 1; min-height: 0; display: flex; flex-direction: column; }
 .video-frame {
   position: relative;
   flex: 1; min-height: 0;
+  overflow: hidden;
   background: var(--black);
   display: grid; place-items: center;
   box-shadow:
     inset 1px 1px 0 var(--silver-dk), inset -1px -1px 0 var(--white),
     inset 2px 2px 0 var(--black), inset -2px -2px 0 var(--silver-lt);
 }
-.video { display: flex; flex-direction: column; }
-.video-frame video { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* Absolute, not `height: 100%`. The frame centres its child, which means the
+   child does not stretch, which means a percentage height resolves against a
+   track the child is itself sizing -- so the element fell back to its
+   intrinsic size. A portrait video from TikTok is 1080x1920, and it went
+   straight down the page and over two panels below. */
+.video-frame video {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%;
+  object-fit: contain; display: block;
+}
 .video-pending, .video-empty {
   font-family: var(--sans); font-size: 0.7rem; color: var(--silver);
   display: grid; place-items: center; gap: 4px; text-align: center;
@@ -392,16 +407,19 @@ body {
     inset 2px 2px 0 var(--black), inset -2px -2px 0 var(--silver-lt);
 }
 .video-meta {
+  flex: none;
   display: flex; flex-direction: column; gap: 1px;
   padding: 5px 4px 2px;
+  min-width: 0;
 }
+.video-meta > * { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .video-title {
   font-family: var(--serif); font-size: 0.92rem;
   color: var(--link); text-decoration: underline;
 }
 .video-title:visited { color: var(--visited); }
 .video-channel { font-family: var(--sans); font-size: 0.64rem; color: #404040; }
-.video-controls { padding: 5px 4px 2px; }
+.video-controls { flex: none; padding: 5px 4px 2px; }
 
 /* ── statistics ──────────────────────────────────────────────────────────── */
 

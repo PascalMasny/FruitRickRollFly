@@ -64,7 +64,7 @@ export default function VideoPreview({
   }, [seekTo, onTime])
 
   return (
-    <div className="video">
+    <div className="video-stack">
       <div className="video-frame">
         {src ? (
           <video

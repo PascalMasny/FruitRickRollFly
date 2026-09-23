@@ -9,10 +9,15 @@ interface Props {
   live: boolean
 }
 
-const QUIET = new THREE.Color(0x6d5f4c)
-const LIT = new THREE.Color(0xf6e8c8)
-const APPROACH = new THREE.Color(0xe0912f)
-const AVOIDANCE = new THREE.Color(0xb3121f)
+/* The sixteen-colour VGA bright set, which is what a graph on a black screen
+   was drawn in when this song was new -- and what the 2D timeline beside this
+   panel is now drawn in. Dim blue at rest, white when a cell fires, warming to
+   bright yellow as dopamine builds and to bright red if the fly is being
+   pushed the other way. */
+const QUIET = new THREE.Color(0x4a4a7a)
+const LIT = new THREE.Color(0xffffff)
+const APPROACH = new THREE.Color(0xffff55)
+const AVOIDANCE = new THREE.Color(0xff5555)
 
 const DECAY_SECONDS = 0.28
 /** How long a cell keeps glowing after it stops firing.
