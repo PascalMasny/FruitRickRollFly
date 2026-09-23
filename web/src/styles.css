@@ -478,13 +478,16 @@ body {
     inset 2px 2px 0 var(--black), inset -2px -2px 0 var(--silver-lt);
   padding: 2px;
 }
-/* Segmented, the way a progress bar was drawn before it was a gradient. */
+/* Segmented, the way a progress bar was drawn before it was a gradient. The
+   colour arrives as `color` rather than `background`, because `background` is
+   a shorthand: set inline it wiped this background-image out, and the
+   !important that used to sit here then removed the colour as well. The bar
+   was moving the whole time and drawing nothing. */
 .meter-fill {
   height: 100%;
   transition: width 0.1s linear;
   background-image: repeating-linear-gradient(
     90deg, currentColor 0 8px, transparent 8px 10px);
-  background-color: transparent !important;
 }
 
 .panel-title {

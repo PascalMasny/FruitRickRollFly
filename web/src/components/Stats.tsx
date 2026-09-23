@@ -26,7 +26,7 @@ function Meter({ label, value, tone }: { label: string; value: number; tone: str
       <div className="meter-track">
         <div
           className="meter-fill"
-          style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%`, background: tone }}
+          style={{ width: `${Math.max(0, Math.min(1, value)) * 100}%`, color: tone }}
         />
       </div>
     </div>

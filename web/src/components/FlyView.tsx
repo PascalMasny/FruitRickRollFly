@@ -155,19 +155,38 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
     tube.position.set(0, 0.95, -1.18)
     monitor.add(tube)
 
-    const knobMaterial = new THREE.MeshStandardMaterial({
-      color: 0x6f6a5c, roughness: 0.6, flatShading: true,
-    })
-    for (let i = 0; i < 2; i += 1) {
-      const knob = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.1, 6), knobMaterial)
-      knob.rotation.x = Math.PI / 2
-      knob.position.set(1.2, 0.42 - i * 0.3, 0.12)
-      monitor.add(knob)
-    }
-
     const feet = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.16, 1.8), caseMaterial)
     feet.position.set(0, -0.3, -0.5)
     monitor.add(feet)
+
+    /* Der Rechner, und zwar unter dem Bildschirm. Ein Desktop-Gehaeuse war
+       waagerecht und der Monitor stand darauf; der Tower kam erst spaeter. Es
+       fuellt genau die Luecke, in der der Monitor bisher ueber dem Tisch
+       schwebte, und kostet keine Breite. */
+    const tower = new THREE.Mesh(new THREE.BoxGeometry(3.3, 0.34, 2.2), caseMaterial)
+    tower.position.set(0, -0.55, -0.35)
+    monitor.add(tower)
+
+    const slotMaterial = new THREE.MeshStandardMaterial({
+      color: 0x4a463c, roughness: 0.7, flatShading: true,
+    })
+    // Ein 5,25-Zoll-Schacht und darunter der Schlitz fuer die Diskette.
+    const bay = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.1, 0.02), slotMaterial)
+    bay.position.set(0.62, -0.48, 0.76)
+    monitor.add(bay)
+    const floppySlot = new THREE.Mesh(new THREE.BoxGeometry(0.95, 0.05, 0.02), slotMaterial)
+    floppySlot.position.set(0.62, -0.63, 0.76)
+    monitor.add(floppySlot)
+
+    // Die Betriebs-LED. Das einzige Gruen im Raum.
+    const led = new THREE.Mesh(
+      new THREE.BoxGeometry(0.07, 0.05, 0.02),
+      new THREE.MeshStandardMaterial({
+        color: 0x1f7a1f, emissive: 0x3ddc3d, emissiveIntensity: 1.4, flatShading: true,
+      }),
+    )
+    led.position.set(-1.35, -0.55, 0.76)
+    monitor.add(led)
     monitor.position.set(1.85, -0.2, -0.5)
     monitor.rotation.y = -0.62
     scene.add(monitor)
@@ -319,18 +338,50 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
     wall.position.set(0, 4, -7)
     scene.add(wall)
 
-    const keyboard = new THREE.Group()
+    const peripherals = new THREE.Group()
     const deck = new THREE.Mesh(new THREE.BoxGeometry(2.1, 0.12, 0.78), caseMaterial)
-    keyboard.add(deck)
-    const keys = new THREE.Mesh(
-      new THREE.BoxGeometry(1.92, 0.05, 0.6),
-      new THREE.MeshStandardMaterial({ color: 0xbdb5a1, roughness: 0.85, flatShading: true }),
-    )
+    peripherals.add(deck)
+    const keyMaterial = new THREE.MeshStandardMaterial({
+      color: 0xbdb5a1, roughness: 0.85, flatShading: true,
+    })
+    const keys = new THREE.Mesh(new THREE.BoxGeometry(1.92, 0.05, 0.6), keyMaterial)
     keys.position.y = 0.08
-    keyboard.add(keys)
-    keyboard.position.set(1.7, -0.86, 1.45)
-    keyboard.rotation.y = -0.52
-    scene.add(keyboard)
+    peripherals.add(keys)
+
+    // Mauspad und Maus, rechts daneben, wo sie hingehoeren.
+    const pad = new THREE.Mesh(
+      new THREE.BoxGeometry(1.15, 0.02, 0.9),
+      new THREE.MeshStandardMaterial({ color: 0x4a5566, roughness: 0.96 }),
+    )
+    pad.position.set(1.75, -0.05, 0.05)
+    peripherals.add(pad)
+    const mouse = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.13, 0.36), caseMaterial)
+    mouse.position.set(1.72, 0.02, 0.0)
+    peripherals.add(mouse)
+    const mouseButtons = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.03, 0.14), keyMaterial)
+    mouseButtons.position.set(1.72, 0.08, -0.1)
+    peripherals.add(mouseButtons)
+
+    peripherals.position.set(1.7, -0.86, 1.45)
+    peripherals.rotation.y = -0.52
+    scene.add(peripherals)
+
+    /* Eine Diskette, flach auf dem Tisch. Das billigste Signal fuer das
+       Jahrzehnt, das es gibt, und sie liegt da wo ohnehin hingeschaut wird. */
+    const floppy = new THREE.Group()
+    floppy.add(new THREE.Mesh(
+      new THREE.BoxGeometry(0.52, 0.02, 0.52),
+      new THREE.MeshStandardMaterial({ color: 0x23262b, roughness: 0.8, flatShading: true }),
+    ))
+    const shutter = new THREE.Mesh(
+      new THREE.BoxGeometry(0.22, 0.021, 0.16),
+      new THREE.MeshStandardMaterial({ color: 0x9aa0a6, roughness: 0.45, metalness: 0.5 }),
+    )
+    shutter.position.set(0, 0.001, -0.17)
+    floppy.add(shutter)
+    floppy.position.set(-0.05, -0.9, 1.35)
+    floppy.rotation.y = 0.38
+    scene.add(floppy)
 
     const state = {
       fly, screen, glow, wings, staticMaterial, screenMaterial,
@@ -346,9 +397,13 @@ export default function FlyView({ video, dopamine, committed, playing }: Props) 
        at any panel shape, and the composition (fly left, screen right, both
        readable) is the direction from the box's centre, kept as it was. */
     scene.updateMatrixWorld(true)
-    const subject = new THREE.Box3().setFromObject(fly).union(
-      new THREE.Box3().setFromObject(monitor),
-    )
+    // Tier und Bildschirm, sonst nichts. Tastatur, Maus und Diskette sind
+    // Ausstattung: sie mit einzurahmen zieht die Kamera so weit zurueck, dass
+    // das Tier klein wird, und angeschnittene Peripherie am Bildrand sieht
+    // ohnehin richtiger aus als vollstaendig sichtbare.
+    const subject = new THREE.Box3()
+      .setFromObject(fly)
+      .union(new THREE.Box3().setFromObject(monitor))
     const centre = subject.getCenter(new THREE.Vector3())
     const extent = subject.getSize(new THREE.Vector3())
     const direction = camera.position.clone().sub(new THREE.Vector3(0.15, 0.1, 0)).normalize()
