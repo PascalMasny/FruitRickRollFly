@@ -14,10 +14,10 @@ interface Props {
    panel is now drawn in. Dim blue at rest, white when a cell fires, warming to
    bright yellow as dopamine builds and to bright red if the fly is being
    pushed the other way. */
-const QUIET = new THREE.Color(0x4a4a7a)
+const QUIET = new THREE.Color(0x3a3a5e)
 const LIT = new THREE.Color(0xffffff)
-const APPROACH = new THREE.Color(0xffff55)
-const AVOIDANCE = new THREE.Color(0xff5555)
+const APPROACH = new THREE.Color(0xffff33)
+const AVOIDANCE = new THREE.Color(0xff3333)
 
 const DECAY_SECONDS = 0.28
 /** How long a cell keeps glowing after it stops firing.
@@ -53,9 +53,16 @@ export default function BrainView({ circuit, frame, live }: Props) {
     level: Float32Array
     count: number
     target: { dopamine: number; aversion: number }
-    firing: number[]
-    pending: boolean
+    applied: Frame | null
   } | null>(null)
+  /* The latest frame, written whether or not there is anything to draw it
+     with yet. The cell positions are a fetch, so a frame can arrive before the
+     rig exists -- and that frame used to be dropped. While the video is
+     playing the next one covers for it, but after an analysis finishes nobody
+     has pressed play: the playhead never moves, no further frame is produced,
+     and the panel sat there claiming 200 cells were firing while drawing none
+     of them. The loop picks this up on its first tick instead. */
+  const incoming = useRef<Frame | null>(null)
 
   useEffect(() => {
     const element = host.current
@@ -127,7 +134,13 @@ export default function BrainView({ circuit, frame, live }: Props) {
           new THREE.ShaderMaterial({
             transparent: true,
             depthWrite: false,
-            blending: THREE.AdditiveBlending,
+            /* Normal, not additive. Additive was right against black -- a
+               firing cell added its own light to nothing. The ground is grey
+               now, and light added to grey is a lighter grey: the quiet cells
+               washed out and the bright ones stopped being bright. Painting
+               over instead means a cell darker than the ground reads as off
+               and a white one reads as firing. */
+            blending: THREE.NormalBlending,
             vertexColors: true,
             vertexShader: `
               attribute float size;
@@ -174,8 +187,7 @@ export default function BrainView({ circuit, frame, live }: Props) {
           level: new Float32Array(count),
           count,
           target: { dopamine: 0, aversion: 0 },
-          firing: [],
-          pending: false,
+          applied: null,
         }
         setStatus('ready')
       })
@@ -220,9 +232,12 @@ export default function BrainView({ circuit, frame, live }: Props) {
       const state = rig.current
       if (state) {
         const { level, colors, sizes, count, target } = state
-        if (state.pending) {
-          for (const i of state.firing) if (i >= 0 && i < count) level[i] = 1
-          state.pending = false
+        const next = incoming.current
+        if (next !== state.applied) {
+          state.applied = next
+          target.dopamine = Math.min(1, next?.dopamine ?? 0)
+          target.aversion = Math.min(1, next?.aversion ?? 0)
+          for (const i of next?.kenyon ?? []) if (i >= 0 && i < count) level[i] = 1
         }
         // Warm the lit colour towards whichever pool is winning.
         hot.copy(LIT)
@@ -273,15 +288,11 @@ export default function BrainView({ circuit, frame, live }: Props) {
     }
   }, [circuit.kenyonCells])
 
+  // Only recorded here. The loop owns every level, so the decay and the new
+  // firings cannot fight each other, and it reads this whenever it is ready
+  // rather than whenever React happened to deliver it.
   useEffect(() => {
-    const state = rig.current
-    if (!state) return
-    state.target.dopamine = Math.min(1, frame?.dopamine ?? 0)
-    state.target.aversion = Math.min(1, frame?.aversion ?? 0)
-    // Handed to the animation loop rather than written here: the loop owns
-    // every level so the decay and the new firings cannot fight each other.
-    state.firing = frame?.kenyon ?? []
-    state.pending = true
+    incoming.current = frame
   }, [frame])
 
   return (
