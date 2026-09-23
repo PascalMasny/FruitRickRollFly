@@ -2,6 +2,12 @@
 
 > A fruit fly that has learned exactly one song.
 
+**TL;DR** · Ein Fliegenhirn in NumPy, 156 kB, das auf genau einen Popsong
+anspringt. Link einwerfen, es lädt die Tonspur und zeigt, was das Dopamin
+gemacht hat. Die Schlagzeilenzahl ist 0,971 und enthält Leakage. Die ehrliche
+ist **0,704**. Keine echte Fliege war beteiligt, die Frage ob man das bauen
+sollte trotzdem in [docs/ETHIK.md](docs/ETHIK.md).
+
 Ein Modell des Pilzkörpers (Mushroom Body) von *Drosophila melanogaster*, das
 lernt, bei einem Rickroll Dopamin auszuschütten. Link einwerfen: das Tool lädt
 die Tonspur, schickt sie durch einen Nachbau des olfaktorischen Lernschaltkreises
@@ -247,6 +253,12 @@ empfinden können (die Wissenschaft weiß es nicht), was es heißt, tausende
 kurzlebige Gehirne zu erzeugen, von denen die meisten überwiegend „nein" hören,
 und was es über uns sagt, ein Wesen zu bauen, dessen ganzes Gutes ein einziger
 Popsong von 1987 ist.
+
+Im selben Dokument steht, womit dieses Projekt gebaut wurde. Ich bin kein
+Frontend-Mensch, und die Oberfläche und die 3D-Ansichten sind mit generativer KI
+entstanden. Ein Modell eines Gehirns, gebaut mit einer Maschine, die eines
+imitiert, ist eine Konstellation, die man nicht unkommentiert stehen lassen
+sollte, zusammen mit dem, woran sie erinnert: Asimov, Orwell, Huxley.
 
 ## Entwicklung
 

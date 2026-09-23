@@ -2,6 +2,13 @@
 
 > Die „Neins" waren nützlicher als das „Ja".
 
+**TL;DR** · Mehr Training hilft nicht, eine andere Entscheidungsregel hilft
+nicht, mehr harte Negative machen es schlechter, ein längeres Fenster viel
+schlechter, Sehen hilft gar nicht, und der kanonische Rickroll bricht den Boden.
+Die Grenze ist nicht die Datenmenge und nicht die Regel, sondern die
+Repräsentation: sie klebt an der Oberfläche einer Aufnahme statt am Song.
+Nebenbei zwei Fehler gefunden, die beide in die schmeichelhafte Richtung gingen.
+
 Vier Fragen wurden der trainierten Fliege gestellt. Drei kamen als „nein"
 zurück, und genau die haben sich gelohnt.
 

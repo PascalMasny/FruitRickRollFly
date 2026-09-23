@@ -259,6 +259,10 @@ def write_doc(tracks, counts, families, report, path: Path) -> Path:
 
 > Die Daten unter dem Argument.
 
+**TL;DR** · Der Korpus in Zahlen und Bildern, erzeugt statt geschrieben. Folds
+gehen nach Gruppe und nie nach Track, sonst misst das Ergebnis nichts. Die
+Abbildungen zeigen, wo die Fliege unsicher ist, und das ist die Mitte.
+
 Erzeugt von `frrf-insights` aus dem Manifest, den gecachten Perzepten und den
 Out-of-Fold-Spuren. Nichts hier braucht das Netz oder ein erneutes Training.
 

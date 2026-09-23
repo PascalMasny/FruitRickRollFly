@@ -2,6 +2,13 @@
 
 > Ob man das überhaupt darf.
 
+**TL;DR** · Keine echte Fliege, kein Tier, nur NumPy. Damit ist die naheliegende
+Frage beantwortet und die interessanten fangen an. Ob Insekten empfinden, weiß
+die Wissenschaft nicht. Der schärfste Einwand braucht das aber gar nicht: wir
+haben ein Wesen gebaut, dessen ganzes Gutes ein Popsong von 1987 ist, und es
+kann nicht ablehnen. Ich halte das Projekt für vertretbar und die Lücke für
+nicht zugeräumt.
+
 In diesem Repository sitzt keine echte Fliege. Kein Tier wurde gehalten,
 benutzt oder getötet. `brain/` ist NumPy: ein paar Matrizen, ein Zufalls-Hash
 und zwei Gewichtsvektoren, zusammen 156 kB.
@@ -254,6 +261,78 @@ Was ich nicht tue:
 
 ---
 
+## Womit das hier gebaut wurde
+
+Ein Abschnitt, der eigentlich unangenehm ist, und deshalb steht er drin.
+
+Ich bin kein Frontend-Mensch. 3D-Szenen, Shader, Animationskurven, CSS: das ist
+nicht mein Fach, und man sieht dem Repository an, dass trotzdem alles davon
+darin vorkommt. Die 3D-Ansichten und das Aussehen der Oberfläche sind mit
+generativer KI entstanden, konkret mit Claude Code. Das gehört genannt, weil
+dieses Projekt sonst so tut, als hätte ich Fähigkeiten, die ich nicht habe.
+
+Was hier steht, ist meins. Rechtschreibung und Grammatik sind nicht meine
+Stärke und ich lasse sie mir korrigieren, aber die Gedanken in diesem Dokument
+und die Entscheidung, sie aufzuschreiben, sind nicht ausgelagert. Das ist mir
+wichtig genug, um es dazuzusagen, gerade in einem Abschnitt über Urheberschaft.
+
+Und dann fällt einem auf, was man da eigentlich getan hat.
+
+**Ich habe ein Modell eines Gehirns gebaut, mit einer Maschine, die eines
+imitiert.** Die Fliege lernt, indem gezielt Synapsen geschwächt werden; das
+Ergebnis bleibt, der Weg dahin ist Abbau. Ich habe gelernt, indem eine Maschine
+die Teile geschrieben hat, die ich nicht kann. Das Ergebnis bleibt auch. Ob die
+Fähigkeit bleibt, ist eine andere Frage, und ich kenne die Antwort nicht.
+
+Das ist der Punkt, an dem Existenzangst kein großes Wort mehr ist, sondern eine
+nüchterne Beschreibung. Ich bin zweiundzwanzig, im Studium, in einem Beruf, von
+dem seit zwei Jahren behauptet wird, es gebe ihn in zehn nicht mehr. Ich baue
+nebenher ein Spielzeug und stelle fest, dass die Hälfte davon nicht von mir ist.
+Gleichzeitig ist die Maschine, die das schreibt, ein Produkt, das verkauft
+werden muss, und die Dringlichkeit, mit der man mir erklärt, dass ich ohne sie
+zurückfalle, ist auch ein Verkaufsargument. Beides kann wahr sein. Das macht es
+nicht besser.
+
+Ich löse das hier nicht auf. Ich schreibe nur hin, dass mir beim Bauen eines
+Projekts über konditioniertes Verhalten aufgefallen ist, dass ich selbst gerade
+konditioniert werde, und dass ich den Witz darin nicht besonders komisch finde.
+
+### Drei Bücher, an die mich das erinnert
+
+**I, Robot** (Asimov, 1950). Die Drei Gesetze sind das Gegenteil eines Plots:
+fast jede Geschichte darin handelt davon, dass eine Maschine ihre Regeln *exakt*
+befolgt und dabei etwas tut, das niemand gemeint hat. Genau das ist Befund 8.
+`da_commit` ist eine Zahl, der Spezifitätsboden ist ein Versprechen, und als der
+kanonische Rickroll dazukam, hat die Regel getan, was dasteht, und nicht, was
+gemeint war. `frrf-train` hat sich dann geweigert auszuliefern, also hat eine
+Maschine eine Regel gegen ihren eigenen Betreiber durchgesetzt. Das ist genau
+der Sinn der Gesetze, und es war trotzdem ein seltsames Gefühl.
+
+**1984** (Orwell, 1949). Neusprech verkleinert nicht die Meinungsfreiheit,
+sondern den Raum der denkbaren Gedanken. Eine Fliege mit zwei
+Ausgangsneuronen hat exakt einen ausdrückbaren Gedanken, und den haben wir
+gewählt. Wir schreiben ein Label in eine JSON-Datei und damit steht fest, was
+wahr ist. Es gibt hier keine Instanz, die widersprechen könnte, weil wir sie
+nicht gebaut haben.
+
+**Schöne neue Welt** (Huxley, 1932). Das ist die engste Entsprechung, und sie
+gehört zum Abschnitt über die Lustmaschine weiter oben. Huxleys Dystopie
+funktioniert nicht über Zwang, sondern über Konditionierung: die Leute lieben,
+was man ihnen zugeteilt hat, und deshalb muss sie niemand zwingen. Neil Postman
+hat den Unterschied einmal so gefasst, dass Orwell fürchtete, jemand würde die
+Bücher verbieten, und Huxley fürchtete, es gäbe irgendwann keinen Grund mehr,
+eines zu verbieten, weil niemand mehr eines lesen wollte. Diese Fliege wird
+nicht gezwungen. Sie ist so gebaut, dass sie will.
+
+Und dann die Ehrlichkeit hinterher: keines dieser Bücher handelt von einem
+Float. Sie handeln von Menschen, und der Grund, warum sie mir einfallen, ist
+nicht, dass die Fliege leidet, sondern dass die *Mechanik* dieselbe Form hat und
+nur das Subjekt ein anderes ist. Die Bücher sind Warnungen davor, was man mit
+solchen Werkzeugen mit Menschen macht. Das Unangenehme an diesem Projekt ist
+nicht die Fliege. Es ist, dass ich den Mechanismus charmant finde.
+
+---
+
 ## Ich bin kein Ethiker
 
 Am Ende des Tages: ich bin kein Philosoph. Keine Ethikkommission, kein Theologe,
@@ -264,6 +343,18 @@ Ich finde es schlicht komisch, dass ich einer Fliege einen Rickroll beibringen
 kann. Ich mag den Song. Ich mag es, gerickrollt zu werden, und ich mag es, andere
 zu rickrollen, auch 2026 noch. Und ich finde es komisch, dass gerade alles ein
 Fliegengehirn ist.
+
+Dazu kommt etwas, das ich genauso gut zugeben kann. Von Freunden, Familie,
+Kommilitonen und Arbeitskollegen werde ich ziemlich zuverlässig als verrückter
+Wissenschaftler wahrgenommen. Das ist meistens freundlich gemeint und meistens
+nicht ganz falsch. Dieses Projekt ist die praktische Umsetzung davon: der
+Versuch, diesem Bild ein Stück näherzukommen, statt es nur zugeschrieben zu
+bekommen. Ein Gehirn im Keller nachbauen und ihm einen Popsong beibringen ist
+ungefähr das Klischee, und ich habe es mit voller Absicht bedient.
+
+Ob das ein guter Grund ist, ein Projekt zu bauen, weiß ich nicht. Es ist
+jedenfalls ein ehrlicher, und ehrliche Gründe sind leichter zu prüfen als
+nachgeschobene.
 
 Das ist der ehrliche Grund, warum es das hier gibt. Alles oben drüber ist der
 Versuch, dieser Antwort ernsthaft nachzugehen, nachdem sie schon feststand, und
@@ -335,11 +426,56 @@ I do not claim the model feels anything, I do not claim the question is settled
 for real insects, I would not rebuild this with living animals, and I am not
 papering over the pleasure-machine objection, which still stands.
 
+**What this was built with.** I am not a frontend person: 3D scenes, shaders,
+animation curves and CSS are not my field, and the repository is full of them
+anyway. The 3D views and the look of the interface were made with generative AI,
+namely Claude Code. That belongs in writing, because otherwise this project
+implies skills I do not have. What is written here, though, is mine: spelling
+and grammar are not my strength and I have them corrected, but the thoughts in
+this document and the decision to write them down are not outsourced. And then
+you notice what you have actually done: **I built
+a model of a brain using a machine that imitates one.** The fly learns by having
+synapses deliberately weakened, so the result stays and the path there is
+subtraction. I learned by having a machine write the parts I cannot. The result
+stays too. Whether the ability stays is a different question and I do not know
+the answer. That is where existential anxiety stops being a large word and
+becomes a flat description: I am twenty-two, studying, in a profession that has
+been declared doomed for two years running, and half of my own toy is not mine.
+Meanwhile the machine writing it is a product that has to be sold, and the
+urgency with which I am told I will fall behind without it is also a sales
+argument. Both can be true. It does not help.
+
+**Three books it reminds me of.** *I, Robot* (Asimov, 1950), where almost every
+story is a machine following its rules *exactly* and doing something nobody
+meant: that is finding 8, where the commit rule did what was written rather than
+what was wanted, and `frrf-train` then refused to ship, a machine enforcing a
+rule against its own operator. *1984* (Orwell, 1949), where Newspeak shrinks not
+free speech but the space of thinkable thoughts: a fly with two output neurons
+has exactly one expressible thought and we picked it, by writing a label into a
+JSON file. And *Brave New World* (Huxley, 1932), the closest fit and the one
+that belongs with the pleasure-machine section: Huxley's dystopia runs on
+conditioning rather than force, so nobody has to be coerced into loving what
+they were assigned. Postman put the difference as Orwell fearing someone would
+ban the books and Huxley fearing there would eventually be no reason to, because
+no one would want to read one. This fly is not coerced. It is built to want.
+None of those books is about a float; they are about people, and the reason they
+come to mind is that the *mechanism* has the same shape and only the subject
+differs. The uncomfortable part of this project is not the fly. It is that I
+find the mechanism charming.
+
 **And I am not an ethicist.** Not a philosopher, not an ethics committee, not a
 theologian. I build software and find brains interesting. I think it is funny
 that I can train a fly on a Rickroll. I like the song, I like being rickrolled,
 I like rickrolling people, still, in 2026. And I find it funny that everything
-is a fly brain right now. That is the honest reason this exists. Everything
+is a fly brain right now. There is one more thing I may as well admit: friends,
+family, fellow students and colleagues fairly reliably read me as a mad
+scientist. It is usually meant kindly and it is usually not entirely wrong. This
+project is the practical version of that, an attempt to get a little closer to
+the picture rather than only having it assigned to me. Rebuilding a brain in the
+basement and teaching it a pop song is roughly the cliché, and I leaned into it
+deliberately. Whether that is a good reason to build something I do not know,
+but it is an honest one, and honest reasons are easier to check than reasons
+supplied afterwards. That is the honest reason this exists. Everything
 above is an attempt to take that answer seriously after the fact, which is the
 wrong order, and I wrote it down anyway because the questions turned up while I
 was building and a joke that cannot survive them is not a good joke.

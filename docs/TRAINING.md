@@ -2,6 +2,10 @@
 
 > Die Daten unter dem Argument.
 
+**TL;DR** · Der Korpus in Zahlen und Bildern, erzeugt statt geschrieben. Folds
+gehen nach Gruppe und nie nach Track, sonst misst das Ergebnis nichts. Die
+Abbildungen zeigen, wo die Fliege unsicher ist, und das ist die Mitte.
+
 Erzeugt von `frrf-insights` aus dem Manifest, den gecachten Perzepten und den
 Out-of-Fold-Spuren. Nichts hier braucht das Netz oder ein erneutes Training.
 
@@ -9,8 +13,8 @@ Out-of-Fold-Spuren. Nichts hier braucht das Netz oder ein erneutes Training.
 
 ## Der Korpus
 
-66 Tracks, 66.866 Perzepte, davon
-19.987 (30 %) der Song. Dieses Ungleichgewicht
+65 Tracks, 66.035 Perzepte, davon
+19.156 (29 %) der Song. Dieses Ungleichgewicht
 wird über Gewichtung behandelt und nicht durch Wegwerfen, jedes negative
 Perzept im Korpus wird also gesehen.
 
@@ -20,7 +24,7 @@ Perzept im Korpus wird also gesehen.
 |---|---|---|---|
 | music | 20 | 22.977 | nicht der Song |
 | hard | 19 | 15.925 | nicht der Song |
-| studio | 13 | 10.855 | der Song |
+| studio | 12 | 10.024 | der Song |
 | live | 5 | 5.111 | der Song |
 | speech | 5 | 7.977 | nicht der Song |
 | rework | 3 | 2.663 | der Song |
@@ -32,7 +36,7 @@ Längenobergrenze des Korpus abgeschnitten.
 **Folds gehen nach Gruppe, nicht nach Track.** Die 50 Gruppen gibt es,
 damit zwei Uploads derselben Aufnahme nie über eine Fold-Grenze getrennt werden
 können. Einen Track zurückzuhalten, während sein Zwilling im Training bleibt,
-misst nichts. Die größten Gruppen sind `studio-1987` (13), `pianoforte` (2), `astley-together-forever` (2), `astley-whenever` (2), `saw-roadblock` (2).
+misst nichts. Die größten Gruppen sind `studio-1987` (12), `pianoforte` (2), `astley-together-forever` (2), `astley-whenever` (2), `saw-roadblock` (2).
 
 ## Was sie mit jedem einzelnen macht
 

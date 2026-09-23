@@ -2,6 +2,13 @@
 
 > Was hier Fliege ist und was Engineering.
 
+**TL;DR** · Die Architektur ist echt: divisive Normalisierung, ein spärlicher
+Zufalls-Expander als lokalitätssensitiver Hash, Lernen ausschließlich als
+Depression, Dopamin als Vorhersagefehler. Das Ohr davor ist erfunden, die
+Chroma-Bins sind keine Fliegenstruktur, und außerhalb der Calyx stimmt keine
+Neuronenzahl. Jede Zahl unten sagt selbst, aus welcher der beiden Quellen sie
+kommt.
+
 `brain/config.py` trägt die Zahlen, dieses Dokument die Begründung. Der Anspruch
 des Projekts ist eng und soll genau so dastehen: **das ist ein Modell des
 Pilzkörpers von Drosophila, angewendet auf Audio, und keine Fliege.** Der
