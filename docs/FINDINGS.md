@@ -1,456 +1,555 @@
-# What the measurements actually said
+# Was die Messungen gesagt haben
 
-Four questions were asked of the trained fly. Three of them came back "no",
-and the "no"s are more useful than the "yes" was.
+> Die „Neins" waren nützlicher als das „Ja".
 
----
-
-## 1. Would more training help? No.
-
-Rendition track recall is 0.429 — the fly commits to 9 of the 21 held-out
-positives. The obvious reading is that it needs more epochs.
-
-It does not. Every one of the twelve misses peaks well above one half:
-
-| held-out positive | peak confidence |
-|---|---|
-| studio-1987 (×5 uploads) | 0.99 |
-| tv-countdown-1987 | 0.98 |
-| live-bbc-nye | 0.97 |
-| pianoforte (×2) | 0.96, 0.94 |
-| live-2016 | 0.92 |
-| live-late-late-show | 0.90 |
-| live-foo-fighters | 0.88 |
-
-Mean peak confidence across the misses is **0.96**. The circuit recognises
-these tracks percept by percept; what fails is the dopamine pool on top of it,
-which never crosses its threshold. More epochs cannot move a threshold.
-
-`docs/img/misses.png` draws this: the pale line is what the circuit believed,
-the solid line is the pool, the dashed line is the bar it had to clear.
-
-## 2. Would a different commit rule help? No.
-
-The commit rule is a leaky integrator with three free numbers — time constant,
-tonic baseline, threshold — swept over 252 combinations. An obvious suspicion
-is that the *shape* is wrong, not the numbers.
-
-A second family was tested on the same out-of-fold traces: **N of the last M
-percepts above a cut**, 210 combinations, a rate rule rather than an integrator.
-Under identical constraints:
-
-| rule family | best rendition recall | at upload specificity |
-|---|---|---|
-| leaky integrator (current) | **0.429** | 0.977 |
-| N-of-M | 0.238 | 0.955 |
-
-The integrator wins, and it wins comfortably. `docs/img/commitment.png` shows
-the further point: among the rules that clear the specificity floor, the one
-already chosen has the highest rendition recall of any of them. The tuner is
-not leaving anything on the table.
-
-## 3. So what *is* the constraint? Three false positives.
-
-The rule is held to 0.95 specificity on held-out uploads before recall is even
-looked at. Four negatives trip it, and three are the same artist:
-
-```
-astley-whenever    Rick Astley - Whenever You Need Somebody         at  9.5s
-astley-whenever    Rick Astley - Whenever You Need Somebody (JP)    at  9.5s
-astley-she-wants   Rick Astley - She Wants To Dance With Me         at 64.1s
-speech-ted         TED - How not to be ignorant about the world     at 12.0s
-```
-
-Re-running the sweep with the Rick Astley negatives removed:
-
-| | best rendition recall |
-|---|---|
-| as measured | 0.429 |
-| without the Astley negatives | **0.762** |
-
-Those three tracks cost **0.333 of rendition recall**. The fly had partly
-learned *Stock Aitken Waterman, 1987, that voice* rather than *this song*.
-
-## 4. Would more hard negatives fix it? No — and this is the important one.
-
-The corpus already carried 19 hard negatives: nine Rick Astley singles, six
-other Stock Aitken Waterman productions, and a different song that happens to
-share the title. Fourteen more were added — four further uploads each of the
-two tracks the fly was measured confusing with the target, plus Mel & Kim,
-Sinitta, Jason Donovan and Kylie Minogue.
-
-**Training failed.** No commit rule in the sweep reaches the 0.95 specificity
-floor any more; the best reachable is **0.897**.
-
-Ranking every negative by the fraction of its percepts the fly scores above
-one half:
-
-| track | over 0.5 | |
-|---|---|---|
-| She Wants To Dance With Me (HQ) | **99.2 %** | new |
-| She Wants To Dance With Me (2023 remaster) | 91.5 % | new |
-| She Wants To Dance With Me (music video) | 89.5 % | new |
-| She Wants To Dance With Me (Top Of The Pops) | 89.2 % | new |
-| *best actual positive (karaoke)* | *88.3 %* | |
-| She Wants To Dance With Me (original entry) | 70.4 % | |
-| *median actual positive* | *50.4 %* | |
-
-The fly is **more confident that "She Wants To Dance With Me" is the Rickroll
-than it is about any real Rickroll in the corpus.**
-
-This was checked for the obvious mistake first. A negative that secretly
-contains the target would poison training, and the curation rules say so. It is
-not that: all four new uploads run 196–199 s against the single's 3 min 19,
-none is a compilation, and the pre-existing entry for the same song is the
-atypical one — 259 s, sixty seconds longer than the others.
-
-The conclusion is unwelcome and worth stating plainly: **the 0.977 specificity
-the model reports was flattered by thin coverage of its nearest confusable
-neighbour.** One upload of "She Wants To Dance With Me" was in the corpus, and
-it happened to be an unusual one. With four ordinary uploads of it, the model's
-real discrimination shows, and it is much worse.
-
-Those fourteen tracks are carried in the manifest at `use: "holdout"`. They are
-fetched and reproducible but not trained on, because adopting them means
-lowering the specificity floor, and that floor is a product promise rather than
-a hyperparameter.
+Vier Fragen wurden der trainierten Fliege gestellt. Drei kamen als „nein"
+zurück, und genau die haben sich gelohnt.
 
 ---
 
-## 5. Would a longer percept fix it? No — and it costs most of the recall.
+## 1. Hilft mehr Training? Nein.
 
-The obvious reading of finding 4 is that 801 ms is too short: over a beat and a
-half, two Stock Aitken Waterman singles are nearly the same object, and what
-separates them is melody and harmonic movement. So the window was doubled —
-`subframes` 3 → 6, a 1.567 s percept, about three beats. The claws went 20 → 40
-with it, because the receptor layer doubled and the config's own argument is
-that the *ratio* is what carries the hash; leaving them at 20 would have halved
-the sampling ratio to 5.6 % and confounded the two changes.
+Der Darbietungs-Recall auf Track-Ebene liegt bei 0,429: die Fliege legt sich bei
+9 von 21 zurückgehaltenen Positiven fest. Die naheliegende Lesart ist, dass sie
+mehr Epochen braucht.
 
-Percept-level, it is a wash. Track-level, it is a disaster.
+Braucht sie nicht. Jeder einzelne der zwölf Fehlschläge hat einen Peak deutlich
+über der Hälfte:
 
-| | 0.801 s | 1.567 s |
+| zurückgehaltenes Positiv | Peak-Konfidenz |
+|---|---|
+| studio-1987 (×5 Uploads) | 0,99 |
+| tv-countdown-1987 | 0,98 |
+| live-bbc-nye | 0,97 |
+| pianoforte (×2) | 0,96 · 0,94 |
+| live-2016 | 0,92 |
+| live-late-late-show | 0,90 |
+| live-foo-fighters | 0,88 |
+
+Die mittlere Peak-Konfidenz über alle Fehlschläge ist **0,96**. Der Schaltkreis
+erkennt diese Tracks Perzept für Perzept. Was versagt, ist der Dopamin-Pool
+darüber, der seine Schwelle nie überschreitet. Mehr Epochen können keine
+Schwelle verschieben.
+
+`docs/img/misses.png` zeichnet das: die blasse Linie ist, was der Schaltkreis
+geglaubt hat, die durchgezogene der Pool, die gestrichelte die Latte.
+
+## 2. Hilft eine andere Commit-Regel? Nein.
+
+Die Commit-Regel ist ein Leaky Integrator mit drei freien Zahlen
+(Zeitkonstante, tonische Grundlinie, Schwelle), durchgefahren über 252
+Kombinationen. Ein naheliegender Verdacht ist, dass die *Form* falsch ist und
+nicht die Zahlen.
+
+Eine zweite Familie wurde auf denselben Out-of-Fold-Spuren getestet: **N der
+letzten M Perzepte über einem Schnitt**, 210 Kombinationen, eine Ratenregel
+statt eines Integrators. Unter identischen Randbedingungen:
+
+| Regelfamilie | bester Darbietungs-Recall | bei Upload-Spezifität |
 |---|---|---|
-| rendition macro AUC | 0.7038 | 0.7014 |
-| rendition pooled AUC | 0.7804 | 0.7627 |
-| **rendition track recall** | **0.429** | **0.095** |
-| rendition track specificity | 0.909 | 0.932 |
-| upload macro AUC | 0.9714 | 0.9756 |
-| upload track recall / specificity | 1.000 / 0.977 | 1.000 / 0.977 |
-| first suspicion (upload) | 0.8 s | 2.6 s |
+| Leaky Integrator (aktuell) | **0,429** | 0,977 |
+| N-von-M | 0,238 | 0,955 |
 
-**Held-out positives caught: 9 of 21 → 2 of 21.** The only two that survive are
-`extended-mix` and `karaoke`.
+Der Integrator gewinnt, und zwar deutlich. `docs/img/commitment.png` zeigt den
+weiteren Punkt: unter allen Regeln, die den Spezifitätsboden schaffen, hat die
+bereits gewählte den höchsten Darbietungs-Recall. Der Tuner lässt nichts liegen.
 
-And on the hard corpus it does not help at all: the best reachable upload
-specificity goes **0.897 → 0.879**, slightly worse than the short window.
+## 3. Was ist dann die Grenze? Drei falsche Alarme.
 
-The per-fold table says why, and it is not noise — the folds move in opposite
-directions, consistently:
+Die Regel ist an 0,95 Spezifität auf zurückgehaltenen Uploads gebunden, bevor
+Recall überhaupt angeschaut wird. Vier Negative reißen sie, und drei davon sind
+derselbe Künstler:
 
-| rendition fold | 0.801 s | 1.567 s | |
+```
+astley-whenever    Rick Astley - Whenever You Need Somebody        bei  9,5 s
+astley-whenever    Rick Astley - Whenever You Need Somebody (JP)   bei  9,5 s
+astley-she-wants   Rick Astley - She Wants To Dance With Me        bei 64,1 s
+speech-ted         TED - How not to be ignorant about the world    bei 12,0 s
+```
+
+Denselben Sweep ohne die Astley-Negative:
+
+| | bester Darbietungs-Recall |
+|---|---|
+| wie gemessen | 0,429 |
+| ohne die Astley-Negative | **0,762** |
+
+Diese drei Tracks kosten **0,333 Darbietungs-Recall**. Die Fliege hatte
+teilweise *Stock Aitken Waterman, 1987, diese Stimme* gelernt statt *diesen
+Song*.
+
+## 4. Helfen mehr harte Negative? Nein, und das ist der wichtige Befund.
+
+Der Korpus trug bereits 19 harte Negative: neun Rick-Astley-Singles, sechs
+weitere Stock-Aitken-Waterman-Produktionen, und einen anderen Song, der zufällig
+denselben Titel trägt. Vierzehn weitere kamen dazu: je vier zusätzliche Uploads
+der beiden Tracks, bei denen die Fliege messbar mit dem Ziel durcheinanderkommt,
+plus Mel & Kim, Sinitta, Jason Donovan und Kylie Minogue.
+
+**Das Training scheiterte.** Keine Commit-Regel im Sweep erreicht den
+0,95-Spezifitätsboden noch. Das Beste, was erreichbar ist, sind **0,897**.
+
+Alle Negative nach dem Anteil ihrer Perzepte über der Hälfte sortiert:
+
+| Track | über 0,5 | |
+|---|---|---|
+| She Wants To Dance With Me (HQ) | **99,2 %** | neu |
+| She Wants To Dance With Me (2023 Remaster) | 91,5 % | neu |
+| She Wants To Dance With Me (Musikvideo) | 89,5 % | neu |
+| She Wants To Dance With Me (Top Of The Pops) | 89,2 % | neu |
+| *bestes echtes Positiv (Karaoke)* | *88,3 %* | |
+| She Wants To Dance With Me (ursprünglicher Eintrag) | 70,4 % | |
+| *mittleres echtes Positiv* | *50,4 %* | |
+
+Die Fliege ist sich **sicherer, dass „She Wants To Dance With Me" der Rickroll
+ist, als bei jedem echten Rickroll im Korpus.**
+
+Der naheliegende Fehler wurde zuerst geprüft. Ein Negativ, das das Ziel heimlich
+enthält, würde das Training vergiften, und genau das verbieten die
+Kurations-Regeln. Daran liegt es nicht: alle vier neuen Uploads laufen 196 bis
+199 s gegen die 3:19 der Single, keiner ist eine Compilation, und ausgerechnet
+der vorbestehende Eintrag desselben Songs ist der untypische, nämlich 259 s und
+damit eine Minute länger als die anderen.
+
+Der Schluss ist unerfreulich und gehört klar hingeschrieben: **die 0,977
+Spezifität, die das Modell meldet, war durch dünne Abdeckung seines nächsten
+Verwechslungskandidaten geschönt.** Ein Upload von „She Wants To Dance With Me"
+war im Korpus, und es war zufällig ein ungewöhnlicher. Mit vier gewöhnlichen
+zeigt sich die echte Trennschärfe, und die ist deutlich schlechter.
+
+Die vierzehn Tracks liegen im Manifest unter `use: "holdout"`. Sie werden
+geladen und bleiben reproduzierbar, aber es wird nicht auf ihnen trainiert, denn
+sie zu übernehmen heißt den Spezifitätsboden zu senken, und dieser Boden ist ein
+Produktversprechen und kein Hyperparameter.
+
+---
+
+## 5. Hilft ein längeres Perzept? Nein, und es kostet den größten Teil des Recalls.
+
+Die naheliegende Lesart von Befund 4 ist, dass 801 ms zu kurz sind: über
+anderthalb Schläge sind zwei Stock-Aitken-Waterman-Singles fast dasselbe Objekt,
+und was sie trennt, ist Melodie und harmonische Bewegung. Also wurde das Fenster
+verdoppelt: `subframes` 3 → 6, ein Perzept von 1,567 s, etwa drei Schläge. Die
+Klauen gingen mit 20 → 40, weil sich die Rezeptorschicht verdoppelt hat und das
+eigene Argument der Config lautet, dass das *Verhältnis* den Hash trägt. Sie bei
+20 zu lassen hätte das Abtastverhältnis auf 5,6 % halbiert und die beiden
+Änderungen vermischt.
+
+Auf Perzept-Ebene ein Nullsummenspiel. Auf Track-Ebene eine Katastrophe.
+
+| | 0,801 s | 1,567 s |
+|---|---|---|
+| Darbietung macro AUC | 0,7038 | 0,7014 |
+| Darbietung gepoolt AUC | 0,7804 | 0,7627 |
+| **Darbietung Track-Recall** | **0,429** | **0,095** |
+| Darbietung Track-Spezifität | 0,909 | 0,932 |
+| Upload macro AUC | 0,9714 | 0,9756 |
+| Upload Recall / Spezifität | 1,000 / 0,977 | 1,000 / 0,977 |
+| erster Verdacht (Upload) | 0,8 s | 2,6 s |
+
+**Gefangene zurückgehaltene Positive: 9 von 21 → 2 von 21.** Übrig bleiben nur
+`extended-mix` und `karaoke`.
+
+Und auf dem harten Korpus hilft es überhaupt nicht: die beste erreichbare
+Upload-Spezifität geht **0,897 → 0,879**, also leicht schlechter als das kurze
+Fenster.
+
+Die Fold-Tabelle sagt warum, und es ist kein Rauschen. Die Folds bewegen sich
+konsistent in entgegengesetzte Richtungen:
+
+| Darbietungs-Fold | 0,801 s | 1,567 s | |
 |---|---|---|---|
-| live-foo-fighters | 0.752 | **0.857** | up |
-| live-bbc-nye | 0.703 | **0.774** | up |
-| karaoke | 0.891 | **0.933** | up |
-| extended-mix | 0.939 | **0.957** | up |
-| studio-1987 | **0.903** | 0.879 | down |
-| tv-countdown-1987 | **0.656** | 0.578 | down |
-| pianoforte | **0.467** | 0.369 | down |
-| live-2016 | **0.329** | 0.262 | down |
+| live-foo-fighters | 0,752 | **0,857** | rauf |
+| live-bbc-nye | 0,703 | **0,774** | rauf |
+| karaoke | 0,891 | **0,933** | rauf |
+| extended-mix | 0,939 | **0,957** | rauf |
+| studio-1987 | **0,903** | 0,879 | runter |
+| tv-countdown-1987 | **0,656** | 0,578 | runter |
+| pianoforte | **0,467** | 0,369 | runter |
+| live-2016 | **0,329** | 0,262 | runter |
 
-The interpretation that fits: **a longer window is more rigid about tempo.**
-Three beats of a performance recorded at a slightly different tempo drift out
-of alignment with what the fly learned; a beat and a half drifts half as far.
-The wider percept is a better template for *the same recording* — every upload
-fold improved, and upload AUC went up — and a worse one for *a different
-performance of the same song*, which is the thing that was supposed to get
-better.
+Die Deutung, die passt: **ein längeres Fenster ist starrer gegenüber dem
+Tempo.** Drei Schläge einer Aufnahme mit leicht anderem Tempo laufen aus der
+Deckung mit dem, was die Fliege gelernt hat; anderthalb Schläge driften halb so
+weit. Das breitere Perzept ist die bessere Schablone für *dieselbe Aufnahme*
+(jeder Upload-Fold wurde besser, die Upload-AUC stieg) und die schlechtere für
+*eine andere Darbietung desselben Songs*, also für genau das, was besser werden
+sollte.
 
-That is the opposite of the intended effect, so the change was reverted. It is
-written down here because it is a cheap experiment to repeat by accident.
+Das ist das Gegenteil des beabsichtigten Effekts, also wurde die Änderung
+zurückgenommen. Sie steht hier, weil es ein Experiment ist, das man aus Versehen
+wiederholt.
 
-It also rules out the framing. The problem is not that the window is too short
-to contain the melody. Tempo-rigidity and timbre-confusion are the same
-complaint from two directions: the representation is anchored to the *surface*
-of a specific recording rather than to what the song is. Lengthening the window
-moves it further in that direction, not less.
+Es schließt außerdem die Rahmung aus. Das Problem ist nicht, dass das Fenster zu
+kurz für die Melodie ist. Tempo-Starrheit und Klangfarben-Verwechslung sind
+dieselbe Beschwerde aus zwei Richtungen: die Repräsentation hängt an der
+*Oberfläche* einer bestimmten Aufnahme statt an dem, was der Song ist. Das
+Fenster zu verlängern schiebt sie weiter in diese Richtung, nicht heraus.
 
 ---
 
-## 6. The meme case: the pool is the wrong shape for a four-second sting
+## 6. Der Meme-Fall: der Pool hat die falsche Form für einen Vier-Sekunden-Sting
 
-A real meme, pasted in: `hB7CDrVnNCs`, fifteen seconds long, the record spliced
-in from 11 s to 15 s. The app said **not a rickroll**, and it was not close to
-random about it:
+Ein echtes Meme, eingeworfen: `hB7CDrVnNCs`, fünfzehn Sekunden lang, die Platte
+von 11 s bis 15 s hineingeschnitten. Die App sagte **kein Rickroll**, und sie
+war dabei nicht nahe am Raten:
 
 ```
-first suspicion  10.89 s      peak confidence  0.965
-peak dopamine     0.474   vs   threshold  0.60
+erster Verdacht  10,89 s      Peak-Konfidenz  0,965
+Peak-Dopamin      0,474   vs   Schwelle  0,60
 ```
 
-It ran out of video at 79 percent of the way to convinced. The pool needs about
-ten seconds of the song; the meme carried four. This is not a rare shape — most
-Rickrolls in the wild are the first five to fifteen seconds of the record
-stapled to the end of something else.
+Das Video ging ihr auf 79 Prozent des Weges zur Überzeugung aus. Der Pool
+braucht rund zehn Sekunden Song, das Meme trug vier. Das ist keine seltene Form:
+die meisten Rickrolls da draußen sind die ersten fünf bis fünfzehn Sekunden der
+Platte, hinten an etwas anderes getackert.
 
-**A second commit path was added for it**: two seconds whose mean confidence is
-at least 0.93, in a recording of at most 25 seconds. Three things made it
-defensible.
+**Dafür kam ein zweiter Commit-Pfad**: zwei Sekunden mit mindestens 0,93
+mittlerer Konfidenz, in einer Aufnahme von höchstens 25 Sekunden. Drei Dinge
+machten ihn vertretbar.
 
-*The evaluation set had to be built.* Every negative in the manifest is a whole
-track, so a rule aimed at fifteen-second memes had never met a fifteen-second
-non-meme. Roughly nine thousand short negative clips were cut from the
-out-of-fold timelines, and memes were simulated the way memes are made: filler,
-then a few seconds of the record.
+*Die Auswertungsmenge musste erst gebaut werden.* Jedes Negativ im Manifest ist
+ein ganzer Track, eine Regel für Fünfzehn-Sekunden-Memes hatte also noch nie ein
+Fünfzehn-Sekunden-Nicht-Meme gesehen. Rund neuntausend kurze negative Clips
+wurden aus den Out-of-Fold-Spuren geschnitten, und Memes wurden so simuliert, wie
+Memes gemacht werden: Füllmaterial, dann ein paar Sekunden Platte.
 
-*Specificity decays with length, and that is the whole argument for the gate.*
-A sliding rule gets a chance to fire per percept, so a four-minute track gives
-it nearly two thousand chances and a fifteen-second clip about a hundred:
+*Spezifität fällt mit der Länge, und das ist das ganze Argument für die
+Schranke.* Eine gleitende Regel bekommt pro Perzept eine Chance zu feuern, ein
+Vier-Minuten-Track gibt ihr also fast zweitausend und ein
+Fünfzehn-Sekunden-Clip etwa hundert:
 
-| clip length | 15 s | 25 s | 45 s | 60 s | 120 s |
+| Clip-Länge | 15 s | 25 s | 45 s | 60 s | 120 s |
 |---|---|---|---|---|---|
-| specificity | 96.3 % | 95.1 % | 93.4 % | 92.4 % | 90.0 % |
+| Spezifität | 96,3 % | 95,1 % | 93,4 % | 92,4 % | 90,0 % |
 
-Ungated, this path drops held-out upload specificity from 0.977 to 0.909 and
-breaks the floor. Gated at 25 s it cannot reach a full-length track at all, so
-every headline figure is unchanged — upload 1.000 / 0.977, rendition 0.429 /
-0.909, still all committed through the pool — while short videos get a rule
-held to the same 0.95 bar on their own population.
+Ungeschränkt drückt dieser Pfad die Upload-Spezifität von 0,977 auf 0,909 und
+bricht den Boden. Bei 25 s geschränkt erreicht er einen Track voller Länge gar
+nicht, also bleibt jede Schlagzeilenzahl unverändert (Upload 1,000 / 0,977,
+Darbietung 0,429 / 0,909, weiterhin alles über den Pool festgelegt), während
+kurze Videos eine Regel bekommen, die auf ihrer eigenen Population an dieselbe
+0,95 gebunden ist.
 
-*What it buys.* On simulated four-second stings, recall goes from **39.8 % to
-67.5 %**. End to end, the video above now commits at 13.7 s, and the record,
-the advert, the ordinary negative and the Astley hard negative all behave
-exactly as before.
+*Was er bringt.* Auf simulierten Vier-Sekunden-Stings steigt der Recall von
+**39,8 % auf 67,5 %**. Ende zu Ende legt sich das Video oben jetzt bei 13,7 s
+fest, und die Platte, die Werbung, das gewöhnliche Negativ und das harte
+Astley-Negativ verhalten sich genau wie vorher.
 
-Two caveats, recorded rather than buried. The threshold is 0.93 and that video
-scores 0.934 over its best two seconds — a margin of four thousandths, which
-means the cut is fitted to that one example as much as to the sweep. And a long
-video with a short sting is still missed by construction: the gate is a
-statement that a four-minute upload gets judged by the pool, whatever is
-spliced into it.
+Zwei Vorbehalte, festgehalten statt begraben. Die Schwelle ist 0,93 und dieses
+Video kommt über seine besten zwei Sekunden auf 0,934, ein Abstand von vier
+Tausendsteln. Der Schnitt ist damit ebenso sehr an dieses eine Beispiel gefittet
+wie an den Sweep. Und ein langes Video mit kurzem Sting wird weiterhin
+konstruktionsbedingt verfehlt: die Schranke ist die Aussage, dass ein
+Vier-Minuten-Upload vom Pool beurteilt wird, egal was hineingeschnitten ist.
 
-### 6b. The first caveat came true, and the sweep was not reproducible
+### 6b. Der erste Vorbehalt trat ein, und der Sweep war nicht reproduzierbar
 
-Two ordinary eight-second Rickrolls — *Rick Roll (Different link + no ads)* and
-*Rick roll, but with different link*, the exact shape this rule exists for —
-score **0.9202** and **0.9269** over their best two seconds. Both were reported
-as *not a rickroll* while the fly was 97 percent confident about them and the
-pool had stalled at 0.39 against 0.60. A threshold fitted four thousandths
-above one example missed the next two examples it met.
+Zwei gewöhnliche Acht-Sekunden-Rickrolls, *Rick Roll (Different link + no ads)*
+und *Rick roll, but with different link*, also genau die Form, für die es diese
+Regel gibt, kommen über ihre besten zwei Sekunden auf **0,9202** und **0,9269**.
+Beide wurden als *kein Rickroll* gemeldet, während die Fliege zu 97 Prozent
+überzeugt war und der Pool bei 0,39 gegen 0,60 stehenblieb. Eine Schwelle, vier
+Tausendstel über einem Beispiel gefittet, verfehlte die nächsten zwei Beispiele,
+die ihr begegneten.
 
-Worse, the sweep that produced 0.93 was never committed, so the number could
-not be argued with. `frrf-commitment` now rebuilds it from `models/traces.npz`:
-memes cut as filler-then-sting from the **upload** family, short negatives cut
-from ordinary tracks at the same lengths.
+Schlimmer: der Sweep, der 0,93 hervorgebracht hat, wurde nie eingecheckt, die
+Zahl war also nicht bestreitbar. `frrf-commitment` baut ihn jetzt aus
+`models/traces.npz` nach: Memes geschnitten als Füller-dann-Sting aus der
+**Upload**-Familie, kurze Negative aus gewöhnlichen Tracks in denselben Längen.
 
-Rebuilding it turned up something the original write-up got wrong. **The burst
-path barely fires at all.** Swept from 0.99 down to 0.86 against nine thousand
-out-of-fold short negatives, the measured cost is *zero* additional false
-alarms at every step — because every short clip the burst would catch, the pool
-has already committed on by itself. False alarms begin at 0.84, where fifteen
-appear. The claimed lift from 39.8 to 67.5 percent recall does not reproduce;
-on this population the pool alone takes 95 to 100 percent of simulated memes,
-and the burst's real job is the narrow band the pool stalls in — which is
-exactly where those two videos sat.
+Beim Nachbauen kam etwas heraus, das die ursprüngliche Notiz falsch hatte. **Der
+Burst-Pfad feuert kaum.** Von 0,99 bis 0,86 gegen neuntausend
+Out-of-Fold-Kurznegative durchgefahren, sind die gemessenen Kosten bei jedem
+Schritt *null* zusätzliche Fehlalarme, weil der Pool jeden kurzen Clip, den der
+Burst fangen würde, schon von selbst festgelegt hat. Fehlalarme beginnen bei
+0,84, wo fünfzehn auftauchen. Der behauptete Sprung von 39,8 auf 67,5 Prozent
+reproduziert sich nicht: auf dieser Population nimmt der Pool allein 95 bis 100
+Prozent der simulierten Memes, und die echte Aufgabe des Bursts ist das schmale
+Band, in dem der Pool steckenbleibt. Genau dort saßen jene beiden Videos.
 
-So the cut moved to **0.90**: six hundredths above the edge of the flat region
-rather than four thousandths above one example. On real audio the change is
-surgical.
+Der Schnitt wanderte also auf **0,90**: sechs Hundertstel über der Kante des
+flachen Bereichs statt vier Tausendstel über einem Beispiel. Auf echtem Audio
+ist die Änderung chirurgisch.
 
-| video | before | after |
+| Video | vorher | nachher |
 |---|---|---|
-| Rick Roll, no ads (8 s) | never | **4.0 s** |
-| Rick roll, different link (7 s) | never | **4.0 s** |
-| Send this to all your friends (15 s) | 13.7 s | 13.1 s |
-| the record (213 s) | 9.5 s | 9.5 s |
-| insurance advert (65 s) | 4.6 s | 4.6 s |
-| Astley hard negative (208 s) | never | never |
-| three ordinary negatives | never | never |
+| Rick Roll, no ads (8 s) | nie | **4,0 s** |
+| Rick roll, different link (7 s) | nie | **4,0 s** |
+| Send this to all your friends (15 s) | 13,7 s | 13,1 s |
+| die Platte (213 s) | 9,5 s | 9,5 s |
+| Versicherungswerbung (65 s) | 4,6 s | 4,6 s |
+| Astley-Hartnegativ (208 s) | nie | nie |
+| drei gewöhnliche Negative | nie | nie |
 
-The hard negative is why the 25-second gate is not also up for negotiation: its
-best two seconds average **0.9479**, comfortably above the new cut, and only
-its length keeps the burst away from it.
+Das Hartnegativ ist der Grund, warum die 25-Sekunden-Schranke nicht ebenfalls
+zur Verhandlung steht: seine besten zwei Sekunden mitteln **0,9479**, bequem
+über dem neuen Schnitt, und nur seine Länge hält den Burst davon fern.
 
-One case is still missed and stays missed: *10 rickrolls 1 video*, 34 seconds,
-outside the gate, with a best two seconds of only 0.855. The gate remains a
-statement that anything past 25 seconds is the pool's business.
+Ein Fall bleibt verfehlt und bleibt es: *10 rickrolls 1 video*, 34 Sekunden,
+außerhalb der Schranke, mit besten zwei Sekunden von nur 0,855. Die Schranke
+bleibt die Aussage, dass alles jenseits von 25 Sekunden Sache des Pools ist.
 
-Two measurements worth recording while the sweep existed. Short-clip
-specificity is **0.86**, far below the 0.977 the fly holds on whole tracks —
-fifteen percent of random five-to-twenty-five second windows of ordinary
-negatives commit, through the pool, with the burst disabled entirely. That is a
-pre-existing weakness of the pool on short inputs and nothing to do with this
-rule. And the family a meme's sting is cut from changes the answer completely:
-cut from `rendition`, simulated memes are so hard that nothing fires; cut from
-`upload`, the pool takes almost all of them. Somebody pasting a Rickroll link
-is pasting an upload, so `upload` is the population, and saying so is part of
-the claim.
+Zwei Messungen, die festzuhalten sich lohnt, solange der Sweep existierte. Die
+Kurzclip-Spezifität ist **0,86**, weit unter den 0,977, die die Fliege auf
+ganzen Tracks hält: fünfzehn Prozent zufälliger Fünf- bis
+Fünfundzwanzig-Sekunden-Fenster gewöhnlicher Negative legen sich fest, über den
+Pool, bei vollständig abgeschaltetem Burst. Das ist eine vorbestehende Schwäche
+des Pools auf kurzen Eingaben und hat mit dieser Regel nichts zu tun. Und die
+Familie, aus der der Sting eines Memes geschnitten wird, ändert die Antwort
+vollständig: aus `rendition` geschnitten sind simulierte Memes so schwer, dass
+nichts feuert; aus `upload` geschnitten nimmt der Pool fast alle. Wer einen
+Rickroll-Link einwirft, wirft einen Upload ein, also ist `upload` die
+Population, und das zu sagen gehört zur Behauptung dazu.
 
-### 6c. The gate was the wrong variable, and the statistic was the wrong statistic
+### 6c. Die Schranke war die falsche Variable, und die Statistik die falsche Statistik
 
-The caveat at the end of finding 6 — *a long video with a short sting is still
-missed by construction* — is not a corner case. It is the most common shape a
-Rickroll takes: four seconds of the record buried in ten minutes of something
-else. Pasted in: an eleven-minute video containing **1.3 s and 1.4 s** of the
-song. Peak confidence 0.976, pool stalled at 0.471 against 0.60, burst switched
-off by the 25-second gate. **Not a rickroll.**
+Der Vorbehalt am Ende von Befund 6, *ein langes Video mit kurzem Sting wird
+weiterhin konstruktionsbedingt verfehlt*, ist kein Randfall. Es ist die
+häufigste Form, die ein Rickroll annimmt: vier Sekunden Platte, vergraben in
+zehn Minuten von etwas anderem. Eingeworfen: ein Elf-Minuten-Video mit **1,3 s
+und 1,4 s** Song. Peak-Konfidenz 0,976, Pool bei 0,471 gegen 0,60 hängen
+geblieben, Burst durch die 25-Sekunden-Schranke aus. **Kein Rickroll.**
 
-The obvious fix is to ungate the burst. It does not work, and the measurement
-is not close. Best two-second mean confidence, over whole tracks, no gate:
+Der naheliegende Fix ist, den Burst zu entsperren. Das funktioniert nicht, und
+die Messung ist nicht knapp. Bestes Zwei-Sekunden-Mittel über ganze Tracks, ohne
+Schranke:
 
-| | best 2 s mean |
+| | bestes 2-s-Mittel |
 |---|---|
-| TED talk, *How not to be ignorant about the world* | **0.985** |
-| *She Wants To Dance With Me* (the hard negative) | **0.972** |
-| the eleven-minute video that really is a Rickroll | 0.939 |
+| TED-Talk, *How not to be ignorant about the world* | **0,985** |
+| *She Wants To Dance With Me* (das Hartnegativ) | **0,972** |
+| das Elf-Minuten-Video, das wirklich ein Rickroll ist | 0,939 |
 
-Ranked by that statistic the genuine Rickroll loses to a lecture. A mean over a
-window can be carried by a single spike, and a long video offers thousands of
-windows to find a spike in. The gate was not protecting an arbitrary length
-limit; it was protecting a statistic that cannot survive many chances.
+Nach dieser Statistik sortiert verliert der echte Rickroll gegen einen Vortrag.
+Ein Mittel über ein Fenster kann von einem einzigen Ausschlag getragen werden,
+und ein langes Video bietet tausende Fenster, in denen sich einer findet. Die
+Schranke schützte keine willkürliche Längengrenze, sie schützte eine Statistik,
+die viele Versuche nicht übersteht.
 
-**An unbroken run can.** Requiring every consecutive percept to clear a high
-bar is a much harder test to pass by accident, because it has to survive each
-percept it covers rather than average over them. Of forty-four full-length
-negatives, exactly one holds 0.97 for six tenths of a second — and it is *She
-Wants To Dance With Me*, which this project already documents the fly as partly
-confusing with the song.
+**Eine ungebrochene Serie übersteht sie.** Zu verlangen, dass *jedes*
+aufeinanderfolgende Perzept eine hohe Latte nimmt, ist ein viel härterer Test,
+weil er jedes abgedeckte Perzept überleben muss statt über sie zu mitteln. Von
+vierundvierzig Negativen in voller Länge hält genau eines 0,97 über sechs
+Zehntelsekunden, und es ist *She Wants To Dance With Me*, von dem dieses Projekt
+ohnehin dokumentiert, dass die Fliege es teilweise mit dem Song verwechselt.
 
-So a third path, ungated: **0.97 held for 0.60 s**. Measured on the out-of-fold
-tracks:
+Also ein dritter Pfad, ungeschränkt: **0,97, gehalten über 0,60 s.** Gemessen
+auf den Out-of-Fold-Tracks:
 
-| | recall | specificity |
+| | Recall | Spezifität |
 |---|---|---|
-| unheard upload | 1.000 → 1.000 | 0.977 → **0.977** |
-| unheard rendition | 0.429 → **0.619** | 0.909 → **0.909** |
+| unbekannter Upload | 1,000 → 1,000 | 0,977 → **0,977** |
+| unbekannte Darbietung | 0,429 → **0,619** | 0,909 → **0,909** |
 
-Neither specificity moves. Rendition recall — the honest number — rises
-nineteen points, because a cover that is briefly right now counts even though
-its pool never charges. The eleven-minute video commits at 163.8 s, on the
-song's second appearance.
+Keine der beiden Spezifitäten bewegt sich. Der Darbietungs-Recall, die ehrliche
+Zahl, steigt um neunzehn Punkte, weil ein Cover, das kurz richtig liegt, jetzt
+zählt, auch wenn sein Pool nie lädt. Das Elf-Minuten-Video legt sich bei 163,8 s
+fest, beim zweiten Auftreten des Songs.
 
-Three things recorded rather than buried. The bar sits on a cliff: at 0.60 s
-upload specificity is 0.977, at 0.50 s it is 0.909, and the video this was
-chased with holds 0.97 for 0.639 s — a margin of six percent, better than the
-four thousandths that sank the first burst rule, but still a margin. The new
-recall is slower: median rendition commit goes from 28.1 s to 41.9 s and p90
-from 50.6 s to 190.5 s, because nothing already caught got faster and
-everything newly caught is hard and late. And *10 rickrolls 1 video*, 34
-seconds, is still missed — its best run never holds 0.97 that long.
+Drei Dinge festgehalten statt begraben. Die Latte steht an einer Kante: bei
+0,60 s liegt die Upload-Spezifität bei 0,977, bei 0,50 s bei 0,909, und das
+Video, mit dem das verfolgt wurde, hält 0,97 über 0,639 s. Ein Abstand von sechs
+Prozent, besser als die vier Tausendstel, die die erste Burst-Regel versenkt
+haben, aber immer noch ein Abstand. Der neue Recall ist langsamer: der mittlere
+Darbietungs-Commit geht von 28,1 s auf 41,9 s und p90 von 50,6 s auf 190,5 s,
+weil nichts bereits Gefangenes schneller wurde und alles neu Gefangene schwer
+und spät ist. Und *10 rickrolls 1 video*, 34 Sekunden, wird weiterhin verfehlt,
+seine beste Serie hält 0,97 nie so lange.
 
-### 6d. The defaults in `brain/config.py` are not the shipped fly
+### 6d. Die Defaults in `brain/config.py` sind nicht die ausgelieferte Fliege
 
-Found while measuring the above, and worth more than a footnote. Training tunes
-the commitment parameters and saves what it chose into the model, so:
+Beim Messen des Obigen gefunden, und mehr wert als eine Fußnote. Das Training
+tunt die Commit-Parameter und legt die gewählten ins Modell, also:
 
 | | `brain/config.py` | `models/fly_brain.npz` |
 |---|---|---|
-| `da_tau` | 0.9 | **2.0** |
-| `da_baseline` | 0.66 | **0.72** |
-| `da_commit` | 0.35 | **0.6** |
+| `da_tau` | 0,9 | **2,0** |
+| `da_baseline` | 0,66 | **0,72** |
+| `da_commit` | 0,35 | **0,6** |
 
-This is by design — the dataclass docstring says the config travels with the
-weights — but it is a trap for anything that measures behaviour. A sweep built
-on a bare `BrainConfig()` reproduces upload specificity of **0.614** where the
-shipped fly scores **0.977**, and every conclusion drawn from it is about an
-animal that was never shipped. The earlier short-clip numbers in 6b were
-computed that way and should be read as indicative only; the real-audio table
-in 6b was not, and stands. `BrainConfig`'s docstring now says this outright:
-take the config from `FlyBrain.load(...).config`, never from the defaults.
+Das ist so beabsichtigt, der Docstring der Dataclass sagt, dass die Config mit
+den Gewichten reist. Für alles, was Verhalten misst, ist es trotzdem eine Falle.
+Ein Sweep auf einer nackten `BrainConfig()` reproduziert eine Upload-Spezifität
+von **0,614**, wo die ausgelieferte Fliege **0,977** erreicht, und jeder daraus
+gezogene Schluss handelt von einem Tier, das nie ausgeliefert wurde. Die
+früheren Kurzclip-Zahlen in 6b wurden so berechnet und sind nur als Hinweis zu
+lesen; die Echtaudio-Tabelle in 6b nicht, die steht. Der Docstring von
+`BrainConfig` sagt das jetzt ausdrücklich: die Config aus
+`FlyBrain.load(...).config` nehmen, nie aus den Defaults.
 
-## 7. The fly can watch, and it does not help
+## 7. Die Fliege kann zusehen, und es hilft nicht
 
-The question was whether the fly could be made to *see* the video rather than
-only hear it. The answer is that the pathway works, the biology is sound, and
-the fly learns almost nothing from it.
+Die Frage war, ob man die Fliege dazu bringen kann, das Video zu *sehen* statt
+nur zu hören. Die Antwort ist, dass der Pfad funktioniert, die Biologie stimmt,
+und die Fliege fast nichts daraus lernt.
 
-**What was built.** A Drosophila eye is about 750 ommatidia, so a frame becomes
-a 32x24 hexagonal picture and no amount of wanting will get a face out of it.
-What flies are extraordinary at is time -- flicker fusion near 200 Hz against
-our sixty -- so the pathway is a motion pathway, and the textbook one:
-ommatidia feed Reichardt correlators (a delayed signal from one facet
-multiplied by its neighbour's undelayed one, minus the mirror of that product),
-and those are pooled into twelve wide-field tangential cells standing in for
-the lobula plate. Twelve fields, four directions each, plus twelve flicker
-channels, is sixty a frame -- the ear's number on purpose, so three sub-frames
-makes 180 receptors either way and the same calyx reads either sense.
+**Was gebaut wurde.** Ein Drosophila-Auge hat etwa 750 Ommatidien, ein Bild wird
+also zu einem hexagonalen 32×24-Raster, und kein Wünschen holt daraus ein
+Gesicht. Worin Fliegen außergewöhnlich sind, ist Zeit: die Flimmerfusion liegt
+nahe 200 Hz gegen unsere sechzig. Also ist der Pfad ein Bewegungspfad, und zwar
+der aus dem Lehrbuch: Ommatidien speisen Reichardt-Korrelatoren (ein verzögertes
+Signal einer Facette, multipliziert mit dem unverzögerten der Nachbarin, minus
+dem Spiegelbild dieses Produkts), und die werden in zwölf tangentiale
+Weitfeldzellen gepoolt, die für die Lobula-Platte stehen. Zwölf Felder, je vier
+Richtungen, plus zwölf Flimmerkanäle sind sechzig pro Bild. Die Zahl des Ohrs,
+mit Absicht, damit drei Sub-Frames in beiden Fällen 180 Rezeptoren ergeben und
+dieselbe Calyx beide Sinne lesen kann.
 
-**What it scored.** Pooled out-of-fold percept AUC, same folds, same circuit,
-same everything but the sense:
+**Was es erreicht hat.** Gepoolte Out-of-Fold-Perzept-AUC, gleiche Folds,
+gleicher Schaltkreis, alles gleich außer dem Sinn:
 
-| | rendition | unheard upload |
+| | Darbietung | unbekannter Upload |
 |---|---|---|
-| ear | **0.780** | **0.971** |
-| eye | 0.621 | 0.631 |
+| Ohr | **0,780** | **0,971** |
+| Auge | 0,621 | 0,631 |
 
-Above a coin flip, and nowhere near enough. `frrf-train` **refused to ship a
-visual fly at all**: no commit rule reaches even a 0.70 specificity floor at
-full upload recall, which is the trainer's own guard working exactly as
-intended. `models/fly_eye.npz` does not exist and the application is unchanged.
+Über dem Münzwurf, und nicht annähernd genug. `frrf-train` hat **sich geweigert,
+überhaupt eine sehende Fliege auszuliefern**: keine Commit-Regel erreicht auch
+nur einen Spezifitätsboden von 0,70 bei vollem Upload-Recall, was die eigene
+Schutzvorrichtung des Trainers ist, die genau wie vorgesehen arbeitet.
+`models/fly_eye.npz` existiert nicht und die Anwendung ist unverändert.
 
-**Two things the attempt turned up that were worth the trip.**
+**Zwei Dinge, die der Versuch zutage gefördert hat und die die Reise wert
+waren.**
 
-*A great many uploads are photographs.* Thirty-eight percent of the positives
-in this corpus are a still cover image with the audio behind it, against
-sixteen percent of the negatives -- so in this corpus **being a still image is
-correlated with being the target**, P(positive | static) = 0.53 against a base
-rate of 0.32. Normalising each video by its own peak activity turned those
-photographs' compression shimmer into something that looked like choreography,
-and the circuit could have learned that correlation and scored for it. It is a
-fact about how the corpus was collected, not about the song. The eye now gates
-on how confident it is that anything moved at all, and a photograph reads
-0.00000 where a music video reads 0.03.
+*Sehr viele Uploads sind Fotografien.* Achtunddreißig Prozent der Positiven in
+diesem Korpus sind ein Standbild mit Audio dahinter, gegen sechzehn Prozent der
+Negativen. In diesem Korpus ist **ein Standbild zu sein also mit dem Ziel
+korreliert**: P(positiv | statisch) = 0,53 gegen eine Grundrate von 0,32. Jedes
+Video an seiner eigenen Spitzenaktivität zu normalisieren machte aus dem
+Kompressionsflimmern dieser Fotos etwas, das wie Choreografie aussah, und der
+Schaltkreis hätte diese Korrelation lernen und darauf punkten können. Das ist
+eine Tatsache darüber, wie der Korpus gesammelt wurde, und keine über den Song.
+Das Auge schränkt jetzt darauf ein, wie sicher es ist, dass sich überhaupt etwas
+bewegt hat: ein Foto liest 0,00000, wo ein Musikvideo 0,03 liest.
 
-*Training a second sense found a silent corruption in the first.* `load_times`
-read the default feature directory whatever `load_corpus` had been given, so
-training on sight paired the eye's confidences with the ear's clock. It
-happened to crash here because the two have different percept counts. Had they
-matched, it would have produced a plausible, entirely wrong model in silence.
+*Einen zweiten Sinn zu trainieren fand eine stille Korruption im ersten.*
+`load_times` las das Standard-Feature-Verzeichnis, egal was `load_corpus`
+bekommen hatte, also paarte das Training auf Sicht die Konfidenzen des Auges mit
+der Uhr des Ohrs. Es ist hier zufällig abgestürzt, weil die beiden
+unterschiedlich viele Perzepte haben. Hätten sie übereingestimmt, wäre lautlos
+ein plausibles und vollständig falsches Modell entstanden.
 
-**Why it does not work, as far as the measurement shows.** The motion
-statistics of a 1987 pop video are not very different from the motion
-statistics of other pop videos, at twelve wide-field channels and thirty frames
-a second. The one fold that does well -- extended-mix, AUC 0.948 -- is a
-visualiser with distinctive strobing, which is the pathway recognising an
-upload rather than the song. That is the same failure the ear has, and vision
-makes it worse: a piano cover contains no Rick Astley at all, so sight cannot
-help the rendition case, which is the one that is actually weak.
+**Warum es nicht funktioniert, soweit die Messung reicht.** Die
+Bewegungsstatistik eines Popvideos von 1987 unterscheidet sich bei zwölf
+Weitfeldkanälen und dreißig Bildern pro Sekunde nicht sehr von der anderer
+Popvideos. Der eine Fold, der gut läuft, `extended-mix` mit AUC 0,948, ist ein
+Visualizer mit markantem Stroboskop, also erkennt der Pfad einen Upload und
+nicht den Song. Das ist derselbe Fehlschlag, den das Ohr hat, und Sehen macht
+ihn schlimmer: in einem Klaviercover kommt gar kein Rick Astley vor, Sicht kann
+dem Darbietungsfall also nicht helfen, und der ist der tatsächlich schwache.
 
-Kept anyway: `brain/eye.py`, `frrf-watch`, and `models/traces-eye.npz`, because
-the negative result is only worth having if the evidence for it is re-readable.
+Trotzdem behalten: `brain/eye.py`, `frrf-watch` und `models/traces-eye.npz`,
+denn ein negatives Ergebnis ist nur etwas wert, wenn die Evidenz dafür wieder
+lesbar ist.
 
 ---
 
-## What this points at
+## Worauf das hindeutet
 
-Not more data, and not a better decision rule. The representation.
+Nicht auf mehr Daten und nicht auf eine bessere Entscheidungsregel. Auf die
+Repräsentation.
 
-The percept is 801 ms of 48 mel bands and 12 pitch classes. Over that window,
-two Stock Aitken Waterman singles cut in the same studio in the same year with
-the same singer are nearly the same object — same tempo range, same drum
-machine, same synth patches, same voice. What separates them is melody and
-harmonic progression, which needs either more weight on the chroma channel or a
-longer window than one and a half beats.
+Das Perzept sind 801 ms aus 48 Mel-Bändern und 12 Tonklassen. Über dieses
+Fenster sind zwei Stock-Aitken-Waterman-Singles, im selben Studio im selben Jahr
+mit derselben Stimme geschnitten, fast dasselbe Objekt: gleicher Tempobereich,
+gleicher Drumcomputer, gleiche Synth-Patches, gleiche Stimme. Was sie trennt,
+ist Melodie und Harmoniefolge, und dafür braucht es entweder mehr Gewicht auf
+dem Chroma-Kanal oder ein längeres Fenster als anderthalb Schläge.
 
-Three experiments follow from this, none of which needs new audio:
+Daraus folgen vier Experimente, von denen keines neues Audio braucht:
 
-1. ~~**A longer percept.**~~ Tried, in finding 5. It makes the fly a better
-   template-matcher for one recording and a worse recogniser of the song.
-2. **Chroma against mel** — now the leading candidate. The gain control already
-   normalises the two banks separately, so they can be re-weighted without
-   touching the ear. Training a chroma-only and a mel-only fly would say
-   directly which bank carries the Astley confusion. The expectation from
-   finding 5 is that mel — timbre, production, the surface of the recording —
-   is doing most of the work, and that is exactly the part two singles cut in
-   the same studio in the same year have in common.
-3. **Tempo invariance.** Finding 5 showed the representation is anchored to a
-   tempo. Nothing in the model normalises for it. Sub-frames of a fixed number
-   of *frames* could instead be a fixed number of *beats*, which is a real
-   change to the ear and the biggest single idea left on the list.
-4. **Adopting the harder corpus with an honest floor.** Train on all 79 tracks
-   with `--with-holdout --min-specificity 0.85` and report the lower numbers, on
-   the grounds that they are the true ones.
+1. ~~**Ein längeres Perzept.**~~ Versucht, in Befund 5. Es macht die Fliege zum
+   besseren Schablonenabgleicher für eine Aufnahme und zum schlechteren
+   Erkenner des Songs.
+2. **Chroma gegen Mel**, jetzt der aussichtsreichste Kandidat. Die
+   Verstärkungsregelung normalisiert die beiden Bänke ohnehin getrennt, sie
+   lassen sich also neu gewichten, ohne das Ohr anzufassen. Eine Nur-Chroma- und
+   eine Nur-Mel-Fliege zu trainieren würde direkt sagen, welche Bank die
+   Astley-Verwechslung trägt. Die Erwartung aus Befund 5 ist, dass Mel
+   (Klangfarbe, Produktion, die Oberfläche der Aufnahme) die meiste Arbeit tut,
+   und genau das ist der Teil, den zwei im selben Studio im selben Jahr
+   geschnittene Singles gemeinsam haben.
+3. **Tempo-Invarianz.** Befund 5 hat gezeigt, dass die Repräsentation an einem
+   Tempo hängt. Nichts im Modell normalisiert darauf. Sub-Frames könnten statt
+   einer festen Anzahl *Frames* eine feste Anzahl *Schläge* umfassen. Das ist
+   eine echte Änderung am Ohr und die größte einzelne Idee, die noch offen ist.
+4. **Den harten Korpus mit ehrlichem Boden übernehmen.** Auf allen 79 Tracks
+   trainieren mit `--with-holdout --min-specificity 0.85` und die niedrigeren
+   Zahlen melden, mit der Begründung, dass sie die wahren sind.
 
-Reproducing any of the measurements above needs only `models/traces.npz` —
-the out-of-fold confidence timelines — and no retraining.
+Jede der obigen Messungen nachzuvollziehen braucht nur `models/traces.npz`, die
+Out-of-Fold-Konfidenzverläufe, und kein erneutes Training.
+
+<details>
+<summary>🇬🇧 English</summary>
+
+Four questions were asked of the trained fly. Three came back "no", and the
+"no"s were the useful part.
+
+**1. More training does not help.** Rendition track recall is 0.429 (9 of 21),
+but the twelve misses have a mean *peak* confidence of 0.96. The circuit
+recognises them percept by percept; the dopamine pool on top never crosses. More
+epochs cannot move a threshold.
+
+**2. A different commit rule does not help.** A leaky integrator (252
+combinations) against an N-of-M rate rule (210): 0.429 at 0.977 specificity
+against 0.238 at 0.955. The integrator wins comfortably, and the tuner is
+already picking the best rule available to it.
+
+**3. The constraint is three false positives.** Two uploads of *Whenever You
+Need Somebody*, one of *She Wants To Dance With Me*, and a TED talk. Removing
+the Astley negatives takes rendition recall 0.429 → 0.762. Those three tracks
+cost 0.333 of recall: the fly has partly learned *Stock Aitken Waterman, 1987,
+that voice* rather than *this song*.
+
+**4. More hard negatives make it worse, and this is the important one.** Adding
+fourteen (including four ordinary uploads of *She Wants To Dance With Me*) puts
+the specificity floor out of reach; the best available becomes 0.897. The fly is
+*more* confident that *She Wants To Dance With Me* is the Rickroll than it is
+about any real Rickroll in the corpus (99.2 % of percepts over half, against
+88.3 % for the best true positive). The 0.977 the model reports was flattered by
+thin coverage of its nearest confusable neighbour. Those tracks are carried at
+`use: "holdout"`, because adopting them means lowering a floor that is a product
+promise rather than a hyperparameter.
+
+**5. A longer percept does not help and costs most of the recall.** Doubling the
+window to 1.567 s is a wash at percept level and a disaster at track level:
+rendition recall 0.429 → 0.095, 9 of 21 caught down to 2. The folds move in
+opposite directions consistently, and the reading that fits is that a longer
+window is more rigid about tempo. It is a better template for *the same
+recording* and a worse recogniser of *the song*, which is the opposite of the
+intent. Reverted, and written down because it is easy to repeat by accident.
+
+**6. Three ways to commit.** The pool needs ~10 s of song and misses a
+four-second meme sting. A burst path (2 s averaging 0.90, gated to clips of at
+most 25 s) covers short memes; the gate is load-bearing because specificity
+decays with length, and the hard negative's best two seconds average 0.9479. But
+the gate then misses the commonest shape of all, four seconds buried in eleven
+minutes. Ungating does not work: ranked by best two-second mean, a TED talk
+(0.985) and the hard negative (0.972) both beat a real eleven-minute Rickroll
+(0.939), because a mean can be carried by one spike and a long video supplies
+thousands of windows to find one in. An unbroken run cannot. So a third,
+ungated path: 0.97 held for 0.60 s. Rendition recall 0.429 → 0.619 with neither
+specificity moving. Sub-findings record that the first burst threshold was
+fitted four thousandths above a single example and promptly missed the next two,
+that the sweep behind it was never committed and did not reproduce, and that
+`brain/config.py`'s defaults are *not* the shipped fly (a sweep on a bare
+`BrainConfig()` reports 0.614 where the real one scores 0.977).
+
+**7. The fly can watch, and it does not help.** A full Reichardt motion pathway
+scores 0.621 / 0.631 against the ear's 0.780 / 0.971, and `frrf-train` refused
+to ship a visual fly at all. Two things were worth the trip: 38 % of the
+positives here are still images against 16 % of negatives, so *being a
+photograph is correlated with being the target* in this corpus, which the eye
+now gates against; and training a second sense exposed a silent bug that paired
+one sense's confidences with the other's clock.
+
+**What it points at:** the representation, not the data or the rule. Next:
+re-weighting chroma against mel, and tempo invariance (sub-frames of a fixed
+number of *beats* rather than frames). Every measurement above is reproducible
+from `models/traces.npz` with no retraining.
+
+</details>
+
+> Die Messungen, die nicht funktioniert haben, 2026.
